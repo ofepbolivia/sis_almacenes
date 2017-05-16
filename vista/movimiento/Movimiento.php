@@ -777,6 +777,27 @@ header("content-type: text/javascript; charset=UTF-8");
 			id_grupo : 1,
 			grid : true,
 			form : true
+		},{
+			config : {
+				name : 'codigo_tran',
+				fieldLabel : 'Codigo Dotaciones',
+				allowBlank : true,
+				anchor : '100%',
+				gwidth : 160,
+				maxLength : 30,
+				renderer: function(value, p, record){
+					return String.format('{0}', value);
+				}
+			},
+			type : 'TextField',
+			filters : {
+				pfiltro : 'mov.codigo_tran',
+				type : 'string'
+			},
+			id_grupo : 1,
+			bottom_filter: true,
+			grid : true,
+			form : false
 		},
 		{
 			config:{
@@ -953,6 +974,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		},
 		{name : 'id_depto_conta',type : 'numeric'},
 		{name : 'comail',type : 'numeric'},
+		{name : 'codigo_tran',type : 'string'},
 		{name : 'nombre_depto',type : 'string'},
 			],
 		sortInfo : {

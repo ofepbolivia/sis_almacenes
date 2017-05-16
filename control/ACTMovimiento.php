@@ -9,6 +9,7 @@
 
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/ReportWriter.php');
 require_once (dirname(__FILE__) . '/../reportes/RMovimiento.php');
+require_once (dirname(__FILE__) . '/../reportes/RMovimientoConsolidado.php');
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
 
 class ACTMovimiento extends ACTbase {
@@ -107,6 +108,7 @@ class ACTMovimiento extends ACTbase {
     }
 
     function generarReporteMovimiento() {
+        $nombreSolicitante;
         $idMovimiento = $this->objParam->getParametro('id_movimiento');
 
         $idProcesoWf= $this->objParam->getParametro('id_proceso_wf');
@@ -138,7 +140,6 @@ class ACTMovimiento extends ACTbase {
         $resultRepMovimiento = $this->objFunc->listarReporteMovimiento($this->objParam);
 
         $resultData = $resultRepMovimiento->getDatos();
-
         //1. En caso de que el movimiento sea un inventario Inicial
         if ($tipoMovimiento == "ingreso" && $tipoPersonalizado == "Inventario Inicial") {
             	
@@ -209,8 +210,33 @@ class ACTMovimiento extends ACTbase {
             $dataSource->putParameter('solicitante', $nombreProveedor);
         }
 
-        $reporte = new RMovimiento();
-        $reporte->setDataSource($dataSource);
+        if($resultData[0]['codigo_tran']==NULL) {
+            $reporte = new RMovimiento();
+            $reporte->setDataSource($dataSource);
+        }else{
+            $this->objParam->addParametroConsulta('filtro', ' mov.codigo_tran = ' . "''". $resultData[0]['codigo_tran']."''");
+            $this->objParam->addParametroConsulta('ordenacion', 'item.codigo');
+            $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
+            $this->objParam->addParametroConsulta('cantidad', 1000);
+            $this->objParam->addParametroConsulta('puntero', 0);
+            $this->objFunc = $this->create('MODMovimiento');
+            $resultRepMovimiento = $this->objFunc->listarReporteMovimiento($this->objParam);
+            $resultData = $resultRepMovimiento->getDatos();
+            //var_dump($resultData); exit;
+            $costoTotal = 0;
+            foreach($resultData as $row) {
+                $costoTotal += $row['costo_total'];
+
+                $nombreSolicitante = $row['nombre_funcionario'];
+                $comail = $row['comail'];
+                $fechaSalida = $row['fecha_salida'];
+            }
+            $dataSource->setDataSet($resultData);
+            //var_dump($dataSource); exit;
+            $reporte = new RMovimientoConsolidado();
+            $reporte->setDataSource($dataSource);
+        }
+
         $nombreArchivo = 'Movimiento.pdf';
         $reportWriter = new ReportWriter($reporte, dirname(__FILE__) . '/../../reportes_generados/' . $nombreArchivo);
         $reportWriter->writeReport(ReportWriter::PDF);

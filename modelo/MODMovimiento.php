@@ -54,6 +54,7 @@ class MODMovimiento extends MODbase {
         $this->captura('comail', 'integer');
         $this->captura('fecha_salida', 'date');
         $this->captura('nro_tramite', 'varchar');
+        $this->captura('codigo_tran', 'varchar');
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;
@@ -115,6 +116,7 @@ class MODMovimiento extends MODbase {
         $this->setParametro('descripcion', 'descripcion', 'varchar'); 		
 		$this->setParametro('detalle','detalle','text');
 		$this->setParametro('id_funcionario_aprobador','id_funcionario_aprobador','integer');
+		$this->setParametro('codigo_tran','codigo_tran','varchar');
 
 		//Ejecuta la instruccion
 		$this->armarConsulta();
@@ -255,13 +257,14 @@ class MODMovimiento extends MODbase {
         $this->captura('fecha_mod', 'varchar');
 		$this->captura('cantidad_solicitada', 'numeric');
         $this->captura('fecha_salida', 'varchar');
+        $this->captura('codigo_tran', 'varchar');
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
 
         return $this->respuesta;
     }
-				
+
 	function siguienteEstadoMovimiento(){
         //Definicion de variables para ejecucion del procedimiento
         $this->procedimiento='alm.ft_movimiento_ime';

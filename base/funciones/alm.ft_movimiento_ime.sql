@@ -165,19 +165,40 @@ BEGIN
         from param.tgestion g
         where g.gestion = to_char(v_parametros.fecha_mov,'YYYY')::integer;
 
-    	select
-        v_parametros.id_movimiento_tipo,
-        v_parametros.id_almacen,
-        v_parametros.id_funcionario,
-        NULL,
-        NULL,
-        v_parametros.fecha_mov,
-        v_parametros.descripcion,
-        NULL,
-        NULL,
-        v_id_gestion as id_gestion,
-        NULL
-        into g_registros;
+		if (pxp.f_existe_parametro(p_tabla,'codigo_tran')) then
+
+            select
+              v_parametros.id_movimiento_tipo,
+              v_parametros.id_almacen,
+              v_parametros.id_funcionario,
+              NULL,
+              NULL,
+              v_parametros.fecha_mov,
+              v_parametros.descripcion,
+              v_parametros.codigo_tran,
+              NULL,
+              NULL,
+              v_id_gestion as id_gestion,
+              NULL
+              into g_registros;
+
+        else
+        	select
+            v_parametros.id_movimiento_tipo,
+            v_parametros.id_almacen,
+            v_parametros.id_funcionario,
+            NULL,
+            NULL,
+            v_parametros.fecha_mov,
+            v_parametros.descripcion,
+            NULL,
+            NULL,
+            v_id_gestion as id_gestion,
+            NULL
+            into g_registros;
+
+        end if;
+
 
         --Llama a la función de registro del movimiento
         v_id_movimiento = alm.f_insercion_movimiento(p_id_usuario,hstore(g_registros));

@@ -715,3 +715,13 @@ COMMENT ON COLUMN alm.titem.cantidad_max_sol
 IS 'cantidad maxima por solicitud';
 
 /***********************************F-SCP-GSS-ALM-1-14/11/2016*****************************************/
+
+/***********************************I-SCP-GSS-ALM-0-08/05/2017*****************************************/
+
+ALTER TABLE alm.tmovimiento
+  ADD COLUMN codigo_tran VARCHAR(22);
+
+COMMENT ON COLUMN alm.tmovimiento.codigo_tran
+IS 'codigo transaccion de sistema dotaciones';
+
+/***********************************F-SCP-GSS-ALM-0-08/05/2017*****************************************/
