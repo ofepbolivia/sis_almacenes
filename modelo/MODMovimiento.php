@@ -30,6 +30,9 @@ class MODMovimiento extends MODbase {
         $this->captura('nombre_movimiento_tipo', 'varchar');
         $this->captura('id_funcionario', 'integer');
         $this->captura('nombre_funcionario', 'varchar');
+        $this->captura('descripcion_cargo', 'varchar');
+        $this->captura('estacion', 'varchar');
+        $this->captura('oficina', 'varchar');
         $this->captura('id_proveedor', 'integer');
         $this->captura('nombre_proveedor', 'varchar');
         $this->captura('id_almacen', 'integer');

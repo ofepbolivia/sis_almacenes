@@ -336,7 +336,14 @@ Class RMovimientoConsolidado extends Report {
         $count = 1;
         $pdf->SetFont('', '');
 
+        $funcionario='';
         foreach ($dataSource->getDataSet() as $datarow) {
+            if($funcionario==$datarow['nombre_funcionario']){
+                break;
+            }else{
+                $funcionario=$datarow['nombre_funcionario'];
+            }
+
             $pdf->Cell($w = $wNro-2+$wDescripcionItem, $h = $hGlobal, $txt = $datarow['nombre_funcionario'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Cell($w = $wCodigo+$wCantidad*2+$wCostoUnitario, $h = $hGlobal, '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Ln();

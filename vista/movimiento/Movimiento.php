@@ -216,7 +216,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					else {
 						aux='<b><font color="green">';
 					}
-					desc=value ? value.dateFormat('d/m/Y h:i:s') : '';
+					desc=value ? value.dateFormat('d/m/Y') : '';
 					aux = aux +desc+'</font></b>';
 					return String.format('{0}', aux);
 				}
@@ -540,7 +540,51 @@ header("content-type: text/javascript; charset=UTF-8");
    		    grid:true,
    			form:true
 		 },
-		 
+		 {
+			config:{
+				name: 'descripcion_cargo',
+				fieldLabel: 'Cargo Funcionario',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 250,
+				maxLength:4
+			},
+			type:'Field',
+			filters:{pfiltro:'fun.cargo_funcionario',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		  },
+		  {
+			config:{
+				name: 'estacion',
+				fieldLabel: 'Estacion',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 250,
+				maxLength:4
+			},
+			type:'Field',
+			filters:{pfiltro:'fun.cargo_funcionario',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		  },
+		  {
+			config:{
+				name: 'oficina',
+				fieldLabel: 'Oficina',
+				allowBlank: true,
+				anchor: '80%',
+				gwidth: 250,
+				maxLength:4
+			},
+			type:'Field',
+			filters:{pfiltro:'fun.cargo_funcionario',type:'string'},
+			id_grupo:1,
+			grid:true,
+			form:false
+		  },
 		  {
 			config : {
 				name : 'id_proveedor',
@@ -975,6 +1019,9 @@ header("content-type: text/javascript; charset=UTF-8");
 		{name : 'id_depto_conta',type : 'numeric'},
 		{name : 'comail',type : 'numeric'},
 		{name : 'codigo_tran',type : 'string'},
+		{name : 'descripcion_cargo',type : 'string'},
+		{name : 'estacion',type : 'string'},
+		{name : 'oficina',type : 'string'},
 		{name : 'nombre_depto',type : 'string'},
 			],
 		sortInfo : {
