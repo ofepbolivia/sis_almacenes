@@ -52,7 +52,7 @@ class CustomReportConsolidado extends TCPDF {
         $this->setCellPaddings(2);
         $this->Cell($width1-4, $height, 'Código:', "B", 0, '', false, '', 0, false, 'T', 'C');
         $this->SetFont('', 'B');
-        $this->Cell($width2+8, $height, $tmpDatos[0]['codigo_mov'], "B", 0, 'C', false, '', 0, false, 'T', 'C');
+        $this->Cell($width2+8, $height, $tmpDatos[0]['codigo_tran'], "B", 0, 'C', false, '', 0, false, 'T', 'C');
 
         $this->SetFont('', '');
         $y += $height;
@@ -78,34 +78,6 @@ class CustomReportConsolidado extends TCPDF {
         $this->Cell($width1, $height, 'Comail:', "B", 0, '', false, '', 0, false, 'T', 'C');
         $this->SetFont('', 'B');
         $this->Cell($w = $width2, $h = $height, $dataSource->getParameter('comail'), $border = "B", $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-
-        $wNro = 10;
-        $wCodigo = 15;
-        $wDescripcionItem = 90;
-        $wUnidad = 15;
-        $wCantidad = 20;
-        $wCostoUnitario = 15;
-        $wCostoTotal = 20;
-        $cantTot=0;
-        $costoUnitTot=0;
-        $hGlobal = 5;
-
-        if($this->headerFistPage==false){
-            $this->headerFistPage=true;
-        } else{
-            $this->Ln();
-            $this->SetFontSize(6.5);
-            $this->SetFont('', 'B');
-            $this->Cell($w = $wNro-2, $h = $hGlobal, $txt = 'Nro.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Cell($w = $wCodigo, $h = $hGlobal, $txt = 'Código', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Cell($w = $wDescripcionItem-10, $h = $hGlobal, $txt = 'Descripcion del Material', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Cell($w = $wUnidad, $h = $hGlobal, $txt = 'Unidad', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cantidad Sol.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cantidad Real', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = 'Costo Unit.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = 'Costo Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $this->Ln();
-        }
 
     }
 
@@ -180,7 +152,7 @@ Class RMovimientoConsolidado extends Report {
         $pdf->SetFont('', 'B');
         $pdf->Ln();
         $pdf->Cell($w = 30, $h = $hMedium, $txt = 'DESCRIPCION: ', $border = 0, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        //var_dump($tmpDatos[0]);exit;
+
         if ($tmpDatos[0]['descripcion'] != null && $tmpDatos[0]['descripcion'] != '') {
             $pdf->SetFont('', '');
             if (strlen($dataSource->getParameter('descripcion')) > 150) {
@@ -250,6 +222,35 @@ Class RMovimientoConsolidado extends Report {
     }
 
     function writeGlobalDetail($pdf, $dataSource, $numberDecimals) {
+
+        $wNro = 10;
+        $wCodigo = 15;
+        $wDescripcionItem = 90;
+        $wUnidad = 15;
+        $wCantidad = 20;
+        $wCostoUnitario = 15;
+        $wCostoTotal = 20;
+        $cantTot=0;
+        $costoUnitTot=0;
+        $hGlobal = 5;
+
+        if($this->headerFistPage==false){
+            $this->headerFistPage=true;
+        } else{
+            $this->Ln();
+            $this->SetFontSize(6.5);
+            $this->SetFont('', 'B');
+            $this->Cell($w = $wNro-2, $h = $hGlobal, $txt = 'Nro.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Cell($w = $wCodigo, $h = $hGlobal, $txt = 'Código', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Cell($w = $wDescripcionItem-10, $h = $hGlobal, $txt = 'Descripcion del Material', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Cell($w = $wUnidad, $h = $hGlobal, $txt = 'Unidad', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cantidad Sol.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Cell($w = $wCantidad, $h = $hGlobal, $txt = 'Cantidad Real', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = 'Costo Unit.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = 'Costo Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $this->Ln();
+        }
+
         $hGlobal = 5;
         $wNro = 10;
         $wCodigo = 15;
@@ -336,15 +337,12 @@ Class RMovimientoConsolidado extends Report {
         $count = 1;
         $pdf->SetFont('', '');
 
-        $funcionario='';
-        foreach ($dataSource->getDataSet() as $datarow) {
-            if($funcionario==$datarow['nombre_funcionario']){
-                break;
-            }else{
-                $funcionario=$datarow['nombre_funcionario'];
-            }
+        $dataset = $dataSource->getDataSet();
+        $solicitantes = explode(',',$dataset[0]['nombre_funcionario']);
 
-            $pdf->Cell($w = $wNro-2+$wDescripcionItem, $h = $hGlobal, $txt = $datarow['nombre_funcionario'], $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        foreach ($solicitantes as $solicitante) {
+
+            $pdf->Cell($w = $wNro-2+$wDescripcionItem, $h = $hGlobal, $txt = $solicitante, $border = 1, $ln = 0, $align = 'L', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Cell($w = $wCodigo+$wCantidad*2+$wCostoUnitario, $h = $hGlobal, '', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             $pdf->Ln();
         }

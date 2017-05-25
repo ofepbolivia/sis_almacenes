@@ -13,36 +13,36 @@ require_once (dirname(__FILE__) . '/../reportes/RMovimientoConsolidado.php');
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
 
 class ACTMovimiento extends ACTbase {
-	
+
     function listarMovimiento() {
         $this->objParam->defecto('ordenacion', 'mov.fecha_mov');
         $this->objParam->defecto('dir_ordenacion', 'asc');
-		
-		//Filtro del tipo de movimiento de la barra de herramientas
-		if($this->objParam->getParametro('cmb_tipo_movimiento')!=''){
-			if($this->objParam->getParametro('cmb_tipo_movimiento')=='ingreso'||$this->objParam->getParametro('cmb_tipo_movimiento')=='salida'){
-				$this->objParam->addFiltro("movtip.tipo = ''".$this->objParam->getParametro('cmb_tipo_movimiento')."''");	
-			}
-		}
-		
-		//Filtro para ventana de cierre de gestión
-		if($this->objParam->getParametro('ids')!=''){
-			$this->objParam->addFiltro("mov.id_movimiento in  (".$this->objParam->getParametro('ids').")");
-		}
-		
-		if($this->objParam->getParametro('pes_estado')=='borrador'){
-             $this->objParam->addFiltro("mov.estado_mov in (''borrador'')");
+
+        //Filtro del tipo de movimiento de la barra de herramientas
+        if($this->objParam->getParametro('cmb_tipo_movimiento')!=''){
+            if($this->objParam->getParametro('cmb_tipo_movimiento')=='ingreso'||$this->objParam->getParametro('cmb_tipo_movimiento')=='salida'){
+                $this->objParam->addFiltro("movtip.tipo = ''".$this->objParam->getParametro('cmb_tipo_movimiento')."''");
+            }
+        }
+
+        //Filtro para ventana de cierre de gestión
+        if($this->objParam->getParametro('ids')!=''){
+            $this->objParam->addFiltro("mov.id_movimiento in  (".$this->objParam->getParametro('ids').")");
+        }
+
+        if($this->objParam->getParametro('pes_estado')=='borrador'){
+            $this->objParam->addFiltro("mov.estado_mov in (''borrador'')");
         }
         if($this->objParam->getParametro('pes_estado')=='en_aprobacion'){
-             $this->objParam->addFiltro("mov.estado_mov in (''vbarea'',''autorizacion'')");
+            $this->objParam->addFiltro("mov.estado_mov in (''vbarea'',''autorizacion'')");
         }
         if($this->objParam->getParametro('pes_estado')=='en_almacenes'){
-             $this->objParam->addFiltro("mov.estado_mov in (''prefin'')");
+            $this->objParam->addFiltro("mov.estado_mov in (''prefin'')");
         }
-		if($this->objParam->getParametro('pes_estado')=='entregado'){
-             $this->objParam->addFiltro("mov.estado_mov in (''finalizado'')");
+        if($this->objParam->getParametro('pes_estado')=='entregado'){
+            $this->objParam->addFiltro("mov.estado_mov in (''finalizado'')");
         }
-		
+
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
             $this->objReporte = new Reporte($this->objParam, $this);
             $this->res = $this->objReporte->generarReporteListado('MODMovimiento', 'listarMovimiento');
@@ -53,8 +53,8 @@ class ACTMovimiento extends ACTbase {
             if ($this->objParam->getParametro('tipo') != null) {
                 $this->objParam->addFiltro(" movtip.tipo = ''" . $this->objParam->getParametro('tipo') . "'' ");
             }
-												
-			$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
+
+            $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
             $this->objFunc = $this->create('MODMovimiento');
             $this->res = $this->objFunc->listarMovimiento();
         }
@@ -70,10 +70,10 @@ class ACTMovimiento extends ACTbase {
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-	function insertarMovimientoREST() {
+    function insertarMovimientoREST() {
         $this->objFunc = $this->create('MODMovimiento');
         $this->res = $this->objFunc->insertarMovimientoREST();
-        
+
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
@@ -113,7 +113,7 @@ class ACTMovimiento extends ACTbase {
 
         $idProcesoWf= $this->objParam->getParametro('id_proceso_wf');
 
-		$costos = $this->objParam->getParametro('costos');
+        $costos = $this->objParam->getParametro('costos');
         $tipoMovimiento = $this->objParam->getParametro('tipo');
         $tipoPersonalizado = $this->objParam->getParametro('nombre_movimiento_tipo');
         $codigoMovimiento = $this->objParam->getParametro('codigo');
@@ -124,7 +124,7 @@ class ACTMovimiento extends ACTbase {
         $fechaMovimiento = $this->objParam->getParametro('fecha_movimiento');
         $nombreFuncionario = $this->objParam->getParametro('nombre_funcionario');
         $nombreProveedor = $this->objParam->getParametro('nombre_proveedor');
-        
+
         $dataSource = new DataSource();
         if($idMovimiento == ''){
             $this->objParam->addParametroConsulta('filtro', ' mov.id_proceso_wf = ' . $idProcesoWf);
@@ -142,7 +142,7 @@ class ACTMovimiento extends ACTbase {
         $resultData = $resultRepMovimiento->getDatos();
         //1. En caso de que el movimiento sea un inventario Inicial
         if ($tipoMovimiento == "ingreso" && $tipoPersonalizado == "Inventario Inicial") {
-            	
+
             $lastNombreClasificacion = $resultData[0]['nombre_clasificacion'];
             $dataSourceArray = Array();
             $dataSourceClasificacion = new DataSource();
@@ -158,7 +158,7 @@ class ACTMovimiento extends ACTbase {
                     $dataSourceClasificacion->putParameter('totalCosto', $totalCostoClasificacion);
                     $dataSourceClasificacion->putParameter('nombreClasificacion', $lastNombreClasificacion);
                     $dataSourceArray[] = $dataSourceClasificacion;
-    
+
                     $lastNombreClasificacion = $row['nombre_clasificacion'];
                     $dataSourceClasificacion = new DataSource();
                     $dataSetClasificacion = Array();
@@ -173,7 +173,7 @@ class ACTMovimiento extends ACTbase {
             $dataSourceClasificacion->putParameter('totalCosto', $totalCostoClasificacion);
             $dataSourceClasificacion->putParameter('nombreClasificacion', $lastNombreClasificacion);
             $dataSourceArray[] = $dataSourceClasificacion;
-    
+
             $dataSource->putParameter('clasificacionDataSources', $dataSourceArray);
             $dataSource->putParameter('costoTotal', $costoTotal);
             $dataSource->setDataSet($mainDataSet);
@@ -190,7 +190,7 @@ class ACTMovimiento extends ACTbase {
             $dataSource->setDataSet($resultData);
             $dataSource->putParameter('totalCosto', $costoTotal);
         }
-        
+
         $dataSource->putParameter('codigo', $codigoMovimiento);
         $dataSource->putParameter('tipoMovimiento', $tipoMovimiento);
         $dataSource->putParameter('almacen', $nombreAlmacen);
@@ -199,10 +199,10 @@ class ACTMovimiento extends ACTbase {
         $dataSource->putParameter('observaciones', $observacionesMovimiento);
         $dataSource->putParameter('fechaRemision', $fechaRegMovimiento);
         $dataSource->putParameter('fechaMovimiento', $fechaMovimiento);
-		$dataSource->putParameter('costos', $costos);
-		$dataSource->putParameter('funcionario_solicitante', $nombreSolicitante);
-		$dataSource->putParameter('comail', $comail);
-		$dataSource->putParameter('fechaSalida',$fechaSalida);
+        $dataSource->putParameter('costos', $costos);
+        $dataSource->putParameter('funcionario_solicitante', $nombreSolicitante);
+        $dataSource->putParameter('comail', $comail);
+        $dataSource->putParameter('fechaSalida',$fechaSalida);
 
         if ($nombreFuncionario != null && $nombreFuncionario != '') {
             $dataSource->putParameter('solicitante', $nombreFuncionario);
@@ -220,9 +220,8 @@ class ACTMovimiento extends ACTbase {
             $this->objParam->addParametroConsulta('cantidad', 1000);
             $this->objParam->addParametroConsulta('puntero', 0);
             $this->objFunc = $this->create('MODMovimiento');
-            $resultRepMovimiento = $this->objFunc->listarReporteMovimiento($this->objParam);
+            $resultRepMovimiento = $this->objFunc->listarReporteMovimientoConsolidado($this->objParam);
             $resultData = $resultRepMovimiento->getDatos();
-            //var_dump($resultData); exit;
             $costoTotal = 0;
             foreach($resultData as $row) {
                 $costoTotal += $row['costo_total'];
@@ -232,7 +231,6 @@ class ACTMovimiento extends ACTbase {
                 $fechaSalida = $row['fecha_salida'];
             }
             $dataSource->setDataSet($resultData);
-            //var_dump($dataSource); exit;
             $reporte = new RMovimientoConsolidado();
             $reporte->setDataSource($dataSource);
         }
@@ -247,39 +245,39 @@ class ACTMovimiento extends ACTbase {
         $this->res = $mensajeExito;
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-    
+
     function siguienteEstadoMovimiento(){
-        $this->objFunc=$this->create('MODMovimiento');  
-        $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]); 
+        $this->objFunc=$this->create('MODMovimiento');
+        $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
         $this->res=$this->objFunc->siguienteEstadoMovimiento($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-    
+
     function anteriorEstadoMovimiento(){
-        $this->objFunc=$this->create('MODMovimiento');  
-        $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]); 
+        $this->objFunc=$this->create('MODMovimiento');
+        $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
         $this->res=$this->objFunc->anteriorEstadoSolicitud($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
-	
-	function listarFuncionarioMovimientoTipo() {
-		$this->objParam->defecto('ordenacion','PERSON.nombre_completo1');
-		$this->objParam->defecto('dir_ordenacion','asc');
-		
-		if ($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
-			$this->objReporte=new Reporte($this->objParam, $this);
-			$this->res=$this->objReporte->generarReporteListado('MODMovimiento','listarFuncionarioMovimientoTipo');
-		}
-		else {
-			$this->objFunSeguridad=$this->create('MODMovimiento');
-			$this->res=$this->objFunSeguridad->listarFuncionarioMovimientoTipo($this->objParam);
-		}
-		
-		$this->res->imprimirRespuesta($this->res->generarJson());		
-	}
-	
-	function revertirPreingreso(){
-        $this->objFunc=$this->create('MODMovimiento');  
+
+    function listarFuncionarioMovimientoTipo() {
+        $this->objParam->defecto('ordenacion','PERSON.nombre_completo1');
+        $this->objParam->defecto('dir_ordenacion','asc');
+
+        if ($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
+            $this->objReporte=new Reporte($this->objParam, $this);
+            $this->res=$this->objReporte->generarReporteListado('MODMovimiento','listarFuncionarioMovimientoTipo');
+        }
+        else {
+            $this->objFunSeguridad=$this->create('MODMovimiento');
+            $this->res=$this->objFunSeguridad->listarFuncionarioMovimientoTipo($this->objParam);
+        }
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function revertirPreingreso(){
+        $this->objFunc=$this->create('MODMovimiento');
         $this->res=$this->objFunc->revertirPreingreso($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }

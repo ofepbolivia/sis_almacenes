@@ -268,6 +268,40 @@ class MODMovimiento extends MODbase {
         return $this->respuesta;
     }
 
+    function listarReporteMovimientoConsolidado() {
+        $this->procedimiento = 'alm.ft_movimiento_sel';
+        $this->transaccion = 'SAL_MOVREPCON_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->captura('codigo', 'varchar');
+        $this->captura('nombre', 'varchar');
+        $this->captura('descripcion_item', 'varchar');
+        $this->captura('unidad_medida', 'varchar');
+        $this->captura('id_clasificacion', 'integer');
+        $this->captura('nombre_clasificacion', 'varchar');
+        $this->captura('cantidad', 'numeric');
+        $this->captura('costo_unitario', 'numeric');
+        $this->captura('costo_total', 'numeric');
+
+        $this->captura('comail', 'integer');
+        $this->captura('nombre_almacen', 'varchar');
+        $this->captura('tipo', 'varchar');
+        $this->captura('nombre_movimiento_tipo', 'varchar');
+        $this->captura('descripcion', 'varchar');
+        $this->captura('observaciones', 'varchar');
+        $this->captura('nombre_funcionario', 'varchar');
+        $this->captura('nombre_proveedor', 'varchar');
+        $this->captura('cantidad_solicitada', 'numeric');
+        $this->captura('fecha_salida', 'varchar');
+        $this->captura('codigo_tran', 'varchar');
+
+        $this->armarConsulta();
+        //var_dump($this->consulta); exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+    
 	function siguienteEstadoMovimiento(){
         //Definicion de variables para ejecucion del procedimiento
         $this->procedimiento='alm.ft_movimiento_ime';

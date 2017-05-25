@@ -307,6 +307,71 @@ BEGIN
     end;
 
   /*********************************
+     #TRANSACCION:  'SAL_MOVREPCON_SEL'
+     #DESCRIPCION:  Consulta de datos reporte consolidado
+     #AUTOR:        Gonzalo Sarmiento Sejas
+     #FECHA:        25-05-2017
+    ***********************************/
+
+	elseif(p_transaccion='SAL_MOVREPCON_SEL')then
+  	begin
+    	v_consulta:='
+        	select
+            	item.codigo,
+                item.nombre,
+                item.descripcion as descripcion_item,
+                umed.codigo as unidad_medida,
+                item.id_clasificacion,
+                cla.nombre as nombre_clasificacion,
+                sum(detval.cantidad) as cantidad,
+                detval.costo_unitario,
+                sum(detval.cantidad) * detval.costo_unitario as costo_total,
+                mov.comail,
+                almac.nombre as nombre_almacen,
+                mtipo.tipo,
+                mtipo.nombre as nombre_movimiento_tipo,
+                mov.descripcion,
+                mov.observaciones,
+                alm.f_get_solicitantes_movimiento_dotaciones(mov.codigo_tran) as nombre_funcionario,
+                prov.desc_proveedor as nombre_proveedor,
+                sum(movdet.cantidad_solicitada) as cantidad_solicitada,
+                to_char(mov.fecha_salida,''dd/mm/yyyy'')::varchar as fecha_salida,
+                mov.codigo_tran
+            from alm.tmovimiento_det_valorado detval
+            inner join alm.tmovimiento_det movdet on movdet.id_movimiento_det = detval.id_movimiento_det
+            inner join alm.titem item on item.id_item = movdet.id_item
+            inner join param.tunidad_medida umed on umed.id_unidad_medida = item.id_unidad_medida
+            left join alm.tclasificacion cla on cla.id_clasificacion = item.id_clasificacion
+            inner join alm.tmovimiento mov on mov.id_movimiento = movdet.id_movimiento
+            inner join alm.talmacen almac on almac.id_almacen = mov.id_almacen
+            inner join alm.tmovimiento_tipo mtipo on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
+            left join orga.vfuncionario fun on fun.id_funcionario = mov.id_funcionario
+            left join param.vproveedor prov on prov.id_proveedor = mov.id_proveedor
+            where ';
+
+    	v_consulta:=v_consulta||v_parametros.filtro;
+        v_consulta = v_consulta || ' group by item.codigo,
+                item.nombre,
+                item.descripcion,
+                umed.codigo,
+                item.id_clasificacion,
+                cla.nombre,
+                detval.costo_unitario,
+                mov.comail,
+                almac.nombre,
+                mtipo.tipo,
+                mtipo.nombre,
+                mov.descripcion,
+                mov.observaciones,
+                prov.desc_proveedor,
+                mov.fecha_salida,
+                mov.codigo_tran ';
+        v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
+        raise notice 'v_consulta %', v_consulta;
+        return v_consulta;
+    end;
+
+  /*********************************
      #TRANSACCION:  'SAL_MOVREPORT_CONT'
      #DESCRIPCION:  Conteo de registros
      #AUTOR:        Ariel Ayaviri Omonte
