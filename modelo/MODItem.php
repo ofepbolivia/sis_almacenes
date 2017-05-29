@@ -71,6 +71,20 @@ class MODItem extends MODbase {
         return $this->respuesta;
     }
 
+    function nombreClasificacionItems() {
+        $this->procedimiento = 'alm.ft_item_sel';
+        $this->transaccion = 'SAL_NOMCLAITEMS_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('id_item', 'id_item', 'varchar');
+
+        $this->captura('nombre', 'varchar');
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
     function insertarItem() {
         $this->procedimiento = 'alm.ft_item_ime';
         $this->transaccion = 'SAL_ITEM_INS';

@@ -558,7 +558,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		  {
 			config:{
 				name: 'estacion',
-				fieldLabel: 'Estacion',
+				fieldLabel: 'Estacion Funcionario',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 250,
@@ -573,7 +573,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		  {
 			config:{
 				name: 'oficina',
-				fieldLabel: 'Oficina',
+				fieldLabel: 'Oficina Funcionario',
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 250,

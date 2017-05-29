@@ -75,6 +75,12 @@ class ACTItem extends ACTbase {
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+    function nombreClasificacionItems() {
+        $this->objFunc = $this->create('MODItem');
+        $this->res = $this->objFunc->nombreClasificacionItems();
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
     function insertarItem() {
         $this->objFunc = $this->create('MODItem');
         if ($this->objParam->insertar('id_item')) {
