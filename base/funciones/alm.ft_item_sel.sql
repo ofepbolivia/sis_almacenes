@@ -473,7 +473,7 @@ BEGIN
             --Sentencia de la consulta
             v_consulta:='select alm.f_nombre_clasificaciones_recursivo(id_clasificacion) as nombre
 						from alm.titem
-						where id_item in ('||v_parametros.id_item||')';
+						where codigo like any(string_to_array('''||v_parametros.codigos||''','',''))';
             return v_consulta;
 
         end;
@@ -491,7 +491,7 @@ BEGIN
             --Sentencia de la consulta
             v_consulta:='select count(alm.f_nombre_clasificaciones_recursivo(id_clasificacion))
 						from alm.titem
-						where id_item in ('||v_parametros.id_item||')';
+						where codigo like any(string_to_array('''||v_parametros.codigos||''','',''))';
             return v_consulta;
 
         end;

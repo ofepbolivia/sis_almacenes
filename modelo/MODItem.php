@@ -76,7 +76,7 @@ class MODItem extends MODbase {
         $this->transaccion = 'SAL_NOMCLAITEMS_SEL';
         $this->tipo_procedimiento = 'SEL';
 
-        $this->setParametro('id_item', 'id_item', 'varchar');
+        $this->setParametro('codigos', 'codigos', 'varchar');
 
         $this->captura('nombre', 'varchar');
         $this->armarConsulta();
