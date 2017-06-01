@@ -10,14 +10,17 @@ DECLARE
 BEGIN
 
 	v_i=0;
-	FOR v_funcionario IN (select fun.desc_funcionario1
+	FOR v_funcionario IN (select fun.desc_funcionario1, fun.lugar_nombre, fun.oficina_nombre, uo.nombre_unidad
          				 from alm.tmovimiento mov
-         				 inner join orga.vfuncionario fun on fun.id_funcionario=mov.id_funcionario
+         				 inner join orga.vfuncionario_cargo_lugar fun on fun.id_funcionario=mov.id_funcionario
+                         and now() between fun.fecha_asignacion and COALESCE(fun.fecha_finalizacion,now())
+            			 and fun.id_uo_funcionario < 1000000
+                         left join orga.tuo uo on uo.id_uo=fun.id_uo
         				 where mov.codigo_tran=p_codigo_dotaciones
-        				 group by fun.desc_funcionario1
+        				 group by fun.desc_funcionario1, fun.lugar_nombre, fun.oficina_nombre, uo.nombre_unidad
          				 order by fun.desc_funcionario1)LOOP
 
-    v_array_funcionarios[v_i]=v_funcionario.desc_funcionario1;
+    v_array_funcionarios[v_i]=v_funcionario.desc_funcionario1||'~'||v_funcionario.lugar_nombre||'~'||v_funcionario.oficina_nombre||'~'||v_funcionario.nombre_unidad;
     v_i = v_i + 1;
     END LOOP;
 
