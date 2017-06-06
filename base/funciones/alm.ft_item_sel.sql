@@ -471,7 +471,7 @@ BEGIN
 
         begin
             --Sentencia de la consulta
-            v_consulta:='select alm.f_nombre_clasificaciones_recursivo(id_clasificacion) as nombre
+            v_consulta:='select alm.f_nombre_clasificaciones_recursivo(id_clasificacion) ||''~''|| nombre as nombre
 						from alm.titem
 						where codigo like any(string_to_array('''||v_parametros.codigos||''','',''))';
             return v_consulta;

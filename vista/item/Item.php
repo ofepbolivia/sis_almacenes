@@ -40,6 +40,13 @@ header("content-type: text/javascript; charset=UTF-8");
 				handler : this.onBtnVerArchivos,
 				tooltip : '<b>Actividades</b><br/>Ver los archivos asociados al item seleccionado'
 			});
+			this.addButton('btnRelConceptoIngas', {
+				text : 'Relacionar Concepto Ingas',
+				iconCls : 'bengineadd',
+				disabled : true,
+				handler : this.onBtnRelConceptoIngas,
+				tooltip : '<b>Concepto de Gasto</b><br/>Ver el concepto de gasto asociados al item seleccionado'
+			});
 		},
 		Atributos : [{
 			config : {
@@ -403,6 +410,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			var selectedRow = this.sm.getSelected();
 			this.getBoton('btnVerReemplazos').enable();
 			this.getBoton('btnVerArchivos').enable();
+			this.getBoton('btnRelConceptoIngas').enable();
 			if (selectedRow.data.id_clasificacion != null && selectedRow.data.codigo == "") {
 				this.getBoton('btnGenerarCodigo').enable();
 			} else {
@@ -414,6 +422,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.getBoton('btnGenerarCodigo').disable();
 			this.getBoton('btnVerReemplazos').disable();
 			this.getBoton('btnVerArchivos').disable();
+			this.getBoton('btnRelConceptoIngas').disable();
 		},
 		successSave : function(resp) {
 			Phx.vista.Item.superclass.successSave.call(this, resp);
@@ -467,6 +476,15 @@ header("content-type: text/javascript; charset=UTF-8");
 				height : 400
 			}, rec.data, this.idContenedor, 'ItemArchivo');
 		},
+
+		onBtnRelConceptoIngas : function() {
+			var rec = this.sm.getSelected();
+			Phx.CP.loadWindows('../../../sis_almacenes/vista/itemConceptoIngas/ItemConceptoIngas.php', 'Concepto de Gasto del Item', {
+				width : 800,
+				height : 400
+			}, rec.data, this.idContenedor, 'ItemConceptoIngas');
+		},
+
 		fheight:'60%',
     	fwidth: '60%'
 	}); 

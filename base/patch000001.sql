@@ -725,3 +725,16 @@ COMMENT ON COLUMN alm.tmovimiento.codigo_tran
 IS 'codigo transaccion de sistema dotaciones';
 
 /***********************************F-SCP-GSS-ALM-0-08/05/2017*****************************************/
+
+/***********************************I-SCP-GSS-ALM-0-18/05/2017*****************************************/
+
+CREATE TABLE alm.titem_concepto_ingas (
+  id_item_concepto_ingas SERIAL,
+  id_item INTEGER,
+  id_concepto_ingas INTEGER,
+  CONSTRAINT titem_concepto_ingas_pkey PRIMARY KEY(id_item_concepto_ingas)
+) INHERITS (pxp.tbase)
+
+WITH (oids = false);
+
+/***********************************F-SCP-GSS-ALM-0-18/05/2017*****************************************/

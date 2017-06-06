@@ -2968,3 +2968,21 @@ ALTER TABLE alm.tmovimiento_tipo_almacen
     NOT DEFERRABLE;
 
 /***********************************F-DEP-GSS-ALM-1-13/07/2016*****************************************/
+
+/***********************************I-DEP-GSS-ALM-1-18/05/2017*****************************************/
+
+ALTER TABLE alm.titem_concepto_ingas
+  ADD CONSTRAINT fk_titem_concepto_ingas__id_item FOREIGN KEY (id_item)
+    REFERENCES alm.titem(id_item)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+ALTER TABLE alm.titem_concepto_ingas
+  ADD CONSTRAINT fk_titem_concepto_ingas__id_concepto_ingas FOREIGN KEY (id_concepto_ingas)
+    REFERENCES param.tconcepto_ingas(id_concepto_ingas)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE;
+
+/***********************************F-DEP-GSS-ALM-1-18/05/2017*****************************************/
