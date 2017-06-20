@@ -114,6 +114,7 @@ DECLARE
     v_id_funcionario_wf				integer;
     v_tipo_movimiento	varchar;
     v_codigo_movimiento	varchar;
+	v_usuario						varchar;
 
 BEGIN
 
@@ -434,6 +435,17 @@ BEGIN
 	        v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(v_parametros));
 
            	--Respuesta
+            select cuenta into v_usuario
+            from segu.tusuario
+            where id_usuario=p_id_usuario;
+
+            select movtp.codigo into v_tipo_movimiento
+            from alm.tmovimiento mov
+            inner join alm.tmovimiento_tipo movtp on movtp.id_movimiento_tipo=mov.id_movimiento_tipo
+            where mov.id_movimiento=v_parametros.id_movimiento;
+
+         	v_respuesta=pxp.f_agrega_clave(v_respuesta,'usuario',v_usuario);
+            v_respuesta=pxp.f_agrega_clave(v_respuesta,'tipo_movimiento',v_tipo_movimiento);
             v_respuesta=pxp.f_agrega_clave(v_respuesta,'id_movimiento',v_parametros.id_movimiento::varchar);
 
             --Generación de Alertas

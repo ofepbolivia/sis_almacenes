@@ -86,6 +86,46 @@ class ACTMovimiento extends ACTbase {
     function finalizarMovimiento() {
         $this->objFunc = $this->create('MODMovimiento');
         $this->res = $this->objFunc->finalizarMovimiento();
+
+        $datos = $this->res->getDatos();
+        $operacion =$this->objParam->getParametro('operacion');
+        if($operacion=='inicio'&& $datos['tipo_movimiento']=='SALNORROPA'){   //poner condicioon de que solo en caso de ropa de trabajo
+            $data = array("id_movimiento" => $datos['id_movimiento'], "usuario" => $datos['usuario']);
+            $data_string = json_encode($data);
+            $request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
+            $session = curl_init($request);
+            curl_setopt($session, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($session, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+            );
+
+            $result = curl_exec($session);
+            curl_close($session);
+
+            $this->objFunc = $this->create('MODMovimiento');
+            $this->res = $this->objFunc->eliminarMovimiento();
+
+            //eliminar movimiento
+            //$respuesta = json_decode($result);
+            //var_dump($respuesta["RevertirDotacionAlmacenesResult"]);
+            //$mensaje = json_decode($respuesta["RevertirDotacionAlmacenesResult"]);
+            /*var_dump($mensaje); exit;
+            if($result['status']=='true') {
+                $this->objFunc = $this->create('MODMovimiento');
+                $this->res = $this->objFunc->eliminarMovimiento();
+                var_dump($this->res);
+                var_dump($result);
+                exit;
+            }else{
+                var_dump('fallo else');
+                var_dump($result);
+                exit;
+            }*/
+        }
+
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
@@ -215,7 +255,7 @@ class ACTMovimiento extends ACTbase {
             $reporte->setDataSource($dataSource);
         }else{
             $this->objParam->addParametroConsulta('filtro', ' mov.codigo_tran = ' . "''". $resultData[0]['codigo_tran']."''");
-            $this->objParam->addParametroConsulta('ordenacion', 'item.codigo');
+            $this->objParam->addParametroConsulta('ordenacion', 'fun.lugar_nombre');
             $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
             $this->objParam->addParametroConsulta('cantidad', 1000);
             $this->objParam->addParametroConsulta('puntero', 0);
