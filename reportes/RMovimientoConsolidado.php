@@ -332,11 +332,11 @@ Class RMovimientoConsolidado extends Report {
         $costoUnitTot=0;
         $pdf->Ln();
 
-        $pdf->SetFontSize(6.5);
+        $pdf->SetFontSize(7);
         $pdf->SetFont('', 'B');
         $pdf->Cell($w = $wNro-2+$wDescripcionItem+$wCodigo, $h = $hGlobal, $txt = 'SOLICITANTES', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Cell($w = $wDescripcionItem+$wCantidad, $h = $hGlobal, $txt = 'ITEMS', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-        $pdf->Cell($w = $wNro-2+$wDescripcionItem, $h = $hGlobal, $txt = 'ESTACION', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = $wDescripcionItem+$wCantidad+2, $h = $hGlobal, $txt = 'ITEMS', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+        $pdf->Cell($w = $wNro-4+$wDescripcionItem, $h = $hGlobal, $txt = 'ESTACION', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         $pdf->Cell($w = $wNro-2+$wDescripcionItem, $h = $hGlobal, $txt = 'OFICINA', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         $pdf->Cell($w = $wCantidad+$wCostoUnitario, $h = $hGlobal, $txt = 'FIRMAS', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         $pdf->Ln();
@@ -348,7 +348,7 @@ Class RMovimientoConsolidado extends Report {
         $solicitantes = explode(',',$dataset[0]['nombre_funcionario']);
 
         $pdf->SetFillColor(255,255,255,true);
-        $pdf->tablewidths=array($wNro-2+$wDescripcionItem+$wCodigo, $wDescripcionItem+$wCantidad,$wNro-2+$wDescripcionItem,$wNro-2+$wDescripcionItem,$wCantidad+$wCostoUnitario);
+        $pdf->tablewidths=array($wNro-2+$wDescripcionItem+$wCodigo, $wDescripcionItem+$wCantidad+2,$wNro-4+$wDescripcionItem,$wNro-2+$wDescripcionItem,$wCantidad+$wCostoUnitario);
         $pdf->tablealigns=array('L','L','L','L','L');
         $pdf->tablenumbers=array(0,0,0,0,0);
 

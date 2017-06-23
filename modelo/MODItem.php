@@ -79,6 +79,7 @@ class MODItem extends MODbase {
         $this->setParametro('codigos', 'codigos', 'varchar');
 
         $this->captura('nombre', 'text');
+        $this->captura('codigo', 'varchar');
         $this->armarConsulta();
         $this->ejecutarConsulta();
         return $this->respuesta;
