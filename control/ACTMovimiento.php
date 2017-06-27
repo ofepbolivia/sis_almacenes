@@ -89,10 +89,11 @@ class ACTMovimiento extends ACTbase {
 
         $datos = $this->res->getDatos();
         $operacion =$this->objParam->getParametro('operacion');
-        if($operacion=='inicio'&& $datos['tipo_movimiento']=='SALNORROPA'){   //poner condicioon de que solo en caso de ropa de trabajo
+        if($operacion=='inicio'&& $datos['tipo_movimiento']=='SALNORROPA'){   //solo en caso de ropa de trabajo
             $data = array("id_movimiento" => $datos['id_movimiento'], "usuario" => $datos['usuario']);
             $data_string = json_encode($data);
-            $request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
+            //$request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
+            $request =  'http://wservices.obairlines.bo/Dotacion.AppService/Api/Dotaciones/RevertirDotacionAlmacenes';
             $session = curl_init($request);
             curl_setopt($session, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($session, CURLOPT_POSTFIELDS, $data_string);
@@ -105,25 +106,13 @@ class ACTMovimiento extends ACTbase {
             $result = curl_exec($session);
             curl_close($session);
 
-            $this->objFunc = $this->create('MODMovimiento');
-            $this->res = $this->objFunc->eliminarMovimiento();
-
-            //eliminar movimiento
-            //$respuesta = json_decode($result);
-            //var_dump($respuesta["RevertirDotacionAlmacenesResult"]);
-            //$mensaje = json_decode($respuesta["RevertirDotacionAlmacenesResult"]);
-            /*var_dump($mensaje); exit;
-            if($result['status']=='true') {
+            $respuesta = json_decode($result);
+            if($respuesta->state =='false'){
+                throw new Exception(__METHOD__.$respuesta->mensaje);
+            }else {
                 $this->objFunc = $this->create('MODMovimiento');
                 $this->res = $this->objFunc->eliminarMovimiento();
-                var_dump($this->res);
-                var_dump($result);
-                exit;
-            }else{
-                var_dump('fallo else');
-                var_dump($result);
-                exit;
-            }*/
+            }
         }
 
         $this->res->imprimirRespuesta($this->res->generarJson());

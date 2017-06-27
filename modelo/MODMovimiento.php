@@ -280,8 +280,8 @@ class MODMovimiento extends MODbase {
         $this->captura('id_clasificacion', 'integer');
         $this->captura('nombre_clasificacion', 'varchar');
         $this->captura('cantidad', 'numeric');
-        $this->captura('costo_unitario', 'numeric');
-        $this->captura('costo_total', 'numeric');
+        //$this->captura('costo_unitario', 'numeric');
+        //$this->captura('costo_total', 'numeric');
 
         $this->captura('comail', 'integer');
         $this->captura('nombre_almacen', 'varchar');
