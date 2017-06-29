@@ -121,11 +121,11 @@ class ACTClasificacion extends ACTbase {
             $this->res = $this->objFunc->insertarClasificacion();
         } else {
             $this->res = $this->objFunc->modificarClasificacion();
+            $datos = $this->res->getDatos();
 
-            $id_clasificacion = $this->objParam->getParametro('id_clasificacion');
             $nombre = $this->objParam->getParametro('nombre');
 
-            $data = array("usuario"=> "gsarmiento" , "itemID" => $id_clasificacion, "nombreItem" => $nombre);
+            $data = array("usuario"=> $datos['usuario'] , "codigoItem" => $datos['codigo'], "nombreItem" => $nombre);
             $data_string = json_encode($data);
             //$request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
             $request =  'http://wservices.obairlines.bo/Dotacion.AppService/Api/Dotaciones/UpdateNombreItem';
