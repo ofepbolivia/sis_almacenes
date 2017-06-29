@@ -87,6 +87,32 @@ class ACTItem extends ACTbase {
             $this->res = $this->objFunc->insertarItem();
         } else {
             $this->res = $this->objFunc->modificarItem();
+
+            $datos = $this->res->getDatos();
+
+            $nombre = $this->objParam->getParametro('nombre');
+
+            $data = array("usuario"=> $datos['usuario'] , "codigoItem" => $datos['codigo'], "nombreItem" => $nombre);
+            $data_string = json_encode($data);
+            //$request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
+            $request =  'http://wservices.obairlines.bo/Dotacion.AppService/Api/Dotaciones/UpdateNombreItem';
+
+            $session = curl_init($request);
+            curl_setopt($session, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($session, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+            );
+
+            $result = curl_exec($session);
+            curl_close($session);
+
+            $respuesta = json_decode($result);
+            if($respuesta->state =='false'){
+                throw new Exception(__METHOD__.$respuesta->mensaje);
+            }
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
