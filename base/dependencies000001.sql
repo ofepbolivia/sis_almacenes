@@ -2888,7 +2888,7 @@ AS
          ('<table border="1"><TR> 
    <TH>Item</TH> 
    <TH>Cantidad Solicitada</TH>   
-   ' || pxp.html_rows('<td>'::text || it.nombre::text || '</td> <td>'::text || md.cantidad_solicitada::text|| '</td>'::text) ||
+   ' || pxp.html_rows('<td>'::text || it.nombre::text || '</td> <td>'::text || round(md.cantidad_solicitada)::text|| '</td>'::text) ||
    '</table>')::text as detalle_solicitud
   FROM alm.tmovimiento mov
        JOIN alm.tmovimiento_tipo mt ON mt.id_movimiento_tipo =

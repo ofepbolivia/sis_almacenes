@@ -34,7 +34,7 @@ class ACTMovimiento extends ACTbase {
             $this->objParam->addFiltro("mov.estado_mov in (''borrador'')");
         }
         if($this->objParam->getParametro('pes_estado')=='en_aprobacion'){
-            $this->objParam->addFiltro("mov.estado_mov in (''vbarea'',''autorizacion'')");
+            $this->objParam->addFiltro("mov.estado_mov in (''vbarea'',''autorizacion'', ''aprobado'')");
         }
         if($this->objParam->getParametro('pes_estado')=='en_almacenes'){
             $this->objParam->addFiltro("mov.estado_mov in (''prefin'')");
@@ -113,6 +113,32 @@ class ACTMovimiento extends ACTbase {
                 $this->objFunc = $this->create('MODMovimiento');
                 $this->res = $this->objFunc->eliminarMovimiento();
             }
+        }
+
+        if($operacion=='siguiente'&& $datos['tipo_movimiento']=='SALNORROPA'){   //solo en caso de ropa de trabajo
+            $data = array("id_movimiento" => $datos['id_movimiento']);
+            $data_string = json_encode($data);
+            //$request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
+            $request =  'http://wservices.obairlines.bo/Dotacion.AppService/Api/Dotaciones/NotificarRecojoERP';
+            $session = curl_init($request);
+            curl_setopt($session, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($session, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+            );
+
+            $result = curl_exec($session);
+            curl_close($session);
+
+            $respuesta = json_decode($result);
+            if($respuesta->state =='false'){
+                throw new Exception(__METHOD__.$respuesta->mensaje);
+            }/*else {
+                $this->objFunc = $this->create('MODMovimiento');
+                $this->res = $this->objFunc->eliminarMovimiento();
+            }*/
         }
 
         $this->res->imprimirRespuesta($this->res->generarJson());
