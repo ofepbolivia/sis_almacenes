@@ -25,6 +25,7 @@ Phx.vista.MovimientoAlm = {
         this.addButton('ini_estado',{argument: {operacion: 'inicio'},text:'Dev. a Borrador',iconCls: 'batras',disabled:true,handler:this.retroceder,tooltip: '<b>Retorna Movimiento al estado borrador</b>'});
 	    this.addButton('ant_estado',{argument: {operacion: 'anterior'},text:'Anterior',iconCls: 'batras',disabled:true,handler:this.retroceder,tooltip: '<b>Pasar al Anterior Estado</b>'});
     	this.addButton('sig_estado',{text:'Finalizar',iconCls: 'badelante',disabled:true,handler:this.fin_requerimiento,tooltip: '<b>Finalizar Registro</b>'});
+        this.addButton('fin_grupo',{text:'Finalizar Grupo',iconCls: 'badelante',disabled:true,handler:this.fin_grupo,tooltip: '<b>Finalizar Grupo</b>'});
         this.addButton('comail',{text:'Comail y Fecha Ingreso/Salida',iconCls: 'bsendmail',disabled:true,handler:this.onRegistrarComail,tooltip: '<b>Agregar numero comail y fecha ingreso/salida</b>'});
         this.getBoton('btnRevertir').hide();
 	    this.getBoton('btnCancelar').hide();
@@ -115,7 +116,104 @@ Phx.vista.MovimientoAlm = {
         this.winWF.buttons[0].show();
         this.winWF.show();
 	},
-	
+
+    fin_grupo: function(){
+        //var d= this.sm.getSelected().data;
+        var filas=this.sm.getSelections(),
+            total= 0,tmpMovimientos='', tmpAlmacenes='', me = this;
+
+        for(var i=0;i<this.sm.getCount();i++){
+            aux={};
+
+            if(total == 0){
+                tmpMovimientos = filas[i].data.id_movimiento;
+                tmpAlmacenes = filas[i].data.id_almacen;
+            }
+            else{
+                tmpMovimientos = tmpMovimientos + ','+ filas[i].data.id_movimiento;
+                tmpAlmacenes = tmpAlmacenes + ','+ filas[i].data.id_almacen;
+            }
+            total = total + 1;
+        }
+
+        Phx.CP.loadingShow();
+        Ext.Ajax.request({
+            url: '../../sis_almacenes/control/Movimiento/finalizarGrupo',
+            params: {id_movimientos: tmpMovimientos, id_almacen: tmpAlmacenes, operacion: 'verificar'},
+            success: this.onFinalizarGrupo,
+            failure: this.conexionFailure,
+            timeout: this.timeout,
+            scope: this
+        });
+    },
+
+    onFinalizarGrupo:function(resp){
+        Phx.CP.loadingHide();
+        //var d= this.sm.getSelected().data;
+        var filas=this.sm.getSelections(),
+            total= 0,tmpMovimientos='', tmpAlmacenes='', me = this;
+
+        for(var i=0;i<this.sm.getCount();i++){
+            aux={};
+
+            if(total == 0){
+                tmpMovimientos = filas[i].data.id_movimiento;
+                tmpAlmacenes = filas[i].data.id_almacen;
+            }
+            else{
+                tmpMovimientos = tmpMovimientos + ','+ filas[i].data.id_movimiento;
+                tmpAlmacenes = tmpAlmacenes + ','+ filas[i].data.id_almacen;
+            }
+            total = total + 1;
+        }
+
+        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+        var swWin=0;
+        var swFun=0;
+        var swEst=0;
+        //console.log(reg)
+        //Se verifica la respuesta de la verificación
+        if(!reg.ROOT.error){
+            var data=reg.ROOT.datos;
+            //Verifica si hay alertas y pregunta si continuar
+            console.log(data);
+            if(data.alertas!=''){
+                if(data.permitir_sin_saldo == 'si'){
+                    var v_aux = data.alertas+'\n\n¿Desea continuar de todos modos?';
+                    if(!confirm(v_aux)){
+                        return;
+                    }
+                }else{
+                    alert(data.alertas);
+                    return;
+                }
+            }
+
+            //Se hace la llamda directa porque el WF no tiene bifurcaciones
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url:'../../sis_almacenes/control/Movimiento/finalizarGrupo',
+                params:{
+                    id_movimientos:tmpMovimientos,
+                    operacion:'siguiente',
+                    id_funcionario_wf:data.id_funcionario_wf,
+                    id_tipo_estado: data.id_tipo_estado_wf,
+                    id_almacenes: tmpAlmacenes
+                },
+                success:this.successFinSol,
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+
+
+
+        } else{
+
+            alert('ocurrio un error durante el proceso')
+        }
+    },
+
 	onWF: function(){
 		if(this.sw_estado=='inicio'){
 			
@@ -223,15 +321,18 @@ Phx.vista.MovimientoAlm = {
           
         if(data.estado =='aprobado' ){ 
             this.getBoton('sig_estado').disable();
+            this.getBoton('fin_grupo').disable();
         }
         if(data.estado =='proceso'){
             this.getBoton('sig_estado').disable();
+            this.getBoton('fin_grupo').disable();
         }
         
         if(data.estado !='aprobado' && data.estado !='proceso' ){                
             this.getBoton('ini_estado').enable();            
             this.getBoton('ant_estado').enable();
             this.getBoton('sig_estado').enable();
+            this.getBoton('fin_grupo').enable();
             this.getBoton('comail').enable();
         }
        
@@ -243,6 +344,7 @@ Phx.vista.MovimientoAlm = {
             this.getBoton('ini_estado').disable();
             this.getBoton('ant_estado').disable();
             this.getBoton('sig_estado').disable();
+            this.getBoton('fin_grupo').disable();
         }
         return tb
     },
