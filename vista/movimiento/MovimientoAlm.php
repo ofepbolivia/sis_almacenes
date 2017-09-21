@@ -65,7 +65,7 @@ Phx.vista.MovimientoAlm = {
         this.mostrarComponente(this.cmpComail);
         this.mostrarComponente(this.cmpFechaSalida);
     },
-
+    
     onButtonEdit:function(){
 
         var tb = Phx.vista.MovimientoAlm.superclass.onButtonEdit.call(this);
