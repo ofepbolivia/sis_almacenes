@@ -98,7 +98,7 @@ BEGIN
             	mov.id_movimiento_tipo,
                 movtip.nombre as nombre_movimiento_tipo,
             	mov.id_funcionario,
-                fun.desc_funcionario1::varchar as nombre_funcionario,
+                emp.desc_funcionario1::varchar as nombre_funcionario,
                 fun.descripcion_cargo,
        			fun.lugar_nombre as estacion,
        			fun.oficina_nombre as oficina,
@@ -138,6 +138,7 @@ BEGIN
             LEFT JOIN orga.vfuncionario_cargo_lugar fun on fun.id_funcionario = mov.id_funcionario
             and now() between fun.fecha_asignacion and COALESCE(fun.fecha_finalizacion,now())
             and fun.id_uo_funcionario < 1000000
+            INNER JOIN orga.vfuncionario emp on emp.id_funcionario=mov.id_funcionario
             LEFT JOIN param.vproveedor pro on pro.id_proveedor = mov.id_proveedor
             LEFT JOIN alm.talmacen almd on almd.id_almacen = mov.id_almacen_dest
             LEFT JOIN alm.tmovimiento movorig on movorig.id_movimiento = mov.id_movimiento_origen
