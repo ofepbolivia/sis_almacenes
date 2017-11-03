@@ -187,7 +187,7 @@ BEGIN
                 from alm.tmovimiento
                 where id_movimiento_origen=(p_parametros->'id_movimiento')::integer;
 
-            	IF v_fecha_salida is NULL THEN
+            	IF v_fecha_salida is NULL and va_codigo_estado[1] = 'finalizado' THEN
                 	raise exception 'Debe ingresar fecha de salida al movimiento %', v_codigo_mov;
                 END IF;
 
