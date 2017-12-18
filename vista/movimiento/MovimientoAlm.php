@@ -67,6 +67,21 @@ Phx.vista.MovimientoAlm = {
     },
     
     onButtonEdit:function(){
+        var records = this.grid.getSelectionModel().getSelections();
+        var rec = '';
+
+        Ext.each(records, function(record, index) {
+            if(rec != ''){
+                rec = rec +','+record.id;
+            }else{
+                rec = record.id
+            }
+
+        });
+
+        this.argumentExtraSubmit = {
+            'registros': rec
+        };
 
         var tb = Phx.vista.MovimientoAlm.superclass.onButtonEdit.call(this);
         /*this.mostrarComponente(this.cmpMovimientoTipo);

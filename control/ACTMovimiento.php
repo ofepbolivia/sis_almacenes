@@ -62,6 +62,7 @@ class ACTMovimiento extends ACTbase {
     }
 
     function insertarMovimiento() {
+       
         $this->objFunc = $this->create('MODMovimiento');
         if ($this->objParam->insertar('id_movimiento')) {
             $this->res = $this->objFunc->insertarMovimiento();

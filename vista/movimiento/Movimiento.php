@@ -1462,7 +1462,6 @@ header("content-type: text/javascript; charset=UTF-8");
 			if(!reg.ROOT.error){
 				var data=reg.ROOT.datos;
 				//Verifica si hay alertas y pregunta si continuar
-				console.log(data);
 				if(data.alertas!=''){
 					if(data.permitir_sin_saldo == 'si'){
 						var v_aux = data.alertas+'\n\n¿Desea continuar de todos modos?';

@@ -116,6 +116,8 @@ DECLARE
     v_codigo_movimiento	varchar;
 	v_usuario						varchar;
 
+	v_records						integer[];
+
 BEGIN
 
 	v_nombre_funcion='alm.ft_movimiento_ime';
@@ -358,6 +360,15 @@ BEGIN
           END IF;
       	END IF;
       END IF;
+      -- modificamos fecha de salida cuando seleccionamos mas de un registro
+      v_records = string_to_array(v_parametros.registros, ',');
+        if(array_length(v_records,1)>1)then
+           for v_ind in 1..array_length(v_records,1) loop
+            update alm.tmovimiento set
+              fecha_salida = v_parametros.fecha_salida
+            where id_movimiento = v_records[v_ind];
+           end loop;
+        end if;
 
       update alm.tmovimiento set
           id_usuario_mod = p_id_usuario,
