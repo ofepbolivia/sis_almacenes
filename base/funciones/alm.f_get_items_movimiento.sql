@@ -11,8 +11,8 @@ BEGIN
 
 	v_i=0;
 	FOR v_items IN (
-                    select itm.descripcion
-                    from alm.tmovimiento_det det
+                    select 'Cant: '||round(det.cantidad) ||' Item: '|| itm.descripcion as descripcion
+                    from alm.tmovimiento_det det 
                     inner join alm.titem itm on itm.id_item=det.id_item
                     where det.id_movimiento=p_id_movimiento)LOOP
 

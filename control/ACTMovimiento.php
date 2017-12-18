@@ -53,7 +53,6 @@ class ACTMovimiento extends ACTbase {
             if ($this->objParam->getParametro('tipo') != null) {
                 $this->objParam->addFiltro(" movtip.tipo = ''" . $this->objParam->getParametro('tipo') . "'' ");
             }
-
             $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
             $this->objFunc = $this->create('MODMovimiento');
             $this->res = $this->objFunc->listarMovimiento();
@@ -135,12 +134,63 @@ class ACTMovimiento extends ACTbase {
             $respuesta = json_decode($result);
             if($respuesta->state =='false'){
                 throw new Exception(__METHOD__.$respuesta->mensaje);
-            }/*else {
-                $this->objFunc = $this->create('MODMovimiento');
-                $this->res = $this->objFunc->eliminarMovimiento();
-            }*/
+            }
         }
 
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function finalizarGrupo() {
+        $id_funcionarios_wf='';
+        $id_tipos_estado='';
+        $id_movimientos = explode(',',$this->objParam->getParametro('id_movimientos'));
+        $id_almacenes = explode(',',$this->objParam->getParametro('id_almacenes'));
+        if($this->objParam->getParametro('id_funcionario_wf')!=''){
+            $id_funcionario_wf = $this->objParam->getParametro('id_funcionario_wf');
+        }
+        if($this->objParam->getParametro('id_tipo_estado')!=''){
+            $id_tipo_estado = $this->objParam->getParametro('id_tipo_estado');
+        }
+        $operacion = $this->objParam->getParametro('operacion');
+
+        for($i=0;$i<count($id_movimientos);$i++){
+
+            $this->objParam->addParametro('id_movimiento',$id_movimientos[$i]);
+            $this->objParam->addParametro('id_almacen',$id_almacenes[$i]);
+            $this->objParam->addParametro('id_funcionario_wf',$id_funcionario_wf);
+            $this->objParam->addParametro('id_tipo_estado',$id_tipo_estado);
+            $this->objParam->addParametro('operacion',$operacion);
+            $this->objFunc = $this->create('MODMovimiento');
+            $this->res = $this->objFunc->finalizarMovimiento();
+
+            if($this->res->getTipo() !='EXITO'){
+                throw new Exception(__METHOD__.$this->res->getMensaje());
+            }
+            $datos = $this->res->getDatos();
+
+            if($operacion=='siguiente'&& $datos['tipo_movimiento']=='SALNORROPA'){   //solo en caso de ropa de trabajo
+                $data = array("id_movimiento" => $datos['id_movimiento']);
+                $data_string = json_encode($data);
+                //$request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
+                $request =  'http://wservices.obairlines.bo/Dotacion.AppService/Api/Dotaciones/NotificarRecojoERP';
+                $session = curl_init($request);
+                curl_setopt($session, CURLOPT_CUSTOMREQUEST, "POST");
+                curl_setopt($session, CURLOPT_POSTFIELDS, $data_string);
+                curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($session, CURLOPT_HTTPHEADER, array(
+                        'Content-Type: application/json',
+                        'Content-Length: ' . strlen($data_string))
+                );
+
+                $result = curl_exec($session);
+                curl_close($session);
+
+                $respuesta = json_decode($result);
+                if($respuesta->state =='false'){
+                    throw new Exception(__METHOD__.$respuesta->mensaje);
+                }
+            }
+        }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 

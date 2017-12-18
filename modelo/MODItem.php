@@ -210,7 +210,6 @@ class MODItem extends MODbase {
 		$this->captura('saldo', 'numeric');
 
         $this->armarConsulta();
-		
         $this->ejecutarConsulta();
 
         return $this->respuesta;

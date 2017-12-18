@@ -60,7 +60,6 @@ class MODMovimiento extends MODbase {
         $this->captura('codigo_tran', 'varchar');
 
         $this->armarConsulta();
-        //echo $this->consulta;exit;
         $this->ejecutarConsulta();
 
         return $this->respuesta;

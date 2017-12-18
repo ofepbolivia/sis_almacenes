@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION alm.f_insercion_movimiento (
   p_id_usuario integer,
   p_parametros public.hstore
@@ -22,9 +20,19 @@ DECLARE
     v_id_movimiento integer;
     v_tipo_movimiento	varchar;
     v_codigo_movimiento	varchar;
+    v_record 			record;
 
 BEGIN
-
+	
+	--Permitir a los funcionarios de almacenes insertar movimientos
+    
+    SELECT vfcl.id_oficina, vfcl.nombre_cargo,  vfcl.oficina_nombre,
+            tf.id_funcionario, vfcl.desc_funcionario1 INTO v_record
+            FROM segu.tusuario tu
+            INNER JOIN orga.tfuncionario tf on tf.id_persona = tu.id_persona
+            INNER JOIN orga.vfuncionario_cargo_lugar vfcl on vfcl.id_funcionario = tf.id_funcionario
+            WHERE tu.id_usuario = p_id_usuario ;
+	
 	--Obtener el codigo del tipo_proceso
     select tp.codigo, pm.id_proceso_macro, mt.tipo, mt.codigo
     into v_codigo_tipo_proceso, v_id_proceso_macro, v_tipo_movimiento, v_codigo_movimiento
@@ -36,12 +44,13 @@ BEGIN
     where mt.id_movimiento_tipo = (p_parametros->'id_movimiento_tipo')::integer
     and tp.estado_reg = 'activo'
     and tp.inicio = 'si';
-
-    IF pxp.f_get_variable_global('alm_habilitar_fecha_tope') = 'si' THEN
-      IF (p_parametros->'fecha_mov')::date > pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
-          IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALNORSERB' THEN
-              raise exception 'No se permite hacer solicitudes de salidas de almacenes, debido a que se realiza cierre de gestion';
-          END IF;
+	IF(p_id_usuario != 78 AND p_id_usuario != 589 AND p_id_usuario != 569) THEN
+      IF pxp.f_get_variable_global('alm_habilitar_fecha_tope') = 'si' THEN
+        IF (p_parametros->'fecha_mov')::date > pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
+            IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALNORSERB' AND v_codigo_movimiento != 'SALNORTRA' THEN
+                raise exception 'No se permite hacer solicitudes de salidas de almacenes, debido a que se realiza cierre de gestion';
+            END IF;
+        END IF;
       END IF;
     END IF;
 
