@@ -25,7 +25,8 @@ class MODReporte extends MODbase {
 		$this->setParametro('saldo_cero', 'saldo_cero', 'varchar');
 		$this->setParametro('alertas', 'alertas', 'varchar');
 		$this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
-		
+		$this->setParametro('porcentaje', 'porcentaje', 'varchar');
+
         $this->captura('id_item', 'integer');
         $this->captura('codigo', 'varchar');
         $this->captura('nombre', 'varchar');
