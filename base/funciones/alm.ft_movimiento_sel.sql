@@ -136,7 +136,9 @@ BEGIN
             
             LEFT JOIN orga.vfuncionario_cargo_lugar fun on fun.id_funcionario = mov.id_funcionario
             and now() between fun.fecha_asignacion and COALESCE(fun.fecha_finalizacion,now())
+
             and fun.id_uo_funcionario < 10000000
+
             INNER JOIN orga.vfuncionario emp on emp.id_funcionario=mov.id_funcionario
             LEFT JOIN param.vproveedor pro on pro.id_proveedor = mov.id_proveedor
             LEFT JOIN alm.talmacen almd on almd.id_almacen = mov.id_almacen_dest

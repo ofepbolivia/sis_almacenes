@@ -80,7 +80,7 @@ BEGIN
                         unidad_medida end)::varchar as unidad_medida,
                         clasificacion,
                         cantidad,
-                        costo,
+                        case when ''''''||v_parametros.porcentaje ||'''''' = ''''ochenta'''' then (costo*0.87) else costo end as costo,
                         cantidad_min,
                         cantidad_alerta_roja,
                         cantidad_alerta_amarilla

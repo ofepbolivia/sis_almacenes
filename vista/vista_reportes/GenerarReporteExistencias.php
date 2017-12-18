@@ -249,6 +249,26 @@ header("content-type: text/javascript; charset=UTF-8");
 			id_grupo : 0,
 			form : true
 		},
+			{
+				config : {
+					name : 'porcentaje',
+					fieldLabel : 'Porcentaje Existencia',
+					allowBlank : false,
+					triggerAction : 'all',
+					lazyRender : true,
+					mode : 'local',
+					store : new Ext.data.ArrayStore({
+						fields : ['codigo', 'valor'],
+						data : [['ochenta', '87 %'], ['cien', '100 %']]
+					}),
+					anchor : '50%',
+					valueField : 'codigo',
+					displayField : 'valor'
+				},
+				type : 'ComboBox',
+				id_grupo : 0,
+				form : true
+			},
 		{
 			config : {
 				name : 'id_clasificacion',
@@ -300,7 +320,8 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.Cmp.clasificacion.on('focus',this.bntClasificacion,this);
 			this.Cmp.clasificacion.setReadOnly(true);
 			this.clasificacion = this.Cmp.clasificacion;
-			this.Cmp.alertas.setValue('no');    		},
+			this.Cmp.alertas.setValue('no');    
+		},
 		tipo : 'reporte',
 		clsSubmit : 'bprint',
 		Grupos : [{

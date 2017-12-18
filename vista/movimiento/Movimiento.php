@@ -780,7 +780,18 @@ header("content-type: text/javascript; charset=UTF-8");
 					renderer: function(value, p, record){
 						var aux;
 						if(record.data.tipo=='salida'){
-							aux='<b><font color="red">';
+
+							if(record.data.nombre_movimiento_tipo=='SALIDA ROPA DE TRABAJO'){
+								aux='<b><font color="#a52a2a">';
+							}else {
+								if (record.data.nombre_movimiento_tipo == 'SALIDA SERVICIO A BORDO') {
+									aux = '<b><font color="#8a2be2">';
+								} else {
+									if (record.data.nombre_movimiento_tipo == 'SALIDA MATERIAL DE ESCRITORIO CBB') {
+										aux = '<b><font color="red">';
+									}
+								}
+							}
 						}
 						else {
 							aux='<b><font color="green">';
