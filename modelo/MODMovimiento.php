@@ -132,7 +132,8 @@ class MODMovimiento extends MODbase {
         $this->procedimiento = 'alm.ft_movimiento_ime';
         $this->transaccion = 'SAL_MOV_MOD';
         $this->tipo_procedimiento = 'IME';
-
+        
+        $this->setParametro('registros', 'registros', 'varchar');
         $this->setParametro('id_movimiento', 'id_movimiento', 'integer');
         $this->setParametro('id_movimiento_tipo', 'id_movimiento_tipo', 'integer');
         $this->setParametro('id_almacen', 'id_almacen', 'integer');
