@@ -58,6 +58,9 @@ class MODMovimiento extends MODbase {
         $this->captura('fecha_salida', 'date');
         $this->captura('nro_tramite', 'varchar');
         $this->captura('codigo_tran', 'varchar');
+        $this->captura('id_plantilla', 'integer');
+        $this->captura('desc_plantilla', 'varchar');
+
 
         $this->armarConsulta();
         //echo $this->consulta;exit;
@@ -99,6 +102,7 @@ class MODMovimiento extends MODbase {
         $this->setParametro('id_movimiento_origen', 'id_movimiento_origen', 'integer');
         $this->setParametro('id_gestion', 'id_gestion', 'integer');
         $this->setParametro('id_depto_conta', 'id_depto_conta', 'integer');
+        $this->setParametro('id_plantilla', 'id_plantilla', 'integer');
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -149,6 +153,7 @@ class MODMovimiento extends MODbase {
         $this->setParametro('id_depto_conta', 'id_depto_conta', 'integer');
         $this->setParametro('comail', 'comail', 'integer');
         $this->setParametro('fecha_salida', 'fecha_salida', 'date');
+        $this->setParametro('id_plantilla', 'id_plantilla', 'integer');
 
         $this->armarConsulta();
         $this->ejecutarConsulta();

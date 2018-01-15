@@ -540,6 +540,48 @@ header("content-type: text/javascript; charset=UTF-8");
 				grid:true,
 				form:true
 			},
+
+			{
+				config:{
+					name: 'id_plantilla',
+					anchor: '56%',
+					listWidth: '320',
+					resizable: true,
+					fieldLabel: 'Tipo Documento',
+					allowBlank: false,
+					emptyText:'Elija una plantilla...',
+					store:new Ext.data.JsonStore(
+						{
+							url: '../../sis_parametros/control/Plantilla/listarPlantilla',
+							id: 'id_plantilla',
+							root:'datos',
+							sortInfo:{
+								field:'desc_plantilla',
+								direction:'ASC'
+							},
+							totalProperty:'total',
+							fields: ['id_plantilla','nro_linea','desc_plantilla','tipo','sw_tesoro', 'sw_compro'],
+							remoteSort: true,
+							baseParams:{par_filtro:'plt.desc_plantilla',sw_compro:'si',sw_tesoro:'si' }
+						}),
+					tpl:'<tpl for="."><div class="x-combo-list-item"><p>{desc_plantilla}</p></div></tpl>',
+					valueField: 'id_plantilla',
+					hiddenValue: 'id_plantilla',
+					displayField: 'desc_plantilla',
+					forceSelection:true,
+					typeAhead: false,
+					triggerAction: 'all',
+					lazyRender:true,
+					mode:'remote',
+					pageSize:20,
+					queryDelay:500,
+					minChars:2
+				},
+				type:'ComboBox',
+				id_grupo:1,
+				form:true
+			},
+
 			{
 				config:{
 					name: 'descripcion_cargo',
@@ -1033,6 +1075,8 @@ header("content-type: text/javascript; charset=UTF-8");
 			{name : 'estacion',type : 'string'},
 			{name : 'oficina',type : 'string'},
 			{name : 'nombre_depto',type : 'string'},
+			{name : 'id_plantilla',type : 'numeric'},
+			{name : 'desc_plantilla',type : 'string'},
 		],
 		sortInfo : {
 			field : 'mov.fecha_mov DESC ,mov.fecha_mod',
@@ -1058,12 +1102,22 @@ header("content-type: text/javascript; charset=UTF-8");
 				this.Cmp.id_depto_conta.setVisible(true);
 				this.Cmp.id_depto_conta.enable();
 				this.Cmp.id_depto_conta.allowBlank=true;//=false;
+
+				//(f.e.a) Tipo Ducumento de ingresos
+				this.Cmp.id_plantilla.setVisible(true);
+				this.Cmp.id_plantilla.enable();
+				this.Cmp.id_plantilla.allowBlank=false;
 			} else {
 				//this.getComponente('solicitante').setVisible(true);
 				//this.getComponente('solicitante').enable();
 				this.Cmp.id_depto_conta.setVisible(false);
 				this.Cmp.id_depto_conta.disable();
 				this.Cmp.id_depto_conta.allowBlank=true;
+
+				//(f.e.a) Tipo Ducumento de ingresos
+				this.Cmp.id_plantilla.setVisible(false);
+				this.Cmp.id_plantilla.disable();
+				this.Cmp.id_plantilla.allowBlank=true;
 			}
 			this.getComponente('id_almacen_dest').setVisible(false);
 			this.getComponente('id_movimiento_tipo').reset();
@@ -1211,6 +1265,9 @@ header("content-type: text/javascript; charset=UTF-8");
 			});
 		},
 		onButtonEdit : function() {
+			this.argumentExtraSubmit = {
+				'registros': ''
+			};
 			Phx.vista.Movimiento.superclass.onButtonEdit.call(this);
 			this.Cmp.tipo.disable();
 			this.Cmp.id_movimiento_tipo.disable();
@@ -1267,6 +1324,11 @@ header("content-type: text/javascript; charset=UTF-8");
 				this.Cmp.id_depto_conta.setVisible(true);
 				this.Cmp.id_depto_conta.enable();
 				this.Cmp.id_depto_conta.allowBlank=true;//=false;
+
+				//(f.e.a) Tipo Ducumento de ingresos
+				this.Cmp.id_plantilla.setVisible(true);
+				this.Cmp.id_plantilla.enable();
+				this.Cmp.id_plantilla.allowBlank=false;
 			}
 		},
 		onButtonNew : function() {
@@ -1284,6 +1346,8 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.Cmp.id_funcionario.setVisible(true);
 			this.Cmp.id_movimiento_origen.disable();
 			this.Cmp.id_movimiento_origen.setVisible(false);
+			this.Cmp.id_plantilla.disable();
+			this.Cmp.id_plantilla.setVisible(false);
 		},
 		successSave : function(resp) {
 			Phx.vista.Movimiento.superclass.successSave.call(this, resp);

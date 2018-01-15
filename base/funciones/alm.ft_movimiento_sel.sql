@@ -1,4 +1,3 @@
-------------------------------- SQL -------------------------------
 CREATE OR REPLACE FUNCTION alm.ft_movimiento_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -126,7 +125,9 @@ BEGIN
                 mov.comail,
                 mov.fecha_salida,
                 pw.nro_tramite,
-                mov.codigo_tran
+                mov.codigo_tran,
+                mov.id_plantilla,
+                pla.desc_plantilla
             FROM alm.tmovimiento mov
             INNER JOIN alm.tmovimiento_tipo movtip on movtip.id_movimiento_tipo = mov.id_movimiento_tipo
             INNER JOIN alm.talmacen almo on almo.id_almacen = mov.id_almacen
@@ -137,13 +138,14 @@ BEGIN
 
             LEFT JOIN orga.vfuncionario_cargo_lugar fun on fun.id_funcionario = mov.id_funcionario
             and now() between fun.fecha_asignacion and COALESCE(fun.fecha_finalizacion,now())
-            and fun.id_uo_funcionario < 1000000
+            and fun.id_uo_funcionario < 10000000
             INNER JOIN orga.vfuncionario emp on emp.id_funcionario=mov.id_funcionario
             LEFT JOIN param.vproveedor pro on pro.id_proveedor = mov.id_proveedor
             LEFT JOIN alm.talmacen almd on almd.id_almacen = mov.id_almacen_dest
             LEFT JOIN alm.tmovimiento movorig on movorig.id_movimiento = mov.id_movimiento_origen
             LEFT JOIN segu.tusuario usu2 on usu2.id_usuario = mov.id_usuario_mod
             LEFT JOIN param.tdepto dpto on dpto.id_depto = mov.id_depto_conta
+            left join param.tplantilla pla on pla.id_plantilla = mov.id_plantilla
 			WHERE ';
 
         v_consulta:=v_consulta||v_filtro;
@@ -227,6 +229,7 @@ BEGIN
             LEFT JOIN alm.tmovimiento movorig on movorig.id_movimiento = mov.id_movimiento_origen
             LEFT JOIN segu.tusuario usu2 on usu2.id_usuario = mov.id_usuario_mod
             LEFT JOIN param.tdepto dpto on dpto.id_depto = mov.id_depto_conta
+            left join param.tplantilla pla on pla.id_plantilla = mov.id_plantilla
             WHERE ';
 
 
@@ -349,7 +352,7 @@ BEGIN
             inner join alm.tmovimiento_tipo mtipo on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
             left join orga.vfuncionario_cargo_lugar fun on fun.id_funcionario = mov.id_funcionario
             and now() between fun.fecha_asignacion and COALESCE(fun.fecha_finalizacion,now())
-            and fun.id_uo_funcionario < 1000000
+            and fun.id_uo_funcionario < 10000000
             left join param.vproveedor prov on prov.id_proveedor = mov.id_proveedor
             where ';
 

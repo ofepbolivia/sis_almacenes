@@ -1,5 +1,4 @@
 --------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION alm.ft_movimiento_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -14,11 +13,11 @@ $body$
  DESCRIPCION:    Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones) de la tabla 'alm.tmovimiento'
  AUTOR:          Gonzalo Sarmiento
  FECHA:          03-10-2012
- COMENTARIOS:   
+ COMENTARIOS:
 ************************************************************************/
 DECLARE
 
-	v_nombre_funcion        		varchar;  
+	v_nombre_funcion        		varchar;
 	v_parametros          			record;
 	v_id_movimiento_tipo    		integer;
 	v_id_movimiento       			integer;
@@ -71,21 +70,21 @@ DECLARE
     v_id_proceso_wf					integer;
     v_id_estado_wf					integer;
     v_codigo_estado					varchar;
-    
+
     va_id_tipo_estado 				integer [];
     va_codigo_estado 				varchar [];
     va_disparador 					varchar [];
     va_regla 						varchar [];
-    va_prioridad 					integer []; 
-    
+    va_prioridad 					integer [];
+
     v_id_estado_actual  			integer;
-    
+
     v_id_tipo_estado				integer;
     v_id_tipo_proceso				integer;
     v_id_funcionario				integer;
     v_id_usuario_reg				integer;
-    v_id_estado_wf_ant				integer;           
-    
+    v_id_estado_wf_ant				integer;
+
     v_pedir_obs						varchar;
     v_num_estados					integer;
     v_num_funcionarios				integer;
@@ -117,7 +116,6 @@ DECLARE
 	v_usuario						varchar;
 
 	v_records						integer[];
-
 BEGIN
 
 	v_nombre_funcion='alm.ft_movimiento_ime';
@@ -355,11 +353,11 @@ BEGIN
 
       IF pxp.f_get_variable_global('alm_habilitar_fecha_tope') = 'si' THEN
       	IF v_parametros.fecha_mov::date > pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
-          IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALNORSERB' THEN
+         IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALNORSERB' THEN
               raise exception 'No se permite hacer solicitudes de salidas de almacenes, debido a que se realiza cierre de gestion';
-          END IF;
-      	END IF;
+         END IF;
       END IF;
+	END IF;
       -- modificamos fecha de salida cuando seleccionamos mas de un registro
       v_records = string_to_array(v_parametros.registros, ',');
         if(array_length(v_records,1)>1)then
@@ -967,73 +965,73 @@ BEGIN
             v_respuesta = pxp.f_agrega_clave(v_respuesta,'id_depto_estado',v_id_depto_estado::varchar);
             v_respuesta = pxp.f_agrega_clave(v_respuesta,'id_tipo_estado', va_id_tipo_estado[1]::varchar);
 
-            
+
            ----------------------------------------
            --Se se solicita cambiar de estado a la solicitud
            ------------------------------------------
            ELSEIF  v_parametros.operacion = 'cambiar' THEN
-            
+
             -- obtener datos tipo estado
-            
+
             select
              te.codigo
             into
              v_codigo_estado_siguiente
             from wf.ttipo_estado te
             where te.id_tipo_estado = v_parametros.id_tipo_estado;
-            
+
             IF  pxp.f_existe_parametro('p_tabla','id_depto') THEN
-             
+
              v_id_depto = v_parametros.id_depto;
-            
-            END IF;            
-            
-            v_obs=v_parametros.obs;           
-                        
-             v_id_estado_actual =  wf.f_registra_estado_wf(v_parametros.id_tipo_estado, 
-                                                           v_parametros.id_funcionario, 
-                                                           v_id_estado_wf, 
+
+            END IF;
+
+            v_obs=v_parametros.obs;
+
+             v_id_estado_actual =  wf.f_registra_estado_wf(v_parametros.id_tipo_estado,
+                                                           v_parametros.id_funcionario,
+                                                           v_id_estado_wf,
                                                            v_id_proceso_wf,
                                                            p_id_usuario,
                                                            v_parametros._id_usuario_ai,
                                                            v_parametros._nombre_usuario_ai,
                                                            v_id_depto,
                                                            v_obs);
-            
-            
+
+
              -- actualiza estado en el movimiento
-            
-             update alm.tmovimiento  s set 
+
+             update alm.tmovimiento  s set
                id_estado_wf =  v_id_estado_actual,
                estado_mov = v_codigo_estado_siguiente,
                id_usuario_mod=p_id_usuario,
                fecha_mod=now(),
                id_usuario_ai = v_parametros._id_usuario_ai,
                usuario_ai = v_parametros._nombre_usuario_ai
-               
+
              where id_movimiento= v_parametros.id_movimiento;
-            
+
            -- si hay mas de un estado disponible  preguntamos al usuario
-            v_respuesta = pxp.f_agrega_clave(v_respuesta,'mensaje','Se realizo el cambio de estado)'); 
+            v_respuesta = pxp.f_agrega_clave(v_respuesta,'mensaje','Se realizo el cambio de estado)');
             v_respuesta = pxp.f_agrega_clave(v_respuesta,'operacion','cambio_exitoso');
-                    
+
           END IF;
-        
+
           --Devuelve la respuesta
             return v_respuesta;
-        
+
         end;
-        
-  	/*********************************    
+
+  	/*********************************
  	#TRANSACCION:  'SAL_MOVPRE_REV'
  	#DESCRIPCION:	REvierte un ingreso hasta el preingreso. Cancela el movimiento y retrocede el estado del preingreso
  	#AUTOR:			RCM
  	#FECHA:			21/10/2013
 	***********************************/
 
-	elseif(p_transaccion='SAL_MOVPRE_REV')then   
+	elseif(p_transaccion='SAL_MOVPRE_REV')then
         begin
-        
+
         	--------------------------------------------------------------------
         	--(1)Verifica que el ingreso este en borrador y que tenga preingreso
             --------------------------------------------------------------------
@@ -1043,7 +1041,7 @@ BEGIN
                         and estado_mov = 'borrador') then
             	raise exception 'El ingreso debe estar en Borrador y debe tener un Preingreso asociado';
             end if;
-        
+
         	------------------------
             --(2)Cancela el Ingreso
             ------------------------
@@ -1055,27 +1053,27 @@ BEGIN
            	FROM alm.tmovimiento mov
            	inner join wf.tproceso_wf pw on pw.id_proceso_wf = mov.id_proceso_wf
            	WHERE mov.id_movimiento = v_parametros.id_movimiento;
-            
+
             --Obtiene el estado cancelado del WF
-            select 
+            select
             te.id_tipo_estado
             into
             v_id_tipo_estado
-            from wf.tproceso_wf pw 
+            from wf.tproceso_wf pw
             inner join wf.ttipo_proceso tp on pw.id_tipo_proceso = tp.id_tipo_proceso
-            inner join wf.ttipo_estado te on te.id_tipo_proceso = tp.id_tipo_proceso and te.codigo = 'cancelado'               
+            inner join wf.ttipo_estado te on te.id_tipo_proceso = tp.id_tipo_proceso and te.codigo = 'cancelado'
             where pw.id_proceso_wf = v_id_proceso_wf;
-               
+
             --Se cancela el WF
-            v_id_estado_actual =  wf.f_registra_estado_wf(v_id_tipo_estado, 
-                                                           NULL, 
-                                                           v_id_estado_wf, 
+            v_id_estado_actual =  wf.f_registra_estado_wf(v_id_tipo_estado,
+                                                           NULL,
+                                                           v_id_estado_wf,
                                                            v_id_proceso_wf,
                                                            p_id_usuario,
                                                            v_parametros._id_usuario_ai,
                                                            v_parametros._nombre_usuario_ai,
                                                            null);
-            
+
             --Cancela el movimiento
             update alm.tmovimiento set
             id_estado_wf =  v_id_estado_actual,
@@ -1085,7 +1083,7 @@ BEGIN
             id_usuario_ai = v_parametros._id_usuario_ai,
             usuario_ai = v_parametros._nombre_usuario_ai
         	where id_movimiento = v_parametros.id_movimiento;
-            
+
             ---------------------------
             --(3)Cancela el PreIngreso
             ---------------------------
@@ -1095,7 +1093,7 @@ BEGIN
             from alm.tmovimiento mov
             inner join alm.talmacen alm on alm.id_almacen = mov.id_almacen
             where mov.id_movimiento = v_parametros.id_movimiento;
-            
+
             --Obtiene el Proceso WF
             SELECT
             pre.id_estado_wf, pw.id_tipo_proceso, pw.id_proceso_wf
@@ -1104,36 +1102,36 @@ BEGIN
            	FROM alm.tpreingreso pre
            	inner join wf.tproceso_wf pw on pw.id_proceso_wf = pre.id_proceso_wf
            	WHERE pre.id_preingreso = v_id_preingreso;
-            
+
             --Recupera estado anterior segun Log del WF
-            SELECT  
+            SELECT
             ps_id_tipo_estado,ps_id_funcionario,ps_id_usuario_reg,
             ps_id_depto,ps_codigo_estado,ps_id_estado_wf_ant
             into
             v_id_tipo_estado,v_id_funcionario,v_id_usuario_reg,
-			v_id_depto,v_codigo_estado,v_id_estado_wf_ant 
+			v_id_depto,v_codigo_estado,v_id_estado_wf_ant
 			FROM wf.f_obtener_estado_ant_log_wf(v_id_estado_wf);
-                        
+
             --Encuentra el proceso
-            select ew.id_proceso_wf 
+            select ew.id_proceso_wf
             into v_id_proceso_wf
             from wf.testado_wf ew
             where ew.id_estado_wf= v_id_estado_wf_ant;
-                      
+
             --Registra nuevo estado
             v_id_estado_actual = wf.f_registra_estado_wf(
-                          v_id_tipo_estado, 
-                          v_id_funcionario, 
-                          v_id_estado_wf, 
-                          v_id_proceso_wf, 
+                          v_id_tipo_estado,
+                          v_id_funcionario,
+                          v_id_estado_wf,
+                          v_id_proceso_wf,
                           p_id_usuario,
                           v_parametros._id_usuario_ai,
                           v_parametros._nombre_usuario_ai,
                           v_id_depto,
                           'Reversión del ingreso generado');
-                      
+
 			--Actualiza estado del movimiento
-            update alm.tpreingreso  set 
+            update alm.tpreingreso  set
             id_estado_wf = v_id_estado_actual,
             estado = v_codigo_estado,
             id_usuario_mod = p_id_usuario,
@@ -1141,18 +1139,18 @@ BEGIN
             id_usuario_ai = v_parametros._id_usuario_ai,
             usuario_ai = v_parametros._nombre_usuario_ai
             where id_preingreso = v_id_preingreso;
-            
+
 			--Respuesta
             v_respuesta=pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento revertido a Preingreso');
             v_respuesta=pxp.f_agrega_clave(v_respuesta,'id_movimiento',v_parametros.id_movimiento::varchar);
             v_respuesta=pxp.f_agrega_clave(v_respuesta,'id_preingreso',v_id_preingreso::varchar);
-            
+
             --Devuelve la respuesta
             return v_respuesta;
-        
-        end; 
-        
-	
+
+        end;
+
+
   else
      raise exception 'Transaccion inexistente: %',p_transaccion;
   end if;
