@@ -1,4 +1,5 @@
 --------------- SQL ---------------
+
 CREATE OR REPLACE FUNCTION alm.f_insercion_movimiento (
   p_id_usuario integer,
   p_parametros public.hstore
@@ -21,9 +22,12 @@ DECLARE
     v_id_movimiento integer;
     v_tipo_movimiento	varchar;
     v_codigo_movimiento	varchar;
-	v_record 			record;
+    v_record 			record;
+
 BEGIN
+	
 	--Permitir a los funcionarios de almacenes insertar movimientos
+
     SELECT vfcl.id_oficina, vfcl.nombre_cargo,  vfcl.oficina_nombre,
             tf.id_funcionario, vfcl.desc_funcionario1 INTO v_record
             FROM segu.tusuario tu
@@ -48,6 +52,7 @@ BEGIN
           IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALNORSERB' AND v_codigo_movimiento != 'SALNORTRA' THEN
               raise exception 'No se permite hacer solicitudes de salidas de almacenes, debido a que se realiza cierre de gestion';
           END IF;
+
       END IF;
     END IF;
 

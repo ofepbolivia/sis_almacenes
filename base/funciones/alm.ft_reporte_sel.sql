@@ -76,7 +76,8 @@ BEGIN
             			id_item,
                         codigo,
                         nombre,
-                        unidad_medida,
+                        (case when codigo = ''2.5.6.24'' then ''bloc'' else
+                        unidad_medida end)::varchar as unidad_medida,
                         clasificacion,
                         cantidad,
                         case when ''''''||v_parametros.porcentaje ||'''''' = ''''ochenta'''' then (costo*0.87) else costo end as costo,
@@ -86,7 +87,7 @@ BEGIN
                         from alm.f_existencias_almacen_sel('||v_parametros.id_almacen||','''||v_parametros.fecha_hasta||''','''||v_where||''','''||v_parametros.filtro||''')
                         as (id_item integer,
                         codigo varchar,
-                        nombre varchar,
+                        nombre varchar,                        
                         unidad_medida varchar,
                         clasificacion varchar,
                         cantidad numeric,
@@ -185,7 +186,7 @@ BEGIN
             
 	    	v_consulta:='
 	        	select
-                mval.id_movimiento_det_valorado ,mov.fecha_mov::date, item.codigo, item.nombre, mval.cantidad,
+                distinct mval.id_movimiento_det_valorado ,mov.fecha_mov::date, item.codigo, item.nombre, mval.cantidad,
                 mval.costo_unitario, mval.cantidad*mval.costo_unitario as costo_total,fun.desc_funcionario1,
                 prov.desc_proveedor,mov.codigo as mov_codigo, mtipo.nombre as tipo_nombre, mtipo.tipo,
                 alm.nombre as desc_almacen
@@ -275,7 +276,7 @@ BEGIN
 	
 	    	v_consulta:='
 	        	select
-               	count(mval.id_movimiento_det_valorado)
+               	count(distinct mval.id_movimiento_det_valorado)
                 from alm.tmovimiento_det mdet
                 inner join alm.tmovimiento_det_valorado mval
                 on mval.id_movimiento_det = mdet.id_movimiento_det

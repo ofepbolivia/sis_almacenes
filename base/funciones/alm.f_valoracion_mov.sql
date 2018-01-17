@@ -66,7 +66,7 @@ BEGIN
 	                
             v_cant_aux = alm.f_get_saldo_fisico_item(g_registros.id_item, v_rec.id_almacen, date(v_rec.fecha_mov));
 
-				
+			raise notice 'g_registros.cantidad %, v_cant_aux %', g_registros.cantidad, v_cant_aux;	
             --RCM
             if g_registros.cantidad > v_cant_aux then
                 v_saldo_cantidad = v_cant_aux;
@@ -100,9 +100,9 @@ BEGIN
                 aux_saldo_fisico = detval.aux_saldo_fisico - v_cantidad_valorada
                 where detval.id_movimiento_det_valorado = v_id_movimiento_det_val_desc;
             end if;
-	                
+	        
             v_saldo_cantidad = v_saldo_cantidad - v_cantidad_valorada;
-	                
+	        raise notice 'v_saldo_cantidad %, v_cantidad_valorada %', v_saldo_cantidad, v_cantidad_valorada;   
             update alm.tmovimiento_det_valorado set
             id_usuario_mod = p_id_usuario,
             fecha_mod = now(),
@@ -124,8 +124,9 @@ BEGIN
             where id_movimiento_det = g_registros.id_movimiento_det_ingreso;       
             --Si todavia hay saldo que valorar
             v_cont = 0;
+
 			WHILE (v_saldo_cantidad > 0) LOOP
-            
+                
 				select r_costo_valorado, r_cantidad_valorada, r_id_movimiento_det_val_desc
                 into v_costo_valorado, v_cantidad_valorada, v_id_movimiento_det_val_desc
                 from alm.f_get_valorado_item(g_registros.id_item, v_rec.id_almacen, v_codigo_valoracion, 

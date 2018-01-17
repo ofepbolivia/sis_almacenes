@@ -822,6 +822,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					renderer: function(value, p, record){
 						var aux;
 						if(record.data.tipo=='salida'){
+
 							if(record.data.nombre_movimiento_tipo=='SALIDA ROPA DE TRABAJO'){
 								aux='<b><font color="#a52a2a">';
 							}else {
