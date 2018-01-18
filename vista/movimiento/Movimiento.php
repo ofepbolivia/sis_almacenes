@@ -1116,6 +1116,7 @@ header("content-type: text/javascript; charset=UTF-8");
 				this.Cmp.id_depto_conta.allowBlank=true;
 
 				//(f.e.a) Tipo Ducumento de ingresos
+				this.Cmp.id_plantilla.reset();
 				this.Cmp.id_plantilla.setVisible(false);
 				this.Cmp.id_plantilla.disable();
 				this.Cmp.id_plantilla.allowBlank=true;
@@ -1274,7 +1275,14 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.Cmp.id_movimiento_tipo.disable();
 			this.Cmp.comail.setVisible(false);
 			this.Cmp.fecha_salida.setVisible(false);
+
+
+
 			if (this.Cmp.tipo.value == 'salida') {
+				//(f.e.a)Se oculta el Boton Tipo Documento.
+				this.Cmp.id_plantilla.disable();
+				this.Cmp.id_plantilla.setVisible(false);
+				
 				this.Cmp.solicitante.enable();
 				this.Cmp.solicitante.setVisible(true);
 				if (this.Cmp.id_funcionario.value != null && this.Cmp.id_funcionario.value != undefined) {
