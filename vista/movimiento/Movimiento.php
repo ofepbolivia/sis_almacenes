@@ -1132,12 +1132,12 @@ header("content-type: text/javascript; charset=UTF-8");
 				this.getComponente('id_almacen_dest').lastQuery = null;
 				this.getComponente('id_almacen_dest').setVisible(true);
 				this.getComponente('id_almacen_dest').allowBlank = false;
-			} else if (this.getComponente('tipo').value.indexOf('ingreso') != -1 && component.data.nombre.toLowerCase().indexOf('devol') != -1) {
+			} /*(fea)else if (this.getComponente('tipo').value.indexOf('ingreso') != -1 && component.data.nombre.toLowerCase().indexOf('devol') != -1) {
 				this.getComponente('id_movimiento_origen').reset();
 				this.getComponente('id_movimiento_origen').lastQuery = null;
 				this.getComponente('id_movimiento_origen').enable();
 				this.getComponente('id_movimiento_origen').setVisible(true);
-			} else {
+			}*/ else {
 				this.getComponente('id_almacen_dest').setVisible(false);
 				this.getComponente('id_movimiento_origen').disable();
 				this.getComponente('id_movimiento_origen').setVisible(false);
@@ -1306,13 +1306,13 @@ header("content-type: text/javascript; charset=UTF-8");
 				this.Cmp.id_depto_conta.disable();
 				this.Cmp.id_depto_conta.allowBlank=true;
 			} else if (this.Cmp.tipo.value == 'ingreso') {
-				if (this.Cmp.id_movimiento_tipo.getRawValue().toLowerCase().indexOf('devol') != -1) {
+				/*(fea)if (this.Cmp.id_movimiento_tipo.getRawValue().toLowerCase().indexOf('devol') != -1) {
 					this.Cmp.id_movimiento_origen.enable();
 					this.Cmp.id_movimiento_origen.setVisible(true);
-				} else {
+				} else {*/
 					this.Cmp.id_movimiento_origen.disable();
 					this.Cmp.id_movimiento_origen.setVisible(false);
-				}
+				//(fea)}
 				this.Cmp.solicitante.enable();
 				this.Cmp.solicitante.setVisible(true);
 				if (this.Cmp.id_funcionario.value != null && this.Cmp.id_funcionario.value != undefined) {
