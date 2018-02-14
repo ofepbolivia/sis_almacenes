@@ -98,7 +98,8 @@ BEGIN
           id_depto_conta,
           id_preingreso,
           id_usuario_ai,
-          usuario_ai
+          usuario_ai,
+          id_plantilla
         ) values (
           p_id_usuario,
           now(),
@@ -120,7 +121,8 @@ BEGIN
           (p_parametros->'id_depto_conta')::integer,
           (p_parametros->'id_preingreso')::integer,
           (p_parametros->'_id_usuario_ai')::integer,
-          (p_parametros->'_nombre_usuario_ai')::varchar
+          (p_parametros->'_nombre_usuario_ai')::varchar,
+          (p_parametros->'id_plantilla')::integer
         ) RETURNING id_movimiento into v_id_movimiento;
 
 	--Respuesta

@@ -75,7 +75,7 @@ header("content-type: text/javascript; charset=UTF-8");
             });
             this.argumentExtraSubmit = {
                 'registros': rec
-            }; console.log('registro: ', rec);
+            }; 
             /*this.mostrarComponente(this.cmpMovimientoTipo);
              this.mostrarComponente(this.cmpFechaMov);
              this.mostrarComponente(this.cmpSubtipoMovimiento);
