@@ -277,7 +277,33 @@ header("content-type: text/javascript; charset=UTF-8");
 			},
 			type:'Field',
 			form:true
-		}],
+		},
+            {
+                config:{
+                    name:'formato_reporte',
+                    fieldLabel:'Formato del Reporte',
+                    typeAhead: true,
+                    allowBlank:false,
+                    triggerAction: 'all',
+                    emptyText:'Formato...',
+                    selectOnFocus:true,
+                    mode:'local',
+                    store:new Ext.data.ArrayStore({
+                        fields: ['ID', 'valor'],
+                        data :	[['pdf','PDF'],
+                            ['xls','XLS']]
+                    }),
+                    valueField:'ID',
+                    displayField:'valor',
+                    width:250
+
+                },
+                type:'ComboBox',
+                id_grupo:1,
+                form:true
+            }
+
+        ],
 		title : 'Generar Reporte Anual',
 		ActSave : '../../sis_almacenes/control/Reportes/reporteExistencias',
 		topBar : true,
@@ -366,7 +392,28 @@ header("content-type: text/javascript; charset=UTF-8");
 				//Añade los parámetros extra para mandar por submit
 			this.argumentExtraSubmit.id_clasificacion=this.id_clasificacion;
 			this.argumentExtraSubmit.almacen=this.Cmp.id_almacen.getRawValue();
-		}
+		},
+        successSave :function(resp){
+            Phx.CP.loadingHide();
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            if (reg.ROOT.error) {
+                alert('error al procesar');
+                return
+            }
+
+            var nomRep = reg.ROOT.detalle.archivo_generado;
+            if(Phx.CP.config_ini.x==1){
+                nomRep = Phx.CP.CRIPT.Encriptar(nomRep);
+            }
+
+            if(this.Cmp.formato_reporte.getValue()=='pdf'){
+                window.open('../../../lib/lib_control/Intermediario.php?r='+nomRep+'&t='+new Date().toLocaleTimeString())
+            }
+            else{
+                window.open('../../../reportes_generados/'+nomRep+'?t='+new Date().toLocaleTimeString())
+            }
+
+        }
 
 })
 </script>
