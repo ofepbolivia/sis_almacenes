@@ -144,7 +144,7 @@ class ACTMovimiento extends ACTbase {
 
 
 
-    /*function finalizarGrupo() {
+    function finalizarGrupo() {
         $id_funcionarios_wf='';
         $id_tipos_estado='';
         $id_movimientos = explode(',',$this->objParam->getParametro('id_movimientos'));
@@ -196,7 +196,7 @@ class ACTMovimiento extends ACTbase {
             }
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
-    }*/
+    }
 
     function cancelarMovimiento() {
         $this->objFunc = $this->create('MODMovimiento');

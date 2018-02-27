@@ -147,7 +147,8 @@ BEGIN
         v_parametros.observaciones,
         v_parametros.id_movimiento_origen,
         v_parametros.id_gestion,
-        v_parametros.id_depto_conta
+        v_parametros.id_depto_conta,
+        v_parametros.id_plantilla
         into g_registros;
 
         --Llama a la función de registro del movimiento

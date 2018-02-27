@@ -61,6 +61,9 @@ header("content-type: text/javascript; charset=UTF-8");
             this.mostrarComponente(this.cmpFechaSalida);
         },
         onButtonEdit:function(){
+
+            var tb = Phx.vista.MovimientoAlm.superclass.onButtonEdit.call(this);
+
             var records = this.grid.getSelectionModel().getSelections();
             var rec = '';
             Ext.each(records, function(record, index) {
@@ -72,8 +75,7 @@ header("content-type: text/javascript; charset=UTF-8");
             });
             this.argumentExtraSubmit = {
                 'registros': rec
-            };
-            var tb = Phx.vista.MovimientoAlm.superclass.onButtonEdit.call(this);
+            }; 
             /*this.mostrarComponente(this.cmpMovimientoTipo);
              this.mostrarComponente(this.cmpFechaMov);
              this.mostrarComponente(this.cmpSubtipoMovimiento);
