@@ -40,9 +40,18 @@ class RExistenciasExcel
 
     }
     function imprimeCabecera() {
-        $this->docexcel->createSheet();
-        $this->docexcel->getActiveSheet()->setTitle('Bienes de Consumo');
+        $this->docexcel->createSheet(0);
         $this->docexcel->setActiveSheetIndex(0);
+        $this->docexcel->getActiveSheet()->setTitle('Detalle');
+
+        $this->docexcel->createSheet(1);
+        $this->docexcel->setActiveSheetIndex(1);
+        $this->docexcel->getActiveSheet()->setTitle('Totales');
+
+        $this->docexcel->setActiveSheetIndex(0);
+
+
+
 
         $styleTitulos1 = array(
             'font'  => array(
@@ -117,28 +126,31 @@ class RExistenciasExcel
         $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
         $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
         $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(15);
-        $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
+        $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(25);
 
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A6:H6')->getAlignment()->setWrapText(true);
-        $this->docexcel->getActiveSheet()->getStyle('A6:H6')->applyFromArray($styleTitulos2);
+        /*$this->docexcel->getActiveSheet()->getStyle('A6:H6')->getAlignment()->setWrapText(true);
+        $this->docexcel->getActiveSheet()->getStyle('A6:H6')->applyFromArray($styleTitulos2);*/
 
 
 
         //*************************************Cabecera*****************************************
-        $this->docexcel->getActiveSheet()->setCellValue('A6','Nro');
+        /*$this->docexcel->getActiveSheet()->setCellValue('A6','Nro');
         $this->docexcel->getActiveSheet()->setCellValue('B6','Código');
         $this->docexcel->getActiveSheet()->setCellValue('C6','Descripcion del Material');
         $this->docexcel->getActiveSheet()->setCellValue('D6','Unidad');
         $this->docexcel->getActiveSheet()->setCellValue('E6','Cantidad');
         $this->docexcel->getActiveSheet()->setCellValue('F6','Cant. Min.');
         $this->docexcel->getActiveSheet()->setCellValue('G6','C/Unit.');
-        $this->docexcel->getActiveSheet()->setCellValue('H6','C/Total');
+        $this->docexcel->getActiveSheet()->setCellValue('H6','C/Total');*/
 
     }
     function generarDatos()
     {
+
+        //$hoja_detalle = $this->docexcel->getSheet(0);
+        //$hoja_totales = $this->docexcel->getSheet(1);
         $styleTitulos3 = array(
             'alignment' => array(
                 'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
@@ -146,36 +158,227 @@ class RExistenciasExcel
             ),
         );
 
+        $styleTitulos2 = array(
+            'font'  => array(
+                'bold'  => true,
+                'size'  => 9,
+                'name'  => 'Arial',
+                'color' => array(
+                    'rgb' => 'FFFFFF'
+                )
+
+            ),
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ),
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array(
+                    'rgb' => '0066CC'
+                )
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            ));
+
+        $styleTitulos1 = array(
+            'font'  => array(
+                'bold'  => true,
+                'size'  => 9,
+                'name'  => 'Arial',
+                'color' => array(
+                    'rgb' => 'FFFFFF'
+                )
+
+            ),
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ),
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array(
+                    'rgb' => '626eba'
+                )
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            ));
+
+        $styleTitulos3 = array(
+            'font'  => array(
+                'bold'  => true,
+                'size'  => 9,
+                'name'  => 'Arial',
+                'color' => array(
+                    'rgb' => 'FFFFFF'
+                )
+
+            ),
+            'alignment' => array(
+                'horizontal' => PHPExcel_Style_Alignment::HORIZONTAL_CENTER,
+                'vertical' => PHPExcel_Style_Alignment::VERTICAL_CENTER,
+            ),
+            'fill' => array(
+                'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                'color' => array(
+                    'rgb' => '3287c1'
+                )
+            ),
+            'borders' => array(
+                'allborders' => array(
+                    'style' => PHPExcel_Style_Border::BORDER_THIN
+                )
+            ));
+
         $this->numero = 1;
-        $fila = 7;
+        $fila = 6;
         $datos = $this->objParam->getParametro('datos');
+        //subtotales
+        $clasificacion = '';
+        $contadorCostoGrupo = 0;
+        $contadorCostoTotal = 0;
         $this->imprimeCabecera(0);
+
+        //$numberFormat = '#,#0.##;[Red]-#,#0.##';
+        $numberFormat = '#,##0.00';
+        $cant_datos = count($datos);
+        $cont_total = 1;
+        $fila_total = 1;
+
+        $this->docexcel->getSheet(1)->getColumnDimension('B')->setWidth(15);
+        $this->docexcel->getSheet(1)->getColumnDimension('C')->setWidth(70);
+        $this->docexcel->getSheet(1)->getColumnDimension('D')->setWidth(25);
+
         foreach ($datos as $value)
         {
+            //subtotales{
+            if($clasificacion!=''){
+                if($clasificacion!=$value['clasificacion']){
+                    $styleTitulos['fill']['color']['rgb'] = '4b9bd1';
+                    $this->docexcel->getSheet(0)->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setWrapText(true);
+                    $this->docexcel->getSheet(0)->getStyle('A' . $fila . ':H' . $fila)->applyFromArray($styleTitulos2);
+                    $this->docexcel->getSheet(0)->mergeCells('A'.$fila.':G'.$fila);
+                    $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(0, $fila, 'Total');
+                    //$this->docexcel->getActiveSheet()->getStyle('H7')->getNumberFormat()->setFormatCode(PHPExcel_Style_NumberFormat::FORMAT_NUMBER_00);
+                    $this->docexcel->getSheet(0)->getStyle('H'.$fila)->getNumberFormat()->setFormatCode($numberFormat);
+                    $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(7, $fila, $contadorCostoGrupo);
+                    $contadorCostoTotal+=$contadorCostoGrupo;
 
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0, $fila, $this->numero);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1, $fila, $value['codigo']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2, $fila, $value['nombre']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3, $fila, $value['unidad_medida']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4, $fila, $value['cantidad']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5, $fila, $value['cantidad_min']);
+                    //totales
+                    $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(1,$fila_total,$cont_total);
+                    $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(2,$fila_total,$clasificacion);
+                    $this->docexcel->getSheet(1)->getStyle('D'.$fila_total)->getNumberFormat()->setFormatCode($numberFormat);
+                    $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(3,$fila_total,$contadorCostoGrupo);
+
+                    $contadorCostoGrupo = 0;
+                    $fila++;
+
+                    $cont_total++;
+                    $fila_total++;
+                }
+            }
+            if($clasificacion=='' || $clasificacion!=$value['clasificacion']){
+                if($clasificacion==''){
+                    //totales
+                    $this->docexcel->getSheet(1)->getStyle('B1:D1')->getAlignment()->setWrapText(true);
+                    $this->docexcel->getSheet(1)->getStyle('B1:D1')->applyFromArray($styleTitulos3);
+                    $this->docexcel->getSheet(1)->mergeCells('B'.$fila_total.':D'.$fila_total);
+                    $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(1,$fila_total,'Totales Existencias');
+                    $fila_total++;
+                    $this->docexcel->getSheet(1)->getStyle('B2:D2')->getAlignment()->setWrapText(true);
+                    $this->docexcel->getSheet(1)->getStyle('B2:D2')->applyFromArray($styleTitulos3);
+                    $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(1,$fila_total,'Nro.');
+                    $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(2,$fila_total,'Detalle');
+                    $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(3,$fila_total,'Costo');
+
+                    $fila_total++;
+                }
+
+                //detalle
+                $this->docexcel->getSheet(0)->getStyle('A'.$fila.':H'.$fila)->getAlignment()->setWrapText(true);
+                $this->docexcel->getSheet(0)->getStyle('A'.$fila.':H'.$fila)->applyFromArray($styleTitulos1);
+
+                $this->docexcel->getSheet(0)->mergeCells('A'.$fila.':H'.$fila);
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(0, $fila, $value['clasificacion']);
+                $fila++;
+
+                $this->docexcel->getSheet(0)->getStyle('A'.$fila.':H'.$fila)->getAlignment()->setWrapText(true);
+                $this->docexcel->getSheet(0)->getStyle('A'.$fila.':H'.$fila)->applyFromArray($styleTitulos1);
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(0,$fila,'Nro');
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(1,$fila,'Código');
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(2,$fila,'Descripcion del Material');
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(3,$fila,'Unidad');
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(4,$fila,'Cantidad');
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(5,$fila,'Cant. Min.');
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(6,$fila,'C/Unit.');
+                $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(7,$fila,'C/Total');
+                $fila++;
+            }
+
+            $styleTitulos['fill']['color']['rgb'] = 'e6e8f4';
+            $this->docexcel->getSheet()->getStyle('A'.$fila.':H'.$fila)->applyFromArray($styleTitulos);
+            //$this->docexcel->getStyle('A' . $fila . ':H' . $fila)->getAlignment()->setWrapText(true);
+            //subtotales}
+
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(0, $fila, $this->numero);
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(1, $fila, $value['codigo']);
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(2, $fila, $value['nombre']);
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(3, $fila, $value['unidad_medida']);
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(4, $fila, $value['cantidad']);
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(5, $fila, $value['cantidad_min']);
             if ($value['cantidad'] != 0) {
                 $costoUnitario = $value['costo']/$value['cantidad'];
             }
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6, $fila,$costoUnitario);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7, $fila, $value['costo']);
-
-
+            $this->docexcel->getSheet(0)->getStyle('G'.$fila)->getNumberFormat()->setFormatCode($numberFormat);
+            $this->docexcel->getSheet(0)->getStyle('H'.$fila)->getNumberFormat()->setFormatCode($numberFormat);
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(6, $fila,$costoUnitario);
+            $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(7, $fila, $value['costo']);
+            $contadorCostoGrupo += $value['costo'];
             $fila++;
             $this->numero++;
+            //subtotales
+            $clasificacion = $value['clasificacion'];
         }
+        //totales
+        $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(1,$fila_total,$cont_total);
+        $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(2,$fila_total,$clasificacion);
+        $this->docexcel->getSheet(1)->getStyle('D'.$fila_total)->getNumberFormat()->setFormatCode($numberFormat);
+        $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(3,$fila_total,$contadorCostoGrupo);
+
+        $this->docexcel->getSheet(0)->getStyle('H'.$fila)->getNumberFormat()->setFormatCode($numberFormat);
+        $this->docexcel->getSheet(0)->getStyle('A'.$fila.':H'.$fila)->applyFromArray($styleTitulos2);
+        $this->docexcel->getSheet(0)->mergeCells('A'.$fila.':G'.$fila);
+        $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(0, $fila, 'Total');
+        $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(7, $fila, $contadorCostoGrupo);
+        $fila++;
+        $contadorCostoTotal+=$contadorCostoGrupo;
+
+        $fila_total++;
+        $this->docexcel->getSheet(1)->mergeCells('B'.$fila_total.':C'.$fila_total);
+        $this->docexcel->getSheet(1)->getStyle('B'.$fila_total.':D'.$fila_total)->applyFromArray($styleTitulos2);
+        //$this->docexcel->getSheet(1)->setCellValueByColumnAndRow(1,$fila_total,$cont_total);
+        $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(1,$fila_total,'Totales');
+        $this->docexcel->getSheet(1)->getStyle('D'.$fila_total)->getNumberFormat()->setFormatCode($numberFormat);
+        $this->docexcel->getSheet(1)->setCellValueByColumnAndRow(3,$fila_total,$contadorCostoTotal);
+
+        $this->docexcel->getSheet(0)->getStyle('H'.$fila)->getNumberFormat()->setFormatCode($numberFormat);
+        $this->docexcel->getSheet(0)->getStyle('A'.$fila.':H'.$fila)->applyFromArray($styleTitulos2);
+        $this->docexcel->getSheet(0)->mergeCells('A'.$fila.':G'.$fila);
+        $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(0, $fila, 'Costo Total');
+        $this->docexcel->getSheet(0)->setCellValueByColumnAndRow(7, $fila, $contadorCostoTotal);
 
     }
     function obtenerFechaEnLetra($fecha){
         setlocale(LC_ALL,"es_ES@euro","es_ES","esp");
         $dia= date("d", strtotime($fecha));
         $anno = date("Y", strtotime($fecha));
-       // var_dump()
+        // var_dump()
         $mes = array('Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
         $mes = $mes[(date('m', strtotime($fecha))*1)-1];
         return $dia.' de '.$mes.' del '.$anno;
