@@ -75,7 +75,7 @@ class ACTReportes extends ACTbase {
             $dataSource->putParameter('almacen', $this->objParam->getParametro('almacen'));
             $dataSource->putParameter('mostrar_costos', $this->objParam->getParametro('mostrar_costos'));
             $dataSource->setDataSet($mainDataSet);
-
+            $this->datos= $mainDataSet;
             $reporte = new RExistencias();
             $reporte->setDataSource($dataSource);
             $nombreArchivo = 'Existencias.pdf';
@@ -95,7 +95,8 @@ class ACTReportes extends ACTbase {
             $this->objParam->addParametroConsulta('puntero', 0);
             $this->objFunc = $this->create('MODReporte');
             $this->res = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
-            //var_dump( $this->res);exit;
+
+
 
             //obtener titulo de reporte
             $titulo = 'Reporte Existencias';
@@ -114,8 +115,6 @@ class ACTReportes extends ACTbase {
             $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
             $this->mensajeExito->setArchivoGenerado($nombreArchivo);
             $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
-
-
 
         }
     }
