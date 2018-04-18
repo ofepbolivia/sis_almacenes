@@ -6,6 +6,8 @@ class RExistenciasExcel
     private $numero;
     private $equivalencias=array();
     private $objParam;
+    var $datos_detalle;
+    var $datos_titulo;
     public  $url_archivo;
     function __construct(CTParametro $objParam)
     {
@@ -39,6 +41,7 @@ class RExistenciasExcel
             76=>'BY',77=>'BZ');
 
     }
+    
     function imprimeCabecera() {
         $this->docexcel->createSheet(0);
         $this->docexcel->setActiveSheetIndex(0);
