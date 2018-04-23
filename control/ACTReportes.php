@@ -17,9 +17,10 @@ class ACTReportes extends ACTbase {
         //TODO: pasos para el reporte:
         //iterar sobre el array de ids de almacenes
         //Obtener el listado de los items ordenados por clasificacion y por fecha de un determinado almacen:
+        $fechaHasta = $this->objParam->getParametro('fecha_hasta');
+
         if ($this->objParam->getParametro('formato_reporte') == 'pdf') {
             $idAlmacen = $this->objParam->getParametro('id_almacen');
-            $fechaHasta = $this->objParam->getParametro('fecha_hasta');
             $this->objParam->addParametroConsulta('ordenacion', 'cla.id_clasificacion');
             $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
             $this->objParam->addParametroConsulta('cantidad', 10000);
@@ -93,6 +94,7 @@ class ACTReportes extends ACTbase {
             $nombreArchivo .= '.xls';
             $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
             $this->objParam->addParametro('datos', $this->res->datos);
+            $this->objParam->addParametro('fechaHasta', $fechaHasta);
             //Instancia la clase de excel
             $this->objReporteFormato = new RExistenciasExcel($this->objParam);
             $this->objReporteFormato->generarDatos();

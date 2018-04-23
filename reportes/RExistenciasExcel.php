@@ -41,7 +41,7 @@ class RExistenciasExcel
             76=>'BY',77=>'BZ');
 
     }
-    
+
     function imprimeCabecera() {
         $this->docexcel->createSheet(0);
         $this->docexcel->setActiveSheetIndex(0);
@@ -116,7 +116,7 @@ class RExistenciasExcel
         $this->docexcel->getActiveSheet()->getStyle('A3:H3')->applyFromArray($styleTitulos1);
         $this->docexcel->getActiveSheet()->mergeCells('A3:H3');
         //var_dump(date("Y", $this->obtenerFechaEnLetra($this->objParam->getParametro('fecha_hasta')) ));exit;
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,4,'AL: '. $this->obtenerFechaEnLetra($this->objParam->getParametro('fecha_hasta')));
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,4,'AL: '. $this->objParam->getParametro('fechaHasta'));
         $this->docexcel->getActiveSheet()->getStyle('A4:H4')->applyFromArray($styleTitulos3);
         $this->docexcel->getActiveSheet()->mergeCells('A4:H4');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,5,'(Expresado en Bolivianos)' );
