@@ -168,5 +168,11 @@ class ACTClasificacion extends ACTbase {
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+    function getArbolClasificacion(){
+        $this->objFunSeguridad = $this->create('MODClasificacion');
+        $this->res = $this->objFunSeguridad->getArbolClasificacion($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
 }
 ?>

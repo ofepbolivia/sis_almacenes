@@ -198,5 +198,27 @@ class MODClasificacion extends MODbase {
         return $this->respuesta;
     }
 
+    function getArbolClasificacion() {
+        $this->procedimiento = 'alm.ft_clasificacion_sel';
+        $this->transaccion = 'ALM_GET_ARB_CLA_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setCount(false);
+        $this->setParametro('codigo','codigo','varchar');
+
+        $this->captura('id_clasificacion', 'integer');
+        $this->captura('id_clasificacion_fk', 'integer');
+        $this->captura('codigo', 'varchar');
+        $this->captura('nombre', 'varchar');
+        $this->captura('tipo', 'varchar');
+        //$this->captura('saldos', 'integer');
+
+
+        $this->armarConsulta();//echo( $this->consulta);exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
 }
 ?>
