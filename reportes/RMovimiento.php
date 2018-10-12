@@ -180,7 +180,7 @@ Class RMovimiento extends Report {
         $pdf->Ln();
         $pdf->Cell($w = 30, $h = $hMedium, $txt = 'DESCRIPCION: ', $border = 0, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         //var_dump($tmpDatos[0]);exit;
-        if ($tmpDatos[0]['descripcion'] != null && $tmpDatos[0]['descripcion'] != '') {
+        /*if ($tmpDatos[0]['descripcion'] != null && $tmpDatos[0]['descripcion'] != '') {
             $pdf->SetFont('', '');
             if (strlen($dataSource->getParameter('descripcion')) > 150) {
                 $pdf->MultiCell($w = 0, $h = $hLong, $txt = $tmpDatos[0]['descripcion'], $border = 0, $align = 'L', $fill = false, $ln = 1, $x = '', $y = '', $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = $hMedium, $valign = 'M', $fitcell = false);
@@ -190,6 +190,11 @@ Class RMovimiento extends Report {
             }
         } else {
             $pdf->Ln();
+        }*/
+        if ($tmpDatos[0]['descripcion'] != null && $tmpDatos[0]['descripcion'] != '') {
+            $pdf->SetFont('', '');
+            $pdf->MultiCell($w = 0, $h = $hLong, $txt = $tmpDatos[0]['descripcion'], $border = 0, $align = 'L', $fill = false, $ln = 1, $x = '', $y = '', $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = $hMedium, $valign = 'M', $fitcell = true);
+
         }
 
         if ($tmpDatos[0]['tipo'] == "salida") {
@@ -262,9 +267,14 @@ Class RMovimiento extends Report {
             $pdf->Ln();
             $pdf->SetFont('', 'B');
             $pdf->Cell($w = 30, $h = $hGlobal, $txt = 'OBSERVACIONES: ', $border = 0, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $pdf->SetFont('', '');
+            /*$pdf->SetFont('', '');
             if ($dataSource->getParameter('observaciones') != null && $dataSource->getParameter('observaciones') != '') {
                 $pdf->MultiCell($w = 0, $h = $hMedium, $txt = $dataSource->getParameter('observaciones'), $border = 0, $align = 'L', $fill = false, $ln = 0, $x = '', $y = '', $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = $hMedium, $valign = 'M', $fitcell = false);
+            } */
+
+            if ($tmpDatos[0]['observaciones'] != null && $tmpDatos[0]['observaciones'] != '') {
+                $pdf->SetFont('', '');
+                $pdf->MultiCell($w = 0, $h = $hLong, $txt = $tmpDatos[0]['observaciones'], $border = 0, $align = 'L', $fill = false, $ln = 1, $x = '', $y = '', $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = $hMedium, $valign = 'M', $fitcell = true);
             }
 
             if ($tmpDatos[0]['tipo'] == "salida") {
@@ -373,7 +383,7 @@ Class RMovimiento extends Report {
         $wCostoUnitario = 20;
         $wCostoTotal = 20;
         $cantTot=0;
-        $cantTotSoli=0;
+		$cantTotSoli=0;
         $costoUnitTot=0;
         $pdf->Ln();
 
@@ -438,7 +448,7 @@ Class RMovimiento extends Report {
             //$pdf->Ln();
             $count++;
             $cantTot+=$datarow['cantidad'];
-            $cantTotSoli+=$datarow['cantidad_solicitada'];
+			$cantTotSoli+=$datarow['cantidad_solicitada'];
             $costoUnitTot+=$datarow['costo_unitario'];
         }
 
