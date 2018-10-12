@@ -17,7 +17,7 @@ BEGIN
             			 and fun.id_uo_funcionario < 10000000
                          left join orga.tuo uo on uo.id_uo=fun.id_uo
                          inner join orga.vfuncionario emp on emp.id_funcionario=mov.id_funcionario
-        				 where mov.codigo_tran=p_codigo_dotaciones
+        				 where mov.codigo_tran=p_codigo_dotaciones and mov.estado_mov != 'cancelado'
         				 group by emp.desc_funcionario1, fun.lugar_nombre, fun.oficina_nombre, uo.nombre_unidad, mov.id_movimiento
          				 order by fun.lugar_nombre,fun.oficina_nombre)LOOP
 

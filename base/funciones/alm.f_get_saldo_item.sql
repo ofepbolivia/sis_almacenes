@@ -17,12 +17,12 @@ DECLARE
     v_cond_almacen varchar;
 
 BEGIN
-	
+
 	v_cond_almacen='';
 	if coalesce(pa_id_almacen,'') != '' then
 		v_cond_almacen = ' and mov.id_almacen in ('||pa_id_almacen||')';
     end if;
-    
+
     create temp table tt_saldo(
     saldo numeric
     ) on commit drop;
@@ -38,11 +38,11 @@ BEGIN
     inner join alm.tmovimiento_tipo mtipo
     on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
     where mov.estado_mov = ''finalizado''';
-    
+
     if v_cond_almacen != '' then
     	v_sql = v_sql ||v_cond_almacen;
     end if;
-    
+
     v_sql = v_sql ||'
     and mtipo.tipo = ''ingreso''
     and date_trunc(''day'',mov.fecha_mov) <= ''' || p_fecha_hasta ||'''
@@ -56,11 +56,11 @@ BEGIN
     inner join alm.tmovimiento_tipo mtipo
     on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
     where mov.estado_mov = ''finalizado''';
-    
+
     if v_cond_almacen != '' then
     	v_sql = v_sql ||v_cond_almacen;
     end if;
-    
+
     v_sql = v_sql || '
     and mtipo.tipo = ''salida''
     and date_trunc(''day'',mov.fecha_mov) <= ''' || p_fecha_hasta ||'''
@@ -70,13 +70,13 @@ BEGIN
     from saldos
     group by id_item
     order by id_item';
-    
+
 	execute(v_sql);
-    
+
     select saldo
     into v_saldo
     from tt_saldo;
-    
+
     return coalesce(v_saldo,0);
 
 END;

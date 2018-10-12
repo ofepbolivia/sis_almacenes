@@ -124,7 +124,6 @@ BEGIN
   elsif(p_transaccion='SAL_PREDET_MOD')then
 
     begin
-        --raise exception 'LLEGA';
 
         --Sentencia de la modificacion
         update alm.tpreingreso_det set
@@ -144,7 +143,8 @@ BEGIN
         ubicacion = v_parametros.ubicacion,
         c31 = v_parametros.c31,
         fecha_conformidad = v_parametros.fecha_conformidad,
-        fecha_compra = v_parametros.fecha_compra,
+        fecha_compra = v_parametros.fecha_compra
+        where id_preingreso_det=v_parametros.id_preingreso_det;
 
         -----AUMENTANDO LOS CAMPOS PARA LA MODIFICACION----------
         id_unidad_medida = v_parametros.id_unidad_medida,
@@ -393,7 +393,7 @@ BEGIN
       update alm.tpreingreso_det set
             estado = 'orig',
             sw_generar = 'no'
-            where id_preingreso_det=v_parametros.id_preingreso_det;
+            where id_preingreso_det = v_parametros.id_preingreso_det;
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso eliminado(a) de la preparación');
@@ -450,8 +450,8 @@ BEGIN
             where preingreso.id_preingreso = v_parametros.id_preingreso;
      ------------------------------------------------------------------------------------------------------
 
-      --
-       update alm.tpreingreso_det set
+      --Sentencia de la eliminacion
+      update alm.tpreingreso_det set
             sw_generar = 'si',
       estado = 'mod'
             where id_preingreso=v_parametros.id_preingreso;
