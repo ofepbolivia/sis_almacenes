@@ -12,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'alm.tpreingreso_det'
  AUTOR:      (admin)
  FECHA:         07-10-2013 17:46:04
- COMENTARIOS: 
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION: 
- AUTOR:     
- FECHA:   
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -33,21 +33,25 @@ DECLARE
     v_id_item_clasif_ingas  integer;
     v_id_concepto_ingas   integer;
     v_result        varchar;
-          
+  -------------- AUMENTO DE VARIABLE PARA RECUPERAR OFICINA, PROVEEDOR-----------
+  v_oficina				record;
+  v_proveedor			record;
+  v_recuperacion		record;
+
 BEGIN
 
     v_nombre_funcion = 'alm.ft_preingreso_det_ime';
     v_parametros = pxp.f_get_record(p_tabla);
 
-  /*********************************    
+  /*********************************
   #TRANSACCION:  'SAL_PREDET_INS'
   #DESCRIPCION: Insercion de registros
-  #AUTOR:   admin 
+  #AUTOR:   admin
   #FECHA:   07-10-2013 17:46:04
   ***********************************/
 
   if(p_transaccion='SAL_PREDET_INS')then
-          
+
         begin
           --Sentencia de la insercion
           insert into alm.tpreingreso_det(
@@ -98,11 +102,11 @@ BEGIN
       v_parametros.c31,
       v_parametros.fecha_conformidad,
       v_parametros.fecha_compra
-              
+
       )RETURNING id_preingreso_det into v_id_preingreso_det;
-      
+
       --Definicion de la respuesta
-      v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso almacenado(a) con exito (id_preingreso_det'||v_id_preingreso_det||')'); 
+      v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso almacenado(a) con exito (id_preingreso_det'||v_id_preingreso_det||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso_det',v_id_preingreso_det::varchar);
 
             --Devuelve la respuesta
@@ -110,17 +114,18 @@ BEGIN
 
     end;
 
-  /*********************************    
+  /*********************************
   #TRANSACCION:  'SAL_PREDET_MOD'
   #DESCRIPCION: Modificacion de registros
-  #AUTOR:   admin 
+  #AUTOR:   admin
   #FECHA:   07-10-2013 17:46:04
   ***********************************/
 
   elsif(p_transaccion='SAL_PREDET_MOD')then
 
     begin
-        
+        --raise exception 'LLEGA';
+
         --Sentencia de la modificacion
         update alm.tpreingreso_det set
         id_item = v_parametros.id_item,
@@ -139,9 +144,29 @@ BEGIN
         ubicacion = v_parametros.ubicacion,
         c31 = v_parametros.c31,
         fecha_conformidad = v_parametros.fecha_conformidad,
-        fecha_compra = v_parametros.fecha_compra
+        fecha_compra = v_parametros.fecha_compra,
+
+        -----AUMENTANDO LOS CAMPOS PARA LA MODIFICACION----------
+        id_unidad_medida = v_parametros.id_unidad_medida,
+        vida_util_original = v_parametros.vida_util_original,
+        nro_serie = v_parametros.nro_serie,
+        marca = v_parametros.marca,
+        id_cat_estado_fun = v_parametros.id_cat_estado_fun,
+        id_deposito = v_parametros.id_deposito,
+        id_oficina = v_parametros.id_oficina,
+        id_proveedor = v_parametros.id_proveedor,
+        documento = v_parametros.documento,
+        id_cat_estado_compra = v_parametros.id_cat_estado_compra,
+        fecha_cbte_asociado = v_parametros.fecha_cbte_asociado,
+        monto_compra = v_parametros.monto_compra,
+        id_proyecto = v_parametros.id_proyecto,
+        tramite_compra = v_parametros.tramite_compra,
+        subtipo = v_parametros.subtipo,
+        movimiento = v_parametros.movimiento
+        ----------------------------------------------------------
+
         where id_preingreso_det=v_parametros.id_preingreso_det;
-            
+
             ---------------------------------------------------------------
             --Actualizar la tabla de conceptos de gasto item clasificacion
             ---------------------------------------------------------------
@@ -153,7 +178,7 @@ BEGIN
             inner join adq.tsolicitud_det sdet on sdet.id_solicitud_det = cdet.id_solicitud_det
             inner join param.tconcepto_ingas ingas on ingas.id_concepto_ingas = sdet.id_concepto_ingas
             where pdet.id_preingreso_det=v_parametros.id_preingreso_det;
-            
+
             --Verifica si ya existe el registro de la relación
             if v_parametros.id_item is not null then
               select id_item_clasif_ingas
@@ -172,10 +197,10 @@ BEGIN
             else
               --raise exception 'No puede almacenarse tabla de aprendizaje de los Conceptos de Gasto porque el Item o Clasificación son nulos';
             end if;
-            
-            
+
+
             if v_parametros.id_item is not null or v_parametros.id_clasificacion is not null then
-              
+
               if v_id_item_clasif_ingas is not null then
                 --Actualiza el contado
                   update alm.titem_clasif_ingas set
@@ -204,23 +229,23 @@ BEGIN
                   v_parametros.id_clasificacion,
                   1
                   );
-                  
+
               end if;
             end if;
-               
+
       --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso modificado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso_det',v_parametros.id_preingreso_det::varchar);
-               
+
             --Devuelve la respuesta
             return v_resp;
-            
+
     end;
 
-  /*********************************    
+  /*********************************
   #TRANSACCION:  'SAL_PREDET_ELI'
   #DESCRIPCION: Eliminacion de registros
-  #AUTOR:   admin 
+  #AUTOR:   admin
   #FECHA:   07-10-2013 17:46:04
   ***********************************/
 
@@ -230,17 +255,17 @@ BEGIN
       --Sentencia de la eliminacion
       delete from alm.tpreingreso_det
             where id_preingreso_det=v_parametros.id_preingreso_det;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso eliminado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso_det',v_parametros.id_preingreso_det::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
     end;
-        
-  /*********************************    
+
+  /*********************************
   #TRANSACCION:  'SAL_PREPPRE_MOD'
   #DESCRIPCION: Preparación de preingreso
   #AUTOR:     RCM
@@ -250,22 +275,57 @@ BEGIN
   elsif(p_transaccion='SAL_PREPPRE_MOD')then
 
     begin
+
+    --------------OBTENEMOS LA OFICINA PARA REGISTRAR EN LA PREPARACION DE ACTIVOS FIJOS-------------
+    SELECT
+      into v_oficina
+      funcio.id_oficina
+      FROM gecom.vfuncionario funcio
+      where funcio.desc_funcionario1 = v_parametros.desc_funcionario1;
+     ------------------------------------------------------------------------------------------------------
+
+
+     --------------OBTENEMOS EL PROVEEDOR PARA REGISTRAR EN LA PREPARACION DE ACTIVOS FIJOS-------------
+    SELECT
+      into v_proveedor
+      provee.id_proveedor
+      FROM param.vproveedor provee
+      where provee.desc_proveedor = v_parametros.desc_proveedor;
+     ------------------------------------------------------------------------------------------------------
+
+     --------------OBTENEMOS LOS DATOS PARA REGISTRAR EN ACTIVOS FIJOS-------------
+     select into
+     		v_recuperacion
+            compro.c31,
+            compro.fecha_c31,
+            docu.nro_documento,
+            docu.fecha,
+            coti.num_tramite
+            from alm.tpreingreso preingreso
+            inner join adq.tcotizacion coti on coti.id_cotizacion = preingreso.id_cotizacion
+            inner join tes.tobligacion_pago oblipag on oblipag.id_obligacion_pago = coti.id_obligacion_pago
+            inner join tes.tplan_pago plan on plan.id_obligacion_pago = oblipag.id_obligacion_pago and (plan.estado <> 'anulado')
+            inner join conta.tint_comprobante compro on compro.id_int_comprobante = plan.id_int_comprobante
+          	left join conta.tdoc_compra_venta docu on docu.id_int_comprobante=compro.id_int_comprobante
+            where preingreso.id_preingreso = v_parametros.id_preingreso;
+     ------------------------------------------------------------------------------------------------------
+
       --Sentencia de la eliminacion
       update alm.tpreingreso_det set
             sw_generar = 'si',
       estado = 'mod'
             where id_preingreso_det=v_parametros.id_preingreso_det;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso preparado'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso preparado');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso_det',v_parametros.id_preingreso_det::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
-    end;        
-        
-  /*********************************    
+    end;
+
+  /*********************************
   #TRANSACCION:  'SAL_PREPPRE_INS'
   #DESCRIPCION: Inserción de nuevo registro en la Preparación de preingreso
   #AUTOR:     RCM
@@ -309,17 +369,17 @@ BEGIN
             'si',
             'mod'
       )RETURNING id_preingreso_det into v_id_preingreso_det;
-      
+
       --Definicion de la respuesta
-      v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso almacenado(a) con exito (id_preingreso_det'||v_id_preingreso_det||')'); 
+      v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso almacenado(a) con exito (id_preingreso_det'||v_id_preingreso_det||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso_det',v_id_preingreso_det::varchar);
 
             --Devuelve la respuesta
             return v_resp;
 
-    end;  
-        
-    /*********************************    
+    end;
+
+    /*********************************
   #TRANSACCION:  'SAL_PREDETPRE_ELI'
   #DESCRIPCION: Eliminacion de registros en la preparación
   #AUTOR:     RCM
@@ -334,17 +394,17 @@ BEGIN
             estado = 'orig',
             sw_generar = 'no'
             where id_preingreso_det=v_parametros.id_preingreso_det;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso eliminado(a) de la preparación'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso eliminado(a) de la preparación');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso_det',v_parametros.id_preingreso_det::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
-    end;     
-        
-    /*********************************    
+    end;
+
+    /*********************************
   #TRANSACCION:  'SAL_PREPPREALL_MOD'
   #DESCRIPCION: Preparación de preingreso, agrega todos los items
   #AUTOR:     RCM
@@ -355,21 +415,57 @@ BEGIN
 
     begin
       --Sentencia de la eliminacion
-      update alm.tpreingreso_det set
+      --raise exception 'LLEGA';
+
+      --------------OBTENEMOS LA OFICINA PARA REGISTRAR EN LA PREPARACION DE ACTIVOS FIJOS-------------
+      SELECT
+      into v_oficina
+      funcio.id_oficina
+      FROM gecom.vfuncionario funcio
+      where funcio.desc_funcionario1 = v_parametros.desc_funcionario1;
+     ------------------------------------------------------------------------------------------------------
+
+      --------------OBTENEMOS EL PROVEEDOR PARA REGISTRAR EN LA PREPARACION DE ACTIVOS FIJOS-------------
+      SELECT
+      into v_proveedor
+      provee.id_proveedor
+      FROM param.vproveedor provee
+      where provee.desc_proveedor = v_parametros.desc_proveedor;
+     ------------------------------------------------------------------------------------------------------
+
+     --------------OBTENEMOS LOS DATOS PARA REGISTRAR EN ACTIVOS FIJOS-------------
+     select into
+     		v_recuperacion
+            compro.c31,
+            compro.fecha_c31,
+            docu.nro_documento,
+            docu.fecha,
+            coti.num_tramite
+            from alm.tpreingreso preingreso
+            inner join adq.tcotizacion coti on coti.id_cotizacion = preingreso.id_cotizacion
+            inner join tes.tobligacion_pago oblipag on oblipag.id_obligacion_pago = coti.id_obligacion_pago
+            inner join tes.tplan_pago plan on plan.id_obligacion_pago = oblipag.id_obligacion_pago and (plan.estado <> 'anulado')
+            inner join conta.tint_comprobante compro on compro.id_int_comprobante = plan.id_int_comprobante
+          	left join conta.tdoc_compra_venta docu on docu.id_int_comprobante=compro.id_int_comprobante
+            where preingreso.id_preingreso = v_parametros.id_preingreso;
+     ------------------------------------------------------------------------------------------------------
+
+      --
+       update alm.tpreingreso_det set
             sw_generar = 'si',
       estado = 'mod'
             where id_preingreso=v_parametros.id_preingreso;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso preparado, agregados todos'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso preparado, agregados todos');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso',v_parametros.id_preingreso::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
-    end; 
-        
-  /*********************************    
+    end;
+
+  /*********************************
   #TRANSACCION:  'SAL_QUITAPREALL_MOD'
   #DESCRIPCION: Quita todos los items del preingreso
   #AUTOR:     RCM
@@ -384,31 +480,31 @@ BEGIN
             sw_generar = 'no',
       estado = 'orig'
             where id_preingreso=v_parametros.id_preingreso;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Items de preingreso quitados'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Items de preingreso quitados');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso',v_parametros.id_preingreso::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
-    end;         
-     
+    end;
+
   else
-     
+
       raise exception 'Transaccion inexistente: %',p_transaccion;
 
   end if;
 
 EXCEPTION
-        
+
   WHEN OTHERS THEN
     v_resp='';
     v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
     v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
     v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
     raise exception '%',v_resp;
-                
+
 END;
 $body$
 LANGUAGE 'plpgsql'
