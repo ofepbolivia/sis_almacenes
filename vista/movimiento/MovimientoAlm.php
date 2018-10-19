@@ -8,6 +8,30 @@
  */
 header("content-type: text/javascript; charset=UTF-8");
 ?>
+<style type="text/css" rel="stylesheet">
+    .x-selectable,
+    .x-selectable * {
+        -moz-user-select: text !important;
+        -khtml-user-select: text !important;
+        -webkit-user-select: text !important;
+    }
+
+    .x-grid-row td,
+    .x-grid-summary-row td,
+    .x-grid-cell-text,
+    .x-grid-hd-text,
+    .x-grid-hd,
+    .x-grid-row,
+
+    .x-grid-row,
+    .x-grid-cell,
+    .x-unselectable
+    {
+        -moz-user-select: text !important;
+        -khtml-user-select: text !important;
+        -webkit-user-select: text !important;
+    }
+</style>
 <script>
     Phx.vista.MovimientoAlm = {
         bedit:false,
@@ -18,6 +42,18 @@ header("content-type: text/javascript; charset=UTF-8");
         requireclase:'Phx.vista.Movimiento',
         title:'Movimiento',
         nombreVista: 'movimientoAlm',
+        viewConfig: {
+            stripeRows: false,
+            getRowClass: function(record) {
+                return "x-selectable";
+            }/*,
+            listeners:{
+                itemkeydown:function(view, record, item, index, e){
+                    alert('The press key is' + e.getKey());
+                }
+            }*/
+
+        },
         constructor: function(config) {
             this.maestro=config.maestro;
             Phx.vista.MovimientoAlm.superclass.constructor.call(this,config);
@@ -46,6 +82,17 @@ header("content-type: text/javascript; charset=UTF-8");
             this.cmpObservaciones = this.getComponente('observaciones');
             this.cmpComail = this.getComponente('comail');
             this.cmpFechaSalida = this.getComponente('fecha_salida');
+
+            this.grid.addListener('keydown', this.selectTodos,this);
+        },
+        selectTodos: function(e){
+            if(e.shiftKey && e.getKey()==83) {
+                this.grid.getSelectionModel().selectAll();
+            }
+        },
+        onButtonAct:function(){
+            Phx.vista.MovimientoAlm.superclass.onButtonAct.call(this);
+            this.grid.getSelectionModel().clearSelections(true);
         },
         onRegistrarComail:function(){
             this.onButtonEdit();
