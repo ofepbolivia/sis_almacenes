@@ -12,13 +12,13 @@ $body$
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'alm.tpreingreso'
  AUTOR: 		 (admin)
  FECHA:	        07-10-2013 16:56:43
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -37,21 +37,24 @@ DECLARE
     v_id_tipo_estado 		integer;
     v_id_estado_actual  	integer;
     v_estado				varchar;
-			    
+    v_activo_fijo			record;
+    v_movimiento			record;
+    v_movi					record;
+
 BEGIN
 
     v_nombre_funcion = 'alm.ft_preingreso_ime';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_PREING_INS'
  	#DESCRIPCION:	Insercion de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		07-10-2013 16:56:43
 	***********************************/
 
 	if(p_transaccion='SAL_PREING_INS')then
-					
+
         begin
         	--Sentencia de la insercion
         	insert into alm.tpreingreso(
@@ -88,11 +91,11 @@ BEGIN
 			null,
             v_parametros._id_usuario_ai,
             v_parametros._nombre_usuario_ai
-							
+
 			)RETURNING id_preingreso into v_id_preingreso;
-			
+
 			--Definicion de la respuesta
-			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso almacenado(a) con exito (id_preingreso'||v_id_preingreso||')'); 
+			v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso almacenado(a) con exito (id_preingreso'||v_id_preingreso||')');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso',v_id_preingreso::varchar);
 
             --Devuelve la respuesta
@@ -100,35 +103,35 @@ BEGIN
 
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_PREING_MOD'
  	#DESCRIPCION:	Modificacion de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		07-10-2013 16:56:43
 	***********************************/
 
 	elsif(p_transaccion='SAL_PREING_MOD')then
 
 		begin
-        
+
         	--Validación de existencia del registro
             if not exists(select 1 from alm.tpreingreso
             			where id_preingreso = v_parametros.id_preingreso) then
             	raise exception 'Preingreso inexistente';
             end if;
-            
+
             if not exists(select 1 from alm.tpreingreso
             			where id_preingreso = v_parametros.id_preingreso
                         and estado = 'borrador') then
             	raise exception 'El Preingreso debe estar en Borrador';
             end if;
-            
+
 			--Sentencia de la modificacion
 			update alm.tpreingreso set
 			id_cotizacion = v_parametros.id_cotizacion,
 			id_almacen = v_parametros.id_almacen,
 			id_depto = v_parametros.id_depto,
-			
+
 			id_moneda = v_parametros.id_moneda,
 			tipo = v_parametros.tipo,
 			descripcion = v_parametros.descripcion,
@@ -137,53 +140,53 @@ BEGIN
             id_usuario_ai = v_parametros._id_usuario_ai,
             usuario_ai = v_parametros._nombre_usuario_ai
 			where id_preingreso=v_parametros.id_preingreso;
-               
+
 			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso modificado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso modificado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso',v_parametros.id_preingreso::varchar);
-               
+
             --Devuelve la respuesta
             return v_resp;
-            
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_PREING_ELI'
  	#DESCRIPCION:	Eliminacion de registros
- 	#AUTOR:		admin	
+ 	#AUTOR:		admin
  	#FECHA:		07-10-2013 16:56:43
 	***********************************/
 
 	elsif(p_transaccion='SAL_PREING_ELI')then
 
 		begin
-        
+
         	--Validación de existencia del registro
             if not exists(select 1 from alm.tpreingreso
             			where id_preingreso = v_parametros.id_preingreso) then
             	raise exception 'Preingreso inexistente';
             end if;
-            
+
             if not exists(select 1 from alm.tpreingreso
             			where id_preingreso = v_parametros.id_preingreso
                         and estado = 'borrador') then
             	raise exception 'El Preingreso debe estar en Borrador';
             end if;
-            
+
 			--Sentencia de la eliminacion
 			delete from alm.tpreingreso
             where id_preingreso=v_parametros.id_preingreso;
-               
+
             --Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso eliminado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso eliminado(a)');
             v_resp = pxp.f_agrega_clave(v_resp,'id_preingreso',v_parametros.id_preingreso::varchar);
-              
+
             --Devuelve la respuesta
             return v_resp;
 
 		end;
-		
-	/*********************************    
+
+	/*********************************
  	#TRANSACCION:  'SAL_INGRES_GEN'
  	#DESCRIPCION:	GEneración de ingreso a Almacenes o Activos Fijos
  	#AUTOR:			RCM
@@ -192,43 +195,111 @@ BEGIN
 
 	elsif(p_transaccion='SAL_INGRES_GEN')then
 
+
+
 		begin
-        	
+
+
+
+        	--raise EXCEPTION 'LLEGA EL BOTON  ';
+
         	--Validación de existencia del registro
             if not exists(select 1 from alm.tpreingreso
             			where id_preingreso = v_parametros.id_preingreso) then
             	raise exception 'Preingreso inexistente';
             end if;
-            
+
             select p.estado into v_estado
             from alm.tpreingreso p
             where id_preingreso = v_parametros.id_preingreso;
-        
+
         	if (v_estado = 'borrador') then
-            	
+
                 --Llamada a la función de generación de ingreso
                 v_result = alm.f_generar_ingreso(p_id_usuario,
                                                   v_parametros._id_usuario_ai,
-                                                  v_parametros._nombre_usuario_ai, 
+                                                  v_parametros._nombre_usuario_ai,
                                                   v_parametros.id_preingreso);
             elsif (v_estado = 'registrado') then
-            
+
             	--Llamada a la función de generación de ingreso
                 v_result = alm.f_generar_alta(p_id_usuario,
                                                   v_parametros._id_usuario_ai,
-                                                  v_parametros._nombre_usuario_ai, 
+                                                  v_parametros._nombre_usuario_ai,
                                                   v_parametros.id_preingreso);
             end if;
-               
+
+             ------ACTUALIZAMOS LA TABLA ACTIVOS FIJOS DESDE FORMULARIO PREINGRESO------------
+
+
+
+
+             select 			into
+             					v_activo_fijo
+                                pre.id_preingreso_det,
+                                pre.vida_util_original,
+                                pre.nro_serie,
+                                pre.marca,
+                                pre.id_unidad_medida,
+                                pre.id_cat_estado_fun,
+                                pre.id_deposito,
+                                pre.id_oficina,
+                                pre.id_proveedor,
+                                pre.documento,
+                                pre.id_cat_estado_compra,
+                                pre.fecha_cbte_asociado,
+                                pre.tramite_compra,
+                                pre.id_proyecto,
+                                pre.subtipo,
+                                pre.movimiento,
+                                preing.id_proceso_wf
+                                from alm.tpreingreso_det pre
+                                inner join alm.tpreingreso preing on preing.id_preingreso = pre.id_preingreso
+                                where preing.id_preingreso = v_parametros.id_preingreso;
+
+                                --raise exception 'EL ID PROCESO WF1 es: %',v_activo_fijo.id_proceso_wf;
+            /*select into
+                            	v_movimiento
+                                  af.id_movimiento,
+                                  movi.id_proceso_wf
+                                  from kaf.tmovimiento movi
+                                  inner join kaf.tmovimiento_af af on af.id_movimiento = movi.id_movimiento
+                                  inner join kaf.tactivo_fijo act on act.id_activo_fijo = af.id_activo_fijo
+                                  where act.id_preingreso_det = v_activo_fijo.id_preingreso_det;
+
+                                  --raise exception 'EL ID PROCESO WF22 es: %',v_movimiento.id_proceso_wf;*/
+
+                                update kaf.tactivo_fijo activo set
+                                nro_serie = v_activo_fijo.nro_serie,
+                                marca = v_activo_fijo.marca,
+                                id_unidad_medida = v_activo_fijo.id_unidad_medida,
+                                id_cat_estado_fun = v_activo_fijo.id_cat_estado_fun,
+                                id_deposito = v_activo_fijo.id_deposito,
+                                id_oficina = v_activo_fijo.id_oficina,
+                                id_proveedor = v_activo_fijo.id_proveedor,
+                                documento = v_activo_fijo.documento,
+                                id_cat_estado_compra = v_activo_fijo.id_cat_estado_compra,
+                                fecha_cbte_asociado = v_activo_fijo.fecha_cbte_asociado,
+                                tramite_compra = v_activo_fijo.tramite_compra,
+                                id_proyecto = v_activo_fijo.id_proyecto,
+                                subtipo = v_activo_fijo.subtipo,
+                                id_proceso_wf = v_activo_fijo.id_proceso_wf
+                                where activo.id_preingreso_det = v_activo_fijo.id_preingreso_det;
+
+
+
+
+
+
 			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso modificado(a)'); 
-               
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso modificado(a)');
+
             --Devuelve la respuesta
             return v_resp;
-            
+
 		end;
-        
-    /*********************************    
+
+    /*********************************
  	#TRANSACCION:  'SAL_PREING_REV'
  	#DESCRIPCION:	Reversión del Preingreso
  	#AUTOR:			RCM
@@ -238,19 +309,19 @@ BEGIN
 	elsif(p_transaccion='SAL_PREING_REV')then
 
 		begin
-        	
+
         	--Validación de existencia del registro
             if not exists(select 1 from alm.tpreingreso
             			where id_preingreso = v_parametros.id_preingreso) then
             	raise exception 'Preingreso inexistente';
             end if;
-            
+
             if not exists(select 1 from alm.tpreingreso
             			where id_preingreso = v_parametros.id_preingreso
                         and estado = 'borrador') then
             	raise exception 'El Preingreso debe estar en Borrador';
             end if;
-            
+
              --Obtiene el Proceso WF
             SELECT
             pre.id_estado_wf, pw.id_tipo_proceso, pw.id_proceso_wf
@@ -259,31 +330,31 @@ BEGIN
            	FROM alm.tpreingreso pre
            	inner join wf.tproceso_wf pw on pw.id_proceso_wf = pre.id_proceso_wf
            	WHERE pre.id_preingreso = v_parametros.id_preingreso;
-            
+
             --Obtiene el estado cancelado del WF
-            select 
+            select
             te.id_tipo_estado,te.codigo
             into
             v_id_tipo_estado,v_estado
-            from wf.tproceso_wf pw 
+            from wf.tproceso_wf pw
             inner join wf.ttipo_proceso tp on pw.id_tipo_proceso = tp.id_tipo_proceso
-            inner join wf.ttipo_estado te on te.id_tipo_proceso = tp.id_tipo_proceso and te.codigo = 'cancelado'               
+            inner join wf.ttipo_estado te on te.id_tipo_proceso = tp.id_tipo_proceso and te.codigo = 'cancelado'
             where pw.id_proceso_wf = v_id_proceso_wf;
-               
+
             --Se cancela el WF
-            
-                v_id_estado_actual =  wf.f_registra_estado_wf(v_id_tipo_estado, 
-                                                               NULL, 
-                                                               v_id_estado_wf, 
+
+                v_id_estado_actual =  wf.f_registra_estado_wf(v_id_tipo_estado,
+                                                               NULL,
+                                                               v_id_estado_wf,
                                                                v_id_proceso_wf,
                                                                p_id_usuario,
                                                                v_parametros._id_usuario_ai,
                                                                v_parametros._nombre_usuario_ai,
                                                                null,
                                                                'Eliminacion de la preingreso de almacenes ');
-                                                               
-                                                     
-            
+
+
+
             --Cancela el movimiento
             update alm.tpreingreso set
             id_estado_wf =  v_id_estado_actual,
@@ -291,31 +362,31 @@ BEGIN
             id_usuario_mod=p_id_usuario,
             fecha_mod=now()
         	where id_preingreso = v_parametros.id_preingreso;
-               
+
 			--Definicion de la respuesta
-            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso modificado(a)'); 
+            v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso modificado(a)');
             v_resp=pxp.f_agrega_clave(v_resp,'id_preingreso',v_parametros.id_preingreso::varchar);
-               
+
             --Devuelve la respuesta
             return v_resp;
-            
+
 		end;
-         
+
 	else
-     
+
     	raise exception 'Transaccion inexistente: %',p_transaccion;
 
 	end if;
 
 EXCEPTION
-				
+
 	WHEN OTHERS THEN
 		v_resp='';
 		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
 		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
 		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 		raise exception '%',v_resp;
-				        
+
 END;
 $body$
 LANGUAGE 'plpgsql'

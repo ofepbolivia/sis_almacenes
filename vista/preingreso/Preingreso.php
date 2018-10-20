@@ -17,8 +17,8 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
     	//llama al constructor de la clase padre
 		Phx.vista.Preingreso.superclass.constructor.call(this,config);
 		this.init();
-		
-		
+
+
 		/*this.addButton('btnIngreso',{
                     text :'Generar Ingreso',
                     iconCls : 'bchecklist',
@@ -26,8 +26,8 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
                     handler : this.onIngreso,
                     tooltip : '<b>Ingreso</b><br/><b>Generación del Ingreso a Almacén o Activo Fijo</b>'
          });*/
-         
-         
+
+
          this.addButton('btnChequeoDocumentosWf',
             {
             	grupo:[0,1,2],
@@ -38,10 +38,10 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
                 tooltip: '<b>Documentos de la Solicitud</b><br/>Subir los documetos requeridos en la solicitud seleccionada.'
             }
         );
-        
+
         this.addButton('diagrama_gantt',{grupo:[0,1,2],text:'Gant',iconCls: 'bgantt',disabled:true,handler:diagramGantt,tooltip: '<b>Diagrama Gantt de proceso macro</b>'});
-  
-        function diagramGantt(){            
+
+        function diagramGantt(){
             var data=this.sm.getSelected().data.id_proceso_wf;
             Phx.CP.loadingShow();
             Ext.Ajax.request({
@@ -51,9 +51,9 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
                 failure: this.conexionFailure,
                 timeout:this.timeout,
                 scope:this
-            });         
+            });
         }
-        
+
         this.addButton('btnGraf',
             {
                 text: 'Gráficas',
@@ -63,9 +63,9 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
                 tooltip: '<b>Gráficas</b><br/>Generación de gráficas'
             }
         );
-    
+
 	},
-	
+
 	loadCheckDocumentosSolWf:function() {
             var rec=this.sm.getSelected();
             rec.data.nombreVista = this.nombreVista;
@@ -80,7 +80,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
                     'DocumentoWf'
         )
     },
-			
+
 	Atributos:[
 		{
 			//configuracion del componente
@@ -90,7 +90,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 					name: 'id_preingreso'
 			},
 			type:'Field',
-			form:true 
+			form:true
 		},
 		{
 			config:{
@@ -294,7 +294,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
              },
             type:'ComboRec',
             id_grupo:1,
-            filters:{   
+            filters:{
                 pfiltro:'mon.codigo',
                 type:'string'
             },
@@ -356,7 +356,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -387,7 +387,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y H:i:s'):''}
 			},
 				type:'DateField',
@@ -403,7 +403,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100
-							
+
 			},
 				type:'TextField',
 				filters:{pfiltro:'preing.c31',type:'date'},
@@ -418,7 +418,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				anchor: '80%',
 				gwidth: 100,
-							format: 'd/m/Y', 
+							format: 'd/m/Y',
 							renderer:function (value,p,record){return value?value.dateFormat('d/m/Y'):''}
 			},
 				type:'DateField',
@@ -428,7 +428,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 				form:false
 		}
 	],
-	tam_pag:50,	
+	tam_pag:50,
 	title:'Preingreso',
 	ActSave:'../../sis_almacenes/control/Preingreso/insertarPreingreso',
 	ActDel:'../../sis_almacenes/control/Preingreso/eliminarPreingreso',
@@ -471,7 +471,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 	bnew:false,
 	south:{
 		  url:'../../../sis_almacenes/vista/preingreso_det/PreingresoDet.php',
-		  title:'Adquisiciones', 
+		  title:'Adquisiciones',
 		  height:'50%',	//altura de la ventana hijo
 		  cls:'PreingresoDet'
 	},
@@ -481,9 +481,9 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
         	var aux;
         	aux='Ingreso a Almacén';
         	if(rec.data.tipo=='activo_fijo'){
-				aux='Alta de Activos Fijos';        		
-        	} 
-        	Ext.Msg.confirm('Confirmación','¿Está seguro de generar el '+aux+'?', 
+				aux='Alta de Activos Fijos';
+        	}
+        	Ext.Msg.confirm('Confirmación','¿Está seguro de generar el '+aux+'?',
 			function(btn) {
 				if (btn == "yes") {
 					Phx.CP.loadingShow();
@@ -497,7 +497,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 			            });
 					}
 				},this);
-  
+
             } else{
             	Ext.Msg.alert('Mensaje','Seleccione un registro y vuelva a intentarlo');
         }
@@ -506,7 +506,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
     	var rec = this.getSelectedData();
       	var tb =this.tbar;
       	Phx.vista.Preingreso.superclass.preparaMenu.call(this,n);
-      
+
       	if(rec.estado=='borrador'){
       		//this.getBoton('btnIngreso').enable();
       		this.getBoton('btnRevertir').enable();
@@ -515,7 +515,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
       	} else if(rec.estado=='cancelado'||rec.estado=='finalizado'){
       		//this.getBoton('btnIngreso').disable();
       		this.getBoton('btnRevertir').disable();
-      		
+
       		//this.getBoton('edit').disable();
       		//this.getBoton('del').disable();
       	} else {
@@ -524,14 +524,14 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
       		//this.getBoton('edit').disable();
       		//this.getBoton('del').disable();
       	}
-      	
+
       	 this.getBoton('diagrama_gantt').enable();
          this.getBoton('btnChequeoDocumentosWf').enable();
-         
+
          this.getBoton('btnGraf').enable();
 
 	},
-	
+
 	liberaMenu:function(){
         var tb = Phx.vista.Preingreso.superclass.liberaMenu.call(this);
         if(tb){
@@ -553,7 +553,7 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 	onRevertir:function(){
         var rec = this.sm.getSelected();
         if(rec.data){
-        	Ext.Msg.confirm('Confirmación','¿Está seguro de Revertir el Preingreso?', 
+        	Ext.Msg.confirm('Confirmación','¿Está seguro de Revertir el Preingreso?',
 			function(btn) {
 				if (btn == "yes") {
 					Phx.CP.loadingShow();
@@ -567,13 +567,13 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 			            });
 					}
 				},this);
-  
+
             } else{
             	Ext.Msg.alert('Mensaje','Seleccione un registro y vuelva a intentarlo');
         }
    },
    onEnablePanel: function(idPanel, data) {
-   		
+
         var myPanel
         if (typeof idPanel == 'object') {
             myPanel = idPanel
@@ -582,44 +582,44 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
         }
 
         if (idPanel && myPanel) {
-			//Accede al panel derecho        	
+			//Accede al panel derecho
         	myPanelEast = Phx.CP.getPagina(idPanel+'-east');
 
 			//Desbloquea panel izquierdo y derecho
             myPanel.desbloquearMenus();
             myPanelEast.desbloquearMenus()
-			
+
 			//Carga los datos de ambos paneles
 			myPanel.onReloadPage(data);
 			myPanelEast.onReloadPage(data);
-			
+
         }
 
         delete myPanel;
         delete myPanelEast;
 
     },
-    
+
     arrayDefaultColumHidden:['id_fecha_reg','id_fecha_mod',
 	'fecha_mod','usr_reg','estado_reg','fecha_reg','usr_mod',
 	'estado','tipo','id_cotizacion','id_moneda'],
-	
-	
-	
-	
+
+
+
+
 	rowExpander: new Ext.ux.grid.RowExpander({
 		        tpl : new Ext.Template(
 		            '<br>',
 		            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Orden de Compra:&nbsp;&nbsp;</b> {numero_oc}</p>',
-		            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tipo:&nbsp;&nbsp;</b> {tipo}</p>',	       
+		            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Tipo:&nbsp;&nbsp;</b> {tipo}</p>',
 		            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Estado:&nbsp;&nbsp;</b> {estado}</p>',
 		            '<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Moneda:&nbsp;&nbsp;</b> {codigo_moneda}</p><br>'
-		            
+
 		        )
 	    }),
-    
+
     RepEst: function (){
-		
+
 		var storeGraf = new Ext.data.JsonStore({
 	        fields: ['season', 'total'],
 	        data: [{
@@ -636,9 +636,9 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 	            total: 184
 	        }]
 	    });
-	    
+
 	    console.log(storeGraf)
-	    
+
 	    var graf = new Ext.Panel({
 	        width: 400,
 	        height: 400,
@@ -665,9 +665,9 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 	            }
 	        }
 	    });
-	    
+
 	    console.log(graf)
-	    
+
 	    var win = new Ext.Window({
             title: 'Gráficas',
             closable:true,
@@ -682,10 +682,8 @@ Phx.vista.Preingreso=Ext.extend(Phx.gridInterfaz,{
 
         win.show(this);
         alert('fffff');
-	    
+
 	}
-	
+
 })
 </script>
-		
-		

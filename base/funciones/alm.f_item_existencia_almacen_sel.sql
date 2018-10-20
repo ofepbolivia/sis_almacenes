@@ -13,13 +13,13 @@ $body$
  			y la cantidad donde hayan existencia del item solicitado
 
  AUTOR:     RCM
- FECHA:     01/08/2013	
+ FECHA:     01/08/2013
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -29,13 +29,13 @@ DECLARE
 	v_nombre_funcion   	text;
 	v_resp				varchar;
 	v_fecha				date;
-			    
+
 BEGIN
 
 	v_nombre_funcion = 'alm.f_item_existencia_almacen_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_ITMALM_SEL'
  	#DESCRIPCION:	Consulta de datos
  	#AUTOR:			rcm
@@ -43,13 +43,13 @@ BEGIN
 	***********************************/
 
 	if(p_transaccion='SAL_ITMALM_SEL')then
-     				
+
     	begin
     		if not exists(select 1 from alm.titem
     					where id_item = v_parametros.id_item) then
     			raise exception 'Material/Producto inexistente';
             end if;
-            
+
             if pxp.f_existe_parametro(p_tabla,'fecha') then
             	if v_parametros.fecha is null then
             		v_fecha = now();
@@ -94,13 +94,13 @@ BEGIN
             group by s.id_almacen, s.id_item,a.codigo,a.nombre
             having sum(s.cantidad)>0
             order by id_item';
-
+			raise notice 'consulta: %', v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_ITMALM_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:			rcm
@@ -114,7 +114,7 @@ BEGIN
     					where id_item = v_parametros.id_item) then
     			raise exception 'Material/Producto inexistente';
             end if;
-            
+
             if pxp.f_existe_parametro(p_tabla,'fecha') then
             	if v_parametros.fecha is null then
             		v_fecha = now();
@@ -160,15 +160,15 @@ BEGIN
 			return v_consulta;
 
 		end;
-					
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION alm.ft_movimiento_ime (
   p_administrador integer,
   p_id_usuario integer,
@@ -115,12 +113,9 @@ DECLARE
     v_tipo_movimiento	varchar;
     v_codigo_movimiento	varchar;
 	v_usuario						varchar;
-<<<<<<< HEAD
 
-	v_records						integer[];
-=======
-    
->>>>>>> b3870531babf4d58921eb9969b421643bacc682f
+    v_records						integer[];
+
 BEGIN
 
 	v_nombre_funcion='alm.ft_movimiento_ime';
@@ -188,7 +183,7 @@ BEGIN
               v_id_gestion as id_gestion,
               NULL
               into g_registros;
-          
+
         else
         	select
             v_parametros.id_movimiento_tipo,
@@ -203,9 +198,9 @@ BEGIN
             v_id_gestion as id_gestion,
             NULL
             into g_registros;
-        
+
         end if;
-      
+
 
         --Llama a la función de registro del movimiento
         v_id_movimiento = alm.f_insercion_movimiento(p_id_usuario,hstore(g_registros));
@@ -266,8 +261,8 @@ BEGIN
                     NULL,
                     v_registros.cantidad
                 );
-        end loop;        
-        
+        end loop;
+
 		select
         v_id_movimiento as id_movimiento,
         v_parametros.id_almacen as id_almacen,
@@ -295,7 +290,7 @@ BEGIN
 
         --Llama a la función de registro del movimiento
         v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
-        
+
         select
         v_id_movimiento as id_movimiento,
         v_parametros.id_almacen as id_almacen,
@@ -356,31 +351,23 @@ BEGIN
       if (v_estado_mov = 'cancelado') then
           raise exception '%', 'El movimiento actual no puede ser modificado';
       end if;
-<<<<<<< HEAD
-
-      IF pxp.f_get_variable_global('alm_habilitar_fecha_tope') = 'si' THEN
-      	IF v_parametros.fecha_mov::date > pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
-         IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALNORSERB' THEN
-              raise exception 'No se permite hacer solicitudes de salidas de almacenes, debido a que se realiza cierre de gestion';
-         END IF;
-=======
-	  IF(p_id_usuario != 78 AND p_id_usuario != 589 AND p_id_usuario != 569) THEN	
+	  --IF(p_id_usuario != 78 AND p_id_usuario != 589 AND p_id_usuario != 569 AND v_codigo_movimiento != 'SALTRNSF') THEN
         IF pxp.f_get_variable_global('alm_habilitar_fecha_tope') = 'si' THEN
-          IF v_parametros.fecha_mov::date > pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
+          IF v_parametros.fecha_mov::date < pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
             IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALNORSERB' THEN
                 raise exception 'No se permite hacer solicitudes de salidas de almacenes, debido a que se realiza cierre de gestion';
             END IF;
           END IF;
         END IF;
->>>>>>> b3870531babf4d58921eb9969b421643bacc682f
-      END IF;
-	END IF;
-      -- modificamos fecha de salida cuando seleccionamos mas de un registro
+      --END IF;
+	  -- modificamos fecha de salida cuando seleccionamos mas de un registro
       v_records = string_to_array(v_parametros.registros, ',');
+      --raise exception 'v_records: %',v_parametros.registros;
         if(array_length(v_records,1)>1)then
            for v_ind in 1..array_length(v_records,1) loop
             update alm.tmovimiento set
-              fecha_salida = v_parametros.fecha_salida
+              fecha_salida = v_parametros.fecha_salida,
+              comail = v_parametros.comail
             where id_movimiento = v_records[v_ind];
            end loop;
         end if;
@@ -462,15 +449,15 @@ BEGIN
 
            	--Respuesta
             select cuenta into v_usuario
-            from segu.tusuario 
+            from segu.tusuario
             where id_usuario=p_id_usuario;
-            
+
             select movtp.codigo into v_tipo_movimiento
             from alm.tmovimiento mov
             inner join alm.tmovimiento_tipo movtp on movtp.id_movimiento_tipo=mov.id_movimiento_tipo
-            where mov.id_movimiento=v_parametros.id_movimiento;       
-         
-         	v_respuesta=pxp.f_agrega_clave(v_respuesta,'usuario',v_usuario); 
+            where mov.id_movimiento=v_parametros.id_movimiento;
+
+         	v_respuesta=pxp.f_agrega_clave(v_respuesta,'usuario',v_usuario);
             v_respuesta=pxp.f_agrega_clave(v_respuesta,'tipo_movimiento',v_tipo_movimiento);
             v_respuesta=pxp.f_agrega_clave(v_respuesta,'id_movimiento',v_parametros.id_movimiento::varchar);
 
@@ -844,7 +831,7 @@ BEGIN
 	elseif(p_transaccion='SAL_SIGEMOV_IME')then
         begin
         --obtenermos datos basicos
-			
+
           select
             m.id_proceso_wf,
             m.id_estado_wf,
@@ -858,7 +845,7 @@ BEGIN
 
           from alm.tmovimiento m
           where m.id_movimiento=v_parametros.id_movimiento;
-			
+
            select
             ew.id_tipo_estado ,
             te.pedir_obs

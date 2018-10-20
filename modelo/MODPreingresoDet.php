@@ -57,6 +57,8 @@ class MODPreingresoDet extends MODbase{
         $this->captura('fecha_conformidad','date');
         $this->captura('fecha_compra','date');
 
+
+
         //Ejecuta la instruccion
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -129,12 +131,31 @@ class MODPreingresoDet extends MODbase{
         $this->setParametro('c31','c31','varchar');
         $this->setParametro('fecha_conformidad','fecha_conformidad','date');
         $this->setParametro('fecha_compra','fecha_compra','date');
+        //-------------------AUMENTANDO LOS CAMPOS------------------------------//
+        $this->setParametro('id_unidad_medida','id_unidad_medida','int4');
+        $this->setParametro('vida_util_original','vida_util_original','int4');
+        $this->setParametro('nro_serie','nro_serie','varchar');
+        $this->setParametro('marca','marca','varchar');
+        $this->setParametro('id_cat_estado_fun','id_cat_estado_fun','int4');
+        $this->setParametro('id_deposito','id_deposito','int4');
+        $this->setParametro('id_oficina','id_oficina','int4');
+        $this->setParametro('id_proveedor','id_proveedor','int4');
+        $this->setParametro('documento','documento','varchar');
+        $this->setParametro('id_cat_estado_compra','id_cat_estado_compra','int4');
+        $this->setParametro('fecha_cbte_asociado','fecha_cbte_asociado','date');
+        $this->setParametro('monto_compra','monto_compra','numeric');
+        $this->setParametro('id_proyecto','id_proyecto','int4');
+        $this->setParametro('tramite_compra','tramite_compra','varchar');
+        $this->setParametro('subtipo','subtipo','varchar');
+        $this->setParametro('movimiento','movimiento','varchar');
+        //------------------------------------------------------------------------
+
 
         //Ejecuta la instruccion
         $this->armarConsulta();
         //echo $this->consulta;exit;
         $this->ejecutarConsulta();
-
+          //var_dump( $this->respuesta);exit;
         //Devuelve la respuesta
         return $this->respuesta;
     }
@@ -164,7 +185,9 @@ class MODPreingresoDet extends MODbase{
 
         //Define los parametros para la funcion
         $this->setParametro('id_preingreso_det','id_preingreso_det','int4');
-
+        $this->setParametro('id_preingreso','id_preingreso','int4');
+        $this->setParametro('desc_funcionario1','desc_funcionario1','varchar');
+        $this->setParametro('desc_proveedor','desc_proveedor','varchar');
         //Ejecuta la instruccion
         $this->armarConsulta();
         //echo $this->consulta;exit;
@@ -226,6 +249,8 @@ class MODPreingresoDet extends MODbase{
 
         //Define los parametros para la funcion
         $this->setParametro('id_preingreso','id_preingreso','int4');
+        $this->setParametro('desc_funcionario1','desc_funcionario1','varchar');
+        $this->setParametro('desc_proveedor','desc_proveedor','varchar');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -297,6 +322,35 @@ class MODPreingresoDet extends MODbase{
         $this->captura('c31','varchar');
         $this->captura('fecha_conformidad','date');
         $this->captura('fecha_compra','date');
+        //--------------------------CAMPOS AUMENTADOS-----------------------------//
+        $this->captura('id_unidad_medida','int4');
+        $this->captura('codigo_unmed','varchar');
+        $this->captura('descripcion_unmed','varchar');
+
+        $this->captura('vida_util_original','int4');
+        $this->captura('vida_util_original_anios','numeric');
+        $this->captura('nro_serie','varchar');
+        $this->captura('marca','varchar');
+        $this->captura('id_cat_estado_fun','int4');
+        $this->captura('estado_fun','varchar');
+        $this->captura('id_deposito','int4');
+        $this->captura('deposito','varchar');
+        $this->captura('id_oficina','int4');
+        $this->captura('oficina','text');
+        $this->captura('id_proveedor','int4');
+        $this->captura('desc_proveedor','varchar');
+        $this->captura('documento','varchar');
+        $this->captura('id_cat_estado_compra','int4');
+        $this->captura('estado_compra','varchar');
+        $this->captura('fecha_cbte_asociado','date');
+        $this->captura('monto_compra','numeric');
+        $this->captura('id_proyecto','int4');
+        $this->captura('desc_proyecto','varchar');
+        $this->captura('tramite_compra','varchar');
+        $this->captura('nombre_clasi','varchar');
+        $this->captura('subtipo','varchar');
+        $this->captura('movimiento','varchar');
+        //-------------------------------------------------------------------------
 
         //Ejecuta la instruccion
         $this->armarConsulta();
