@@ -37,6 +37,7 @@ DECLARE
   v_oficina				record;
   v_proveedor			record;
   v_recuperacion		record;
+  v_id_uo				integer;
 
 BEGIN
 
@@ -124,6 +125,7 @@ BEGIN
   elsif(p_transaccion='SAL_PREDET_MOD')then
 
     begin
+        --raise exception 'LLEGA';
 
         --Sentencia de la modificacion
         update alm.tpreingreso_det set
@@ -143,8 +145,7 @@ BEGIN
         ubicacion = v_parametros.ubicacion,
         c31 = v_parametros.c31,
         fecha_conformidad = v_parametros.fecha_conformidad,
-        fecha_compra = v_parametros.fecha_compra
-        where id_preingreso_det=v_parametros.id_preingreso_det;
+        fecha_compra = v_parametros.fecha_compra,
 
         -----AUMENTANDO LOS CAMPOS PARA LA MODIFICACION----------
         id_unidad_medida = v_parametros.id_unidad_medida,
@@ -300,20 +301,44 @@ BEGIN
             compro.fecha_c31,
             docu.nro_documento,
             docu.fecha,
-            coti.num_tramite
+            coti.num_tramite,
+            prowf.nro_tramite
             from alm.tpreingreso preingreso
             inner join adq.tcotizacion coti on coti.id_cotizacion = preingreso.id_cotizacion
             inner join tes.tobligacion_pago oblipag on oblipag.id_obligacion_pago = coti.id_obligacion_pago
             inner join tes.tplan_pago plan on plan.id_obligacion_pago = oblipag.id_obligacion_pago and (plan.estado <> 'anulado')
             inner join conta.tint_comprobante compro on compro.id_int_comprobante = plan.id_int_comprobante
           	left join conta.tdoc_compra_venta docu on docu.id_int_comprobante=compro.id_int_comprobante
+            inner join wf.tproceso_wf prowf on prowf.id_proceso_wf = preingreso.id_proceso_wf
             where preingreso.id_preingreso = v_parametros.id_preingreso;
      ------------------------------------------------------------------------------------------------------
+     /*-----------------------------RECUPERAMOS EL ID UO---------------------------------------------------*/
+       select					into
+       							v_id_uo
+             					soli.id_uo
+                                from alm.tpreingreso_det pre
+                                inner join alm.tpreingreso preing on preing.id_preingreso = pre.id_preingreso
+                                inner join wf.tproceso_wf prowf on prowf.id_proceso_wf = preing.id_proceso_wf
+                                inner join adq.tcotizacion coti on coti.id_cotizacion = preing.id_cotizacion
+                                inner join adq.tproceso_compra pro on pro.id_proceso_compra = coti.id_proceso_compra
+                                inner join adq.tsolicitud soli on soli.id_solicitud = pro.id_solicitud
+                                where preing.id_preingreso = v_parametros.id_preingreso;
+
+     /*---------------------------------------------------------------------------------------------------------*/
 
       --Sentencia de la eliminacion
       update alm.tpreingreso_det set
             sw_generar = 'si',
-      estado = 'mod'
+            id_oficina = v_oficina.id_oficina,
+            id_proveedor = v_proveedor.id_proveedor,
+            c31 = v_recuperacion.c31,
+            fecha_cbte_asociado = v_recuperacion.fecha_c31,
+            documento = v_recuperacion.nro_documento,
+            tramite_compra = v_recuperacion.nro_tramite,
+            fecha_compra = v_recuperacion.fecha,
+            monto_compra=precio_compra_87,
+            id_uo=v_id_uo,
+      		estado = 'mod'
             where id_preingreso_det=v_parametros.id_preingreso_det;
 
             --Definicion de la respuesta
@@ -335,6 +360,8 @@ BEGIN
   elsif(p_transaccion='SAL_PREPPRE_INS')then
 
     begin
+
+
 
       insert into alm.tpreingreso_det(
       estado_reg,
@@ -440,21 +467,46 @@ BEGIN
             compro.fecha_c31,
             docu.nro_documento,
             docu.fecha,
-            coti.num_tramite
+            coti.num_tramite,
+            prowf.nro_tramite
             from alm.tpreingreso preingreso
             inner join adq.tcotizacion coti on coti.id_cotizacion = preingreso.id_cotizacion
             inner join tes.tobligacion_pago oblipag on oblipag.id_obligacion_pago = coti.id_obligacion_pago
             inner join tes.tplan_pago plan on plan.id_obligacion_pago = oblipag.id_obligacion_pago and (plan.estado <> 'anulado')
             inner join conta.tint_comprobante compro on compro.id_int_comprobante = plan.id_int_comprobante
           	left join conta.tdoc_compra_venta docu on docu.id_int_comprobante=compro.id_int_comprobante
+            inner join wf.tproceso_wf prowf on prowf.id_proceso_wf = preingreso.id_proceso_wf
             where preingreso.id_preingreso = v_parametros.id_preingreso;
      ------------------------------------------------------------------------------------------------------
+    	 /*-----------------------------RECUPERAMOS EL ID UO---------------------------------------------------*/
+       select					into
+       							v_id_uo
+             					soli.id_uo
+                                from alm.tpreingreso_det pre
+                                inner join alm.tpreingreso preing on preing.id_preingreso = pre.id_preingreso
+                                inner join wf.tproceso_wf prowf on prowf.id_proceso_wf = preing.id_proceso_wf
+                                inner join adq.tcotizacion coti on coti.id_cotizacion = preing.id_cotizacion
+                                inner join adq.tproceso_compra pro on pro.id_proceso_compra = coti.id_proceso_compra
+                                inner join adq.tsolicitud soli on soli.id_solicitud = pro.id_solicitud
+                                where preing.id_preingreso = v_parametros.id_preingreso;
+
+     /*---------------------------------------------------------------------------------------------------------*/
+
 
       --Sentencia de la eliminacion
       update alm.tpreingreso_det set
             sw_generar = 'si',
-      estado = 'mod'
-            where id_preingreso=v_parametros.id_preingreso;
+            id_oficina = v_oficina.id_oficina,
+            id_proveedor = v_proveedor.id_proveedor,
+            c31 = v_recuperacion.c31,
+            fecha_cbte_asociado = v_recuperacion.fecha_c31,
+            documento = v_recuperacion.nro_documento,
+            tramite_compra = v_recuperacion.nro_tramite,
+            fecha_compra = v_recuperacion.fecha,
+            monto_compra=precio_compra_87,
+            id_uo=v_id_uo,
+      		estado = 'mod'
+           where id_preingreso=v_parametros.id_preingreso;
 
             --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Preingreso preparado, agregados todos');
