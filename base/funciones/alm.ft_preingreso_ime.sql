@@ -40,6 +40,7 @@ DECLARE
     v_activo_fijo			record;
     v_movimiento			record;
     v_movi					record;
+    v_id_preingreso_pre		record;
 
 BEGIN
 
@@ -228,67 +229,6 @@ BEGIN
                                                   v_parametros._nombre_usuario_ai,
                                                   v_parametros.id_preingreso);
             end if;
-
-             ------ACTUALIZAMOS LA TABLA ACTIVOS FIJOS DESDE FORMULARIO PREINGRESO------------
-
-
-
-
-             select 			into
-             					v_activo_fijo
-                                pre.id_preingreso_det,
-                                pre.vida_util_original,
-                                pre.nro_serie,
-                                pre.marca,
-                                pre.id_unidad_medida,
-                                pre.id_cat_estado_fun,
-                                pre.id_deposito,
-                                pre.id_oficina,
-                                pre.id_proveedor,
-                                pre.documento,
-                                pre.id_cat_estado_compra,
-                                pre.fecha_cbte_asociado,
-                                pre.tramite_compra,
-                                pre.id_proyecto,
-                                pre.subtipo,
-                                pre.movimiento,
-                                preing.id_proceso_wf
-                                from alm.tpreingreso_det pre
-                                inner join alm.tpreingreso preing on preing.id_preingreso = pre.id_preingreso
-                                where preing.id_preingreso = v_parametros.id_preingreso;
-
-                                --raise exception 'EL ID PROCESO WF1 es: %',v_activo_fijo.id_proceso_wf;
-            /*select into
-                            	v_movimiento
-                                  af.id_movimiento,
-                                  movi.id_proceso_wf
-                                  from kaf.tmovimiento movi
-                                  inner join kaf.tmovimiento_af af on af.id_movimiento = movi.id_movimiento
-                                  inner join kaf.tactivo_fijo act on act.id_activo_fijo = af.id_activo_fijo
-                                  where act.id_preingreso_det = v_activo_fijo.id_preingreso_det;
-
-                                  --raise exception 'EL ID PROCESO WF22 es: %',v_movimiento.id_proceso_wf;*/
-
-                                update kaf.tactivo_fijo activo set
-                                nro_serie = v_activo_fijo.nro_serie,
-                                marca = v_activo_fijo.marca,
-                                id_unidad_medida = v_activo_fijo.id_unidad_medida,
-                                id_cat_estado_fun = v_activo_fijo.id_cat_estado_fun,
-                                id_deposito = v_activo_fijo.id_deposito,
-                                id_oficina = v_activo_fijo.id_oficina,
-                                id_proveedor = v_activo_fijo.id_proveedor,
-                                documento = v_activo_fijo.documento,
-                                id_cat_estado_compra = v_activo_fijo.id_cat_estado_compra,
-                                fecha_cbte_asociado = v_activo_fijo.fecha_cbte_asociado,
-                                tramite_compra = v_activo_fijo.tramite_compra,
-                                id_proyecto = v_activo_fijo.id_proyecto,
-                                subtipo = v_activo_fijo.subtipo,
-                                id_proceso_wf = v_activo_fijo.id_proceso_wf
-                                where activo.id_preingreso_det = v_activo_fijo.id_preingreso_det;
-
-
-
-
 
 
 			--Definicion de la respuesta

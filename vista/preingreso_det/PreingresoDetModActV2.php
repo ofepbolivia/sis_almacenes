@@ -1102,6 +1102,7 @@ header("content-type: text/javascript; charset=UTF-8");
         frameForm: false,
         paddingForm: '5 5 5 5',
 
+
         crearVentana: function() {
             if(this.afWindow){
                 this.form.destroy();
@@ -1908,18 +1909,18 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.detailsTemplate.overwrite(data);
 
-
-           /*if(data.codigo==''){
-                qrcode.clear();
-            } else {
-                qrcode.makeCode(data.codigo);
-            }*/
         },
 
 
         preparaMenu:function(n){
             Phx.vista.PreingresoDetModActV2.superclass.preparaMenu.call(this,n);
             this.preparaComponentes(this.maestro)
+            if (this.maestro.estado== 'finalizado' ){
+                tb.items.get('b-edit-' + this.idContenedor).disable();
+            }else{
+                tb.items.get('b-edit-' + this.idContenedor).enable();
+
+            }
         },
 
         loadValoresIniciales:function(){
@@ -1939,27 +1940,14 @@ header("content-type: text/javascript; charset=UTF-8");
             this.load({params:{start:0, limit:this.tam_pag}});
         },
         onButtonEdit: function (){
-          console.log('RECUPERANDO DATO PROVEEDOR',this.maestro.desc_proveedor);
+          console.log('RECUPERANDO estado',this.maestro.estado);
           //Ext.getCmp(this.idContenedor+'_id_proveedor').setValue(this.maestro.desc_proveedor);
-          this.crearVentana();
-          this.abrirVentana('edit');
-
-        //  this.getComponente('id_proveedor').setValue(this.maestro.desc_proveedor);
-
-
-            //Prepara los componentes en función de si el preingreso es para Almacén o para Activos Fijos
-            Phx.vista.PreingresoDetModActV2.superclass.onButtonEdit.call(this);
-            if (this.Cmp.fecha_conformidad.getValue() == '' || this.Cmp.fecha_conformidad.getValue() == undefined) {
-                this.Cmp.fecha_conformidad.setValue(this.maestro.fecha_conformidad);
-                this.Cmp.fecha_compra.setValue(this.maestro.fecha_conformidad);
-            }
-
-            if (this.Cmp.c31.getValue() == '' || this.Cmp.c31.getValue() == undefined) {
-                this.Cmp.c31.setValue(this.Cmp.c31.getValue());
-            }
-
-
-            this.preparaComponentes(this.maestro)
+          if (this.maestro.estado=='finalizado') {
+            alert('Acción no permitida, El preingreso ya fue finalizado, no puede hacerse ninguna modificación.');
+          } else{
+            this.crearVentana();
+            this.abrirVentana('edit');
+          }
 
         },
         preparaComponentes: function(pMaestro){
@@ -2062,17 +2050,15 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.ocultarColumna(8);
             }
 
-            console.log(pMaestro.estado);
+            console.log('LLEGA AQUI IRVA',this.tbar);
 
             //Habilita los componentes
-            if(pMaestro.estado=='borrador'){
-                this.getBoton('new').enable();
-                this.getBoton('edit').enable();
-                this.getBoton('btnAgTodos').enable();
+            var tb = this.tbar;
+            if(pMaestro.estado=='finalizado'){
+                tb.items.get('b-edit-' + this.idContenedor).disable();
+
             } else{
-                this.getBoton('new').disable();
-                this.getBoton('edit').disable();
-                this.getBoton('btnAgTodos').disable();
+                tb.items.get('b-edit-' + this.idContenedor).enable();
             }
         },
 
