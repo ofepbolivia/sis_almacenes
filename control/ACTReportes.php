@@ -8,6 +8,8 @@
  */
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/ReportWriter.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistencias.php');
+require_once (dirname(__FILE__) . '/../reportes/RExistenciasUpdate.php');
+require_once (dirname(__FILE__) . '/../reportes/RExistenciasPUDesglosado.php');
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistenciasExcel.php');
 
@@ -25,55 +27,92 @@ class ACTReportes extends ACTbase {
             $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
             $this->objParam->addParametroConsulta('cantidad', 10000);
             $this->objParam->addParametroConsulta('puntero', 0);
-            $this->objFunc = $this->create('MODReporte');
-            $resultRepExistencias = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
+
+            $nombreArchivo = 'Existencias.pdf';
+
+            if($this->objParam->getParametro('formato') == 'antiguo') {
+                $this->objFunc = $this->create('MODReporte');
+                $resultRepExistencias = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
+
+                $dataSource = new DataSource();
+                $resultData = $resultRepExistencias->getDatos();//var_dump($resultData);exit;
+                $lastNombreClasificacion = $resultData[0]['clasificacion'];
+                $dataSourceArray = Array();
+                $dataSourceClasificacion = new DataSource();
+                $dataSetClasificacion = Array();
+                $totalCostoClasificacion = 0;
+                $mainDataSet = array();
+                $costoTotal = 0;
+                foreach ($resultData as $row) {
+                    if ($row['clasificacion'] != $lastNombreClasificacion) {
+                        $costoTotal += $totalCostoClasificacion;
+                        $mainDataSet[] = array("nombreClasificacion" => $lastNombreClasificacion, "totalClasificacion" => $totalCostoClasificacion);
+                        $dataSourceClasificacion->setDataSet($dataSetClasificacion);
+                        $dataSourceClasificacion->putParameter('totalCosto', $totalCostoClasificacion);
+                        $dataSourceClasificacion->putParameter('nombreClasificacion', $lastNombreClasificacion);
+                        $dataSourceArray[] = $dataSourceClasificacion;
+                        $lastNombreClasificacion = $row['clasificacion'];
+                        $dataSourceClasificacion = new DataSource();
+                        $dataSetClasificacion = Array();
+                        $totalCostoClasificacion = 0;
+                    }
+                    $dataSetClasificacion[] = $row;
+                    $totalCostoClasificacion += $row['costo'];
+                }
+                $costoTotal += $totalCostoClasificacion;
+                $mainDataSet[] = array("nombreClasificacion" => $lastNombreClasificacion, "totalClasificacion" => $totalCostoClasificacion);
+                $dataSourceClasificacion->setDataSet($dataSetClasificacion);
+                $dataSourceClasificacion->putParameter('totalCosto', $totalCostoClasificacion);
+                $dataSourceClasificacion->putParameter('nombreClasificacion', $lastNombreClasificacion);
+                $dataSourceArray[] = $dataSourceClasificacion;
+                $dataSource->putParameter('clasificacionDataSources', $dataSourceArray);
+                $dataSource->putParameter('costoTotal', $costoTotal);
+                $dataSource->putParameter('fechaHasta', $fechaHasta);
+                $dataSource->putParameter('almacen', $this->objParam->getParametro('almacen'));
+                $dataSource->putParameter('mostrar_costos', $this->objParam->getParametro('mostrar_costos'));
+                $dataSource->setDataSet($mainDataSet);
+                $reporte = new RExistencias();
+                $reporte->setDataSource($dataSource);
+
+
+                $reportWriter = new ReportWriter($reporte, dirname(__FILE__) . '/../../reportes_generados/' . $nombreArchivo);
+                $reportWriter->writeReport(ReportWriter::PDF);
+            }else if($this->objParam->getParametro('formato') == 'nuevo'){
+
+                $this->objFunc = $this->create('MODReporte');
+                $resultRepExistencias = $this->objFunc->listarKardexItemIngSal($this->objParam);
+
+                $resultData = $resultRepExistencias->getDatos();
+
+                $this->objParam->addParametro('orientacion','P');
+                $this->objParam->addParametro('tamano','LETTER');
+                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+                $reporte = new RExistenciasUpdate($this->objParam);
+                $reporte->setDatos($resultData);
+                $reporte->generarReporte();
+                $reporte->output($reporte->url_archivo,'F');
+            }else if($this->objParam->getParametro('formato')=='ingresos'){
+
+                $this->objFunc = $this->create('MODReporte');
+                $resultRepExistencias = $this->objFunc->listarKardexItemDesglosado($this->objParam);
+
+                $resultData = $resultRepExistencias->getDatos();
+
+                $this->objParam->addParametro('orientacion','P');
+                $this->objParam->addParametro('tamano','LETTER');
+                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+                $reporte = new RExistenciasPUDesglosado($this->objParam);
+                $reporte->setDatos($resultData);
+                $reporte->generarReporte();
+                $reporte->output($reporte->url_archivo,'F');
+            }
+
             if ($resultRepExistencias->getTipo() == 'ERROR') {
                 $resultRepExistencias->imprimirRespuesta($resultRepExistencias->generarMensajeJson());
                 exit;
             }
-            //var_dump($resultRepExistencias->getDatos());exit;
-            $dataSource = new DataSource();
-            $resultData = $resultRepExistencias->getDatos();
-            $lastNombreClasificacion = $resultData[0]['clasificacion'];
-            $dataSourceArray = Array();
-            $dataSourceClasificacion = new DataSource();
-            $dataSetClasificacion = Array();
-            $totalCostoClasificacion = 0;
-            $mainDataSet = array();
-            $costoTotal = 0;
-            foreach ($resultData as $row) {
-                if ($row['clasificacion'] != $lastNombreClasificacion) {
-                    $costoTotal += $totalCostoClasificacion;
-                    $mainDataSet[] = array("nombreClasificacion" => $lastNombreClasificacion, "totalClasificacion" => $totalCostoClasificacion);
-                    $dataSourceClasificacion->setDataSet($dataSetClasificacion);
-                    $dataSourceClasificacion->putParameter('totalCosto', $totalCostoClasificacion);
-                    $dataSourceClasificacion->putParameter('nombreClasificacion', $lastNombreClasificacion);
-                    $dataSourceArray[] = $dataSourceClasificacion;
-                    $lastNombreClasificacion = $row['clasificacion'];
-                    $dataSourceClasificacion = new DataSource();
-                    $dataSetClasificacion = Array();
-                    $totalCostoClasificacion = 0;
-                }
-                $dataSetClasificacion[] = $row;
-                $totalCostoClasificacion += $row['costo'];
-            }
-            $costoTotal += $totalCostoClasificacion;
-            $mainDataSet[] = array("nombreClasificacion" => $lastNombreClasificacion, "totalClasificacion" => $totalCostoClasificacion);
-            $dataSourceClasificacion->setDataSet($dataSetClasificacion);
-            $dataSourceClasificacion->putParameter('totalCosto', $totalCostoClasificacion);
-            $dataSourceClasificacion->putParameter('nombreClasificacion', $lastNombreClasificacion);
-            $dataSourceArray[] = $dataSourceClasificacion;
-            $dataSource->putParameter('clasificacionDataSources', $dataSourceArray);
-            $dataSource->putParameter('costoTotal', $costoTotal);
-            $dataSource->putParameter('fechaHasta', $fechaHasta);
-            $dataSource->putParameter('almacen', $this->objParam->getParametro('almacen'));
-            $dataSource->putParameter('mostrar_costos', $this->objParam->getParametro('mostrar_costos'));
-            $dataSource->setDataSet($mainDataSet);
-            $reporte = new RExistencias();
-            $reporte->setDataSource($dataSource);
-            $nombreArchivo = 'Existencias.pdf';
-            $reportWriter = new ReportWriter($reporte, dirname(__FILE__) . '/../../reportes_generados/' . $nombreArchivo);
-            $reportWriter->writeReport(ReportWriter::PDF);
             $mensajeExito = new Mensaje();
             $mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
             $mensajeExito->setArchivoGenerado($nombreArchivo);
