@@ -62,7 +62,8 @@ class MODItem extends MODbase {
         $this->captura('numero_serie', 'varchar');
         $this->captura('codigo_unidad', 'varchar');
         $this->captura('precio_ref', 'numeric');
-		
+        $this->captura('nombre_completo', 'varchar');
+
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;
