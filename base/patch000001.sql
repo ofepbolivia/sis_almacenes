@@ -796,3 +796,8 @@ ALTER TABLE alm.tpreingreso_det
 ALTER TABLE alm.tpreingreso_det
 ADD COLUMN id_uo INTEGER;
 /***********************************F-SCP-IRVA-ALM-0-23/10/2018*****************************************/
+
+/***********************************I-SCP-FEA-ALM-0-7/11/2018*****************************************/
+ALTER TABLE alm.tmovimiento
+ADD COLUMN id_plantilla INTEGER;
+/***********************************F-SCP-FEA-ALM-0-7/11/2018*****************************************/
