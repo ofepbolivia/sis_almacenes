@@ -26,14 +26,14 @@ DECLARE
     a_id_alm			integer[];
     v_tam 				integer;
     v_i					integer;*/
-    
+
 
 BEGIN
 
 	v_nombre_funcion = 'alm.ft_rep_kardex_item_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_RKARIT_SEL'
  	#DESCRIPCION:	Consulta de datos
  	#AUTOR:			rcm
@@ -41,7 +41,7 @@ BEGIN
 	***********************************/
 
 	if(p_transaccion='SAL_RKARIT_SEL')then
-     				
+
     	begin
 
             --1. Crear tabla temporal con un solo mes, que adelante sera complementada con mas campos para mas meses si es el caso
@@ -58,9 +58,12 @@ BEGIN
               ingreso_val numeric,
               salida_val numeric,
               saldo_val numeric,
-              id_movimiento integer
+              id_movimiento integer,
+              id_movimiento_det_valorado integer,
+              id_mov_det_val_origen integer,
+              nro_tramite varchar
             ) on commit drop;
-            
+
             --2. Carga el saldo anterior
 			/*a_cad_alm= string_to_array(v_parametros.id_almacen,',');
             v_tam = coalesce(array_length(a_cad_alm, 1),0);
@@ -68,14 +71,14 @@ BEGIN
             for v_i in 1..v_tam loop
             	a_id_alm[v_i]=a_cad_alm[v_i]::integer;
             end loop;*/
-            
+
             --raise exception ' %   %   %',v_parametros.id_item,v_parametros.id_almacen,v_parametros.fecha_ini-1;
-            
+
             v_saldo_fis_ant = alm.f_get_saldo_item(v_parametros.id_item,v_parametros.id_almacen,v_parametros.fecha_ini-1);
             v_saldo_val_ant = alm.f_get_saldo_item_val(v_parametros.id_item,v_parametros.id_almacen,v_parametros.fecha_ini-1);
-            
+
             --raise exception '%   %',v_saldo_fis_ant,v_saldo_val_ant;
-            
+
             insert into tt_rep_kardex_item(
             fecha,almacen,ingreso,salida,saldo,ingreso_val,salida_val,saldo_val
             ) values(
@@ -86,7 +89,8 @@ BEGIN
             v_consulta = '
             insert into tt_rep_kardex_item(
             fecha,nro_mov,almacen,motivo,ingreso,salida,
-            ingreso_val,salida_val,costo_unitario,id_movimiento
+            ingreso_val,salida_val,costo_unitario,id_movimiento,
+            id_movimiento_det_valorado, id_mov_det_val_origen, nro_tramite
             )
             select
             mov.fecha_mov as fecha,
@@ -114,8 +118,12 @@ BEGIN
                 when ''salida'' then coalesce(mdval.costo_unitario,0)
                 else 0
             end as costo_unitario,
-            mov.id_movimiento
+            mov.id_movimiento,
+            mdval.id_movimiento_det_valorado,
+            mdval.id_mov_det_val_origen,
+            tpw.nro_tramite
             from alm.tmovimiento mov
+            inner join wf.tproceso_wf tpw on tpw.id_proceso_wf = mov.id_proceso_wf
             inner join alm.tmovimiento_det mdet
             on mdet.id_movimiento = mov.id_movimiento
             inner join alm.tmovimiento_det_valorado mdval
@@ -128,21 +136,23 @@ BEGIN
             on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
             where mov.estado_mov = ''finalizado''
             and mdet.cantidad > 0';
-            
+
             if coalesce(v_parametros.id_almacen,'') != '' then
             	v_consulta = v_consulta || ' and mov.id_almacen in ('||v_parametros.id_almacen||')';
             end if;
-            
+
             v_consulta = v_consulta || '
             and date_trunc(''day'',mov.fecha_mov) between ''' || v_parametros.fecha_ini||''' and ''' || v_parametros.fecha_fin ||'''
             and mdet.id_item = ' || v_parametros.id_item ||'
-            group by mov.fecha_mov, mov.codigo, alma.codigo, mtipo.nombre, mov.id_movimiento, mtipo.tipo,mdval.costo_unitario
+            group by mov.fecha_mov, mov.codigo, alma.codigo, mtipo.nombre, mov.id_movimiento, mtipo.tipo,mdval.costo_unitario,
+
+            mdval.id_movimiento_det_valorado, mdval.id_mov_det_val_origen, tpw.nro_tramite
             order by mov.fecha_mov, mov.codigo';
-            
+
             raise notice 'RRR: %',v_consulta;
-            
+
             execute(v_consulta);
-            
+
             --4.Calculo de saldos
             v_saldo_fis=0;
             v_saldo_val=0;
@@ -150,7 +160,7 @@ BEGIN
             			order by fecha, nro_mov) loop
 				v_saldo_fis = v_saldo_fis + coalesce(v_rec.ingreso,0) - coalesce(v_rec.salida,0);
                 v_saldo_val = v_saldo_val + coalesce(v_rec.ingreso_val,0) - coalesce(v_rec.salida_val,0);
-                
+
                 update tt_rep_kardex_item set
                 saldo = v_saldo_fis,
                 saldo_val = v_saldo_val
@@ -167,7 +177,10 @@ BEGIN
                         round(ingreso_val,6),
                         round(salida_val,6),
               			round(saldo_val,6),
-                        id_movimiento
+                        id_movimiento,
+                        id_movimiento_det_valorado,
+                        id_mov_det_val_origen,
+                        nro_tramite
                         from tt_rep_kardex_item
                         order by fecha, nro_mov) loop
                 return next v_rec;
@@ -176,22 +189,22 @@ BEGIN
         	return;
 
 		end;
-        
+
     else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-    
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
 			v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
 			v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 			raise exception '%',v_resp;
-   
+
 END;
 $body$
 LANGUAGE 'plpgsql'
