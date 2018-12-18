@@ -163,7 +163,10 @@ BEGIN
         id_proyecto = v_parametros.id_proyecto,
         tramite_compra = v_parametros.tramite_compra,
         subtipo = v_parametros.subtipo,
-        movimiento = v_parametros.movimiento
+        movimiento = v_parametros.movimiento,
+
+        fecha_inicio = v_parametros.fecha_inicio,
+        fecha_fin = v_parametros.fecha_fin
         ----------------------------------------------------------
 
         where id_preingreso_det=v_parametros.id_preingreso_det;
@@ -233,6 +236,10 @@ BEGIN
 
               end if;
             end if;
+            --para control de fechas inicio y fin
+            IF (v_parametros.fecha_inicio > v_parametros.fecha_fin) THEN
+                raise exception 'La Fecha Inicio es mayor a la Fecha Fin';
+            END IF;
 
       --Definicion de la respuesta
             v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso modificado(a)');
@@ -377,8 +384,10 @@ BEGIN
       fecha_reg,
       id_usuario_mod,
       fecha_mod,
-            sw_generar,
-            estado
+      sw_generar,
+      estado,
+      fecha_inicio,
+      fecha_fin
             ) values(
       'activo',
       v_parametros.id_preingreso,
@@ -393,9 +402,17 @@ BEGIN
       now(),
       null,
       null,
-            'si',
-            'mod'
+      'si',
+      'mod',
+      v_parametros.fecha_inicio,
+      v_parametros.fecha_fin
       )RETURNING id_preingreso_det into v_id_preingreso_det;
+
+
+	  --para control de fechas inicio y fin
+            IF (v_parametros.fecha_inicio > v_parametros.fecha_fin) THEN
+                raise exception 'La Fecha Inicio es mayor a la Fecha Fin';
+            END IF;
 
       --Definicion de la respuesta
       v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Detalle Preingreso almacenado(a) con exito (id_preingreso_det'||v_id_preingreso_det||')');

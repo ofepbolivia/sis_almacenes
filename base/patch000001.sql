@@ -801,3 +801,11 @@ ADD COLUMN id_uo INTEGER;
 ALTER TABLE alm.tmovimiento
 ADD COLUMN id_plantilla INTEGER;
 /***********************************F-SCP-FEA-ALM-0-7/11/2018*****************************************/
+
+/***********************************I-SCP-MAY-ALM-0-13/11/2018*****************************************/
+ALTER TABLE alm.tpreingreso_det
+  ADD COLUMN fecha_inicio DATE;
+
+ALTER TABLE alm.tpreingreso_det
+  ADD COLUMN fecha_fin DATE;
+/***********************************F-SCP-MAY-ALM-0-13/11/2018*****************************************/

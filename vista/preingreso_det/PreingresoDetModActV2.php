@@ -194,28 +194,28 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.ArrayStore({
-                           id: 0,
-                           fields: [
-                               'myId',
-                               'displayText'
-                           ],
-                           data: [[1, 'item1'], [2, 'item2']]
-                       }),
-                       valueField: 'myId',
-                       displayField: 'displayText'
-                    },
-                    typeAhead: true,
-                    triggerAction: 'all',
-                    lazyRender:true,
-                    mode: 'local' ,
-                    type: 'ComboBox',
-                    id_grupo: 0,
-                    filters: {
-                        pfiltro: 'movtip.nombre',
-                        type: 'string'
-                    },
-                    grid: true,
-                    form: true
+                        id: 0,
+                        fields: [
+                            'myId',
+                            'displayText'
+                        ],
+                        data: [[1, 'item1'], [2, 'item2']]
+                    }),
+                    valueField: 'myId',
+                    displayField: 'displayText'
+                },
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender:true,
+                mode: 'local' ,
+                type: 'ComboBox',
+                id_grupo: 0,
+                filters: {
+                    pfiltro: 'movtip.nombre',
+                    type: 'string'
+                },
+                grid: true,
+                form: true
             },
             {
                 config: {
@@ -224,28 +224,28 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.ArrayStore({
-                           id: 0,
-                           fields: [
-                               'myId',
-                               'displayText'
-                           ],
-                           data: [[1, 'item1'], [2, 'item2']]
-                       }),
-                       valueField: 'myId',
-                       displayField: 'displayText'
-                    },
-                    typeAhead: true,
-                    triggerAction: 'all',
-                    lazyRender:true,
-                    mode: 'local' ,
-                    type: 'ComboBox',
-                    id_grupo: 0,
-                    filters: {
-                        pfiltro: 'movtip.nombre',
-                        type: 'string'
-                    },
-                    grid: true,
-                    form: true
+                        id: 0,
+                        fields: [
+                            'myId',
+                            'displayText'
+                        ],
+                        data: [[1, 'item1'], [2, 'item2']]
+                    }),
+                    valueField: 'myId',
+                    displayField: 'displayText'
+                },
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender:true,
+                mode: 'local' ,
+                type: 'ComboBox',
+                id_grupo: 0,
+                filters: {
+                    pfiltro: 'movtip.nombre',
+                    type: 'string'
+                },
+                grid: true,
+                form: true
             },
             {
                 config:{
@@ -940,6 +940,48 @@ header("content-type: text/javascript; charset=UTF-8");
                 form: true
             },
             {
+                config: {
+                    name: 'fecha_inicio',
+                    fieldLabel: 'Fecha Inicio',
+                    allowBlank: true,
+                    anchor: '80%',
+                    gwidth: 100,
+                    format: 'd/m/Y',
+                    renderer: function (value, p, record) {
+                        return value ? value.dateFormat('d/m/Y') : ''
+                    }
+                },
+                type: 'DateField',
+                filters: {
+                    pfiltro: 'predet.fecha_inicio',
+                    type: 'date'
+                },
+                id_grupo: 1,
+                grid: true,
+                form: true
+            },
+            {
+                config: {
+                    name: 'fecha_fin',
+                    fieldLabel: 'Fecha Fin',
+                    allowBlank: true,
+                    anchor: '80%',
+                    gwidth: 100,
+                    format: 'd/m/Y',
+                    renderer: function (value, p, record) {
+                        return value ? value.dateFormat('d/m/Y') : ''
+                    }
+                },
+                type: 'DateField',
+                filters: {
+                    pfiltro: 'predet.fecha_fin',
+                    type: 'date'
+                },
+                id_grupo: 1,
+                grid: true,
+                form: true
+            },
+            {
                 config:{
                     name: 'estado_reg',
                     fieldLabel: 'Estado Reg.',
@@ -1085,6 +1127,8 @@ header("content-type: text/javascript; charset=UTF-8");
             {name:'nombre_clasi',type: 'string'},
             {name:'subtipo',type: 'string'},
             {name:'movimiento',type: 'string'},
+            {name: 'fecha_inicio', type: 'date', dateFormat: 'Y-m-d'},
+            {name: 'fecha_fin', type: 'date', dateFormat: 'Y-m-d'}
 
 
         ],
@@ -1092,10 +1136,12 @@ header("content-type: text/javascript; charset=UTF-8");
             field: 'id_preingreso_det',
             direction: 'ASC'
         },
+        arrayDefaultColumHidden: ['fecha_inicio', 'fecha_fin'],
         bdel:false,
         bsave:false,
         bnew:false,
         bedit:true,
+
 
         bodyStyleForm: 'padding:5px;',
         borderForm: true,
@@ -1108,40 +1154,40 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.form.destroy();
                 this.afWindow.destroy();
             }
-                this.form = new Ext.form.FormPanel({
-                    id: this.idContenedor,
+            this.form = new Ext.form.FormPanel({
+                id: this.idContenedor,
 
+                items: [{
+                    region: 'center',
+                    layout: 'column',
+                    border: false,
+                    autoScroll: true,
                     items: [{
-                        region: 'center',
-                        layout: 'column',
-                        border: false,
-                        autoScroll: true,
+                        xtype: 'tabpanel',
+                        plain: true,
+                        activeTab: 0,
+                        height: 515,
+                        deferredRender: false,
+                        defaults: {
+                            bodyStyle: 'padding:10px'
+                        },
                         items: [{
-                            xtype: 'tabpanel',
-                            plain: true,
-                            activeTab: 0,
-                            height: 515,
-                            deferredRender: false,
+                            title: 'Principal',
+                            layout: 'form',
                             defaults: {
-                                bodyStyle: 'padding:10px'
+                                width: 400
                             },
+                            autoScroll: true,
+                            defaultType: 'textfield',
                             items: [{
-                                title: 'Principal',
-                                layout: 'form',
-                                defaults: {
-                                    width: 400
-                                },
-                                autoScroll: true,
-                                defaultType: 'textfield',
-                                items: [{
-                                    name: 'id_preingreso_det',
-                                    hidden: true,
-                                    id: this.idContenedor+'_id_preingreso_det'
-                                },{
-                                    name: 'id_preingreso',
-                                    hidden: true,
-                                    id: this.idContenedor+'_id_preingreso'
-                                },
+                                name: 'id_preingreso_det',
+                                hidden: true,
+                                id: this.idContenedor+'_id_preingreso_det'
+                            },{
+                                name: 'id_preingreso',
+                                hidden: true,
+                                id: this.idContenedor+'_id_preingreso'
+                            },
                                 {
                                     name: 'id_item',
                                     hidden: true,
@@ -1350,81 +1396,81 @@ header("content-type: text/javascript; charset=UTF-8");
                                     name: 'observaciones',
                                     id: this.idContenedor+'_observaciones'
                                 }]
-                            }, {
-                                title: 'Ubicación Física',
-                                layout: 'form',
-                                defaults: {
-                                    width: 400
+                        }, {
+                            title: 'Ubicación Física',
+                            layout: 'form',
+                            defaults: {
+                                width: 400
+                            },
+                            autoScroll: true,
+                            defaultType: 'textfield',
+                            items: [
+                                {
+                                    xtype: 'combo',
+                                    fieldLabel: 'Depósito',
+                                    name: 'id_deposito',
+                                    allowBlank: true,
+                                    id: this.idContenedor+'_id_deposito',
+                                    emptyText: 'Elija el depósito',
+                                    store: new Ext.data.JsonStore({
+                                        url: '../../sis_kactivos_fijos/control/Deposito/listarDeposito',
+                                        id: 'id_deposito',
+                                        root: 'datos',
+                                        fields: ['id_deposito','id_funcionario','id_oficina','ubicacion','codigo','nombre','depto','depto_cod','funcionario','oficina_cod','oficina'],
+                                        totalProperty: 'total',
+                                        sortInfo: {
+                                            field: 'codigo',
+                                            direction: 'ASC'
+                                        },
+                                        baseParams:{
+                                            start: 0,
+                                            limit: 10,
+                                            sort: 'codigo',
+                                            dir: 'ASC',
+                                            par_filtro:'depaf.codigo#depaf.nombre'
+                                        }
+                                    }),
+                                    valueField: 'id_deposito',
+                                    displayField: 'nombre',
+                                    gdisplayField: 'deposito',
+                                    mode: 'remote',
+                                    triggerAction: 'all',
+                                    lazyRender: true,
+                                    pageSize: 15
                                 },
-                                autoScroll: true,
-                                defaultType: 'textfield',
-                                items: [
-                                  {
-                                      xtype: 'combo',
-                                      fieldLabel: 'Depósito',
-                                      name: 'id_deposito',
-                                      allowBlank: true,
-                                      id: this.idContenedor+'_id_deposito',
-                                      emptyText: 'Elija el depósito',
-                                      store: new Ext.data.JsonStore({
-                                          url: '../../sis_kactivos_fijos/control/Deposito/listarDeposito',
-                                          id: 'id_deposito',
-                                          root: 'datos',
-                                          fields: ['id_deposito','id_funcionario','id_oficina','ubicacion','codigo','nombre','depto','depto_cod','funcionario','oficina_cod','oficina'],
-                                          totalProperty: 'total',
-                                          sortInfo: {
-                                              field: 'codigo',
-                                              direction: 'ASC'
-                                          },
-                                          baseParams:{
-                                              start: 0,
-                                              limit: 10,
-                                              sort: 'codigo',
-                                              dir: 'ASC',
-                                              par_filtro:'depaf.codigo#depaf.nombre'
-                                          }
-                                      }),
-                                      valueField: 'id_deposito',
-                                      displayField: 'nombre',
-                                      gdisplayField: 'deposito',
-                                      mode: 'remote',
-                                      triggerAction: 'all',
-                                      lazyRender: true,
-                                      pageSize: 15
-                                  },
-                                  {
-                                      xtype: 'combo',
-                                      fieldLabel: 'Oficina',
-                                      name: 'id_oficina',
-                                      allowBlank: true,
-                                      id: this.idContenedor+'_id_oficina',
-                                      emptyText: 'Elija la Oficina...',
-                                      store: new Ext.data.JsonStore({
-                                          url: '../../sis_organigrama/control/Oficina/listarOficina',
-                                          id: 'id_oficina',
-                                          root: 'datos',
-                                          fields: ['id_oficina','codigo','nombre'],
-                                          totalProperty: 'total',
-                                          sortInfo: {
-                                              field: 'nombre',
-                                              direction: 'ASC'
-                                          },
-                                          baseParams:{
-                                              start: 0,
-                                              limit: 10,
-                                              sort: 'codigo',
-                                              dir: 'ASC',
-                                              par_filtro:'ofi.nombre'
-                                          }
-                                      }),
-                                      valueField: 'id_oficina',
-                                      displayField: 'nombre',
-                                      gdisplayField: 'oficina',
-                                      mode: 'remote',
-                                      triggerAction: 'all',
-                                      lazyRender: true,
-                                      pageSize: 15
-                                  },
+                                {
+                                    xtype: 'combo',
+                                    fieldLabel: 'Oficina',
+                                    name: 'id_oficina',
+                                    allowBlank: true,
+                                    id: this.idContenedor+'_id_oficina',
+                                    emptyText: 'Elija la Oficina...',
+                                    store: new Ext.data.JsonStore({
+                                        url: '../../sis_organigrama/control/Oficina/listarOficina',
+                                        id: 'id_oficina',
+                                        root: 'datos',
+                                        fields: ['id_oficina','codigo','nombre'],
+                                        totalProperty: 'total',
+                                        sortInfo: {
+                                            field: 'nombre',
+                                            direction: 'ASC'
+                                        },
+                                        baseParams:{
+                                            start: 0,
+                                            limit: 10,
+                                            sort: 'codigo',
+                                            dir: 'ASC',
+                                            par_filtro:'ofi.nombre'
+                                        }
+                                    }),
+                                    valueField: 'id_oficina',
+                                    displayField: 'nombre',
+                                    gdisplayField: 'oficina',
+                                    mode: 'remote',
+                                    triggerAction: 'all',
+                                    lazyRender: true,
+                                    pageSize: 15
+                                },
                                 {
                                     xtype: 'textarea',
                                     fieldLabel: 'Ubicación',
@@ -1464,201 +1510,219 @@ header("content-type: text/javascript; charset=UTF-8");
                                     lazyRender: true,
                                     pageSize: 15
                                 }
-                              /*  {
-                                    xtype: 'textarea',
-                                    fieldLabel: 'Lugar',
-                                    name: 'ubicacion',
-                                    id: this.idContenedor+'_nombre_lugar',
-                                    disabled: false
-                                }*/]
+                                /*  {
+                                      xtype: 'textarea',
+                                      fieldLabel: 'Lugar',
+                                      name: 'ubicacion',
+                                      id: this.idContenedor+'_nombre_lugar',
+                                      disabled: false
+                                  }*/]
+                        }, {
+                            title: 'Datos Compra',
+                            layout: 'form',
+                            defaults: {
+                                width: 400
+                            },
+                            defaultType: 'textfield',
+                            items: [ {
+                                xtype: 'combo',
+                                fieldLabel: 'Proveedor',
+                                name: 'id_proveedor',
+                                allowBlank: true,
+                                id: this.idContenedor+'_id_proveedor',
+                                emptyText: 'Elija el Proveedor',
+                                store: new Ext.data.JsonStore({
+                                    url: '../../sis_parametros/control/Proveedor/listarProveedorCombos',
+                                    id: 'id_proveedor',
+                                    root: 'datos',
+                                    fields: ['id_proveedor','desc_proveedor'],
+                                    totalProperty: 'total',
+                                    sortInfo: {
+                                        field: 'desc_proveedor',
+                                        direction: 'ASC'
+                                    },
+                                    baseParams:{
+                                        start: 0,
+                                        limit: 10,
+                                        sort: 'desc_proveedor',
+                                        dir: 'ASC',
+                                        par_filtro:'provee.desc_proveedor'
+                                    }
+                                }),
+                                valueField: 'id_proveedor',
+                                displayField: 'desc_proveedor',
+                                gdisplayField: 'desc_proveedor',
+                                mode: 'remote',
+                                triggerAction: 'all',
+                                lazyRender: true,
+                                pageSize: 15,
+                                //valueNotFoundText: 'Proveedor no encontrado',
+                                pageSize: 15
+                            },{
+                                xtype: 'datefield',
+                                fieldLabel: 'Fecha Compra',
+                                name: 'fecha_compra',
+                                allowBlank: false,
+                                id: this.idContenedor+'_fecha_compra'
                             }, {
-                                title: 'Datos Compra',
-                                layout: 'form',
-                                defaults: {
-                                    width: 400
-                                },
-                                defaultType: 'textfield',
-                                items: [ {
-                                    xtype: 'combo',
-                                    fieldLabel: 'Proveedor',
-                                    name: 'id_proveedor',
-                                    allowBlank: true,
-                                    id: this.idContenedor+'_id_proveedor',
-                                    emptyText: 'Elija el Proveedor',
-                                    store: new Ext.data.JsonStore({
-                                        url: '../../sis_parametros/control/Proveedor/listarProveedorCombos',
-                                        id: 'id_proveedor',
-                                        root: 'datos',
-                                        fields: ['id_proveedor','desc_proveedor'],
-                                        totalProperty: 'total',
-                                        sortInfo: {
-                                            field: 'desc_proveedor',
-                                            direction: 'ASC'
-                                        },
-                                        baseParams:{
-                                            start: 0,
-                                            limit: 10,
-                                            sort: 'desc_proveedor',
-                                            dir: 'ASC',
-                                            par_filtro:'provee.desc_proveedor'
-                                        }
-                                    }),
-                                    valueField: 'id_proveedor',
-                                    displayField: 'desc_proveedor',
-                                    gdisplayField: 'desc_proveedor',
-                                    mode: 'remote',
-                                    triggerAction: 'all',
-                                    lazyRender: true,
-                                    pageSize: 15,
-                                    //valueNotFoundText: 'Proveedor no encontrado',
-                                    pageSize: 15
-                                },{
-                                    xtype: 'datefield',
-                                    fieldLabel: 'Fecha Compra',
-                                    name: 'fecha_compra',
-                                    allowBlank: false,
-                                    id: this.idContenedor+'_fecha_compra'
+                                fieldLabel: 'Documento',
+                                name: 'documento',
+                                allowBlank: true,
+                                id: this.idContenedor+'_documento'
+                            },{
+                                xtype: 'compositefield',
+                                fieldLabel: 'Importe',
+                                // msgTarget: 'side',
+                                anchor: '-20',
+                                /* defaults: {
+                                     flex: 1
+                                 },*/
+                                items: [{
+                                    xtype: 'label',
+                                    text: 'Costo AF'
                                 }, {
-                                    fieldLabel: 'Documento',
-                                    name: 'documento',
+                                    xtype: 'numberfield',
+                                    fieldLabel: 'Monto compra 87',
+                                    name: 'precio_compra_87',
                                     allowBlank: true,
-                                    id: this.idContenedor+'_documento'
-                                },{
-                                    xtype: 'compositefield',
-                                    fieldLabel: 'Importe',
-                                   // msgTarget: 'side',
-                                    anchor: '-20',
-                                   /* defaults: {
-                                        flex: 1
-                                    },*/
-                                    items: [{
-                                        xtype: 'label',
-                                        text: 'Costo AF'
-                                    }, {
-                                        xtype: 'numberfield',
-                                        fieldLabel: 'Monto compra 87',
-                                        name: 'precio_compra_87',
-                                        allowBlank: true,
-                                        id: this.idContenedor+'_precio_compra_87',
-                                        width: 127
-                                    }, {
-                                        xtype: 'label',
-                                        text: 'Valor Compra'
-                                    }, {
-                                        xtype: 'numberfield',
-                                        fieldLabel: 'Monto compra 100',
-                                        name: 'precio_compra',
-                                        allowBlank: true,
-                                        id: this.idContenedor+'_precio_compra',
-                                        width: 127
-                                    }]
+                                    id: this.idContenedor+'_precio_compra_87',
+                                    width: 127
                                 }, {
-                                    xtype: 'combo',
-                                    fieldLabel: 'Estado Activo Compra',
-                                    name: 'id_cat_estado_compra',
-                                    allowBlank: false,
-                                    id: this.idContenedor+'_id_cat_estado_compra',
-                                    emptyText: 'Elija una opción',
-                                    store: new Ext.data.JsonStore({
-                                        url: '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
-                                        id: 'id_catalogo',
-                                        root: 'datos',
-                                        fields: ['id_catalogo','codigo','descripcion'],
-                                        totalProperty: 'total',
-                                        sortInfo: {
-                                            field: 'descripcion',
-                                            direction: 'ASC'
-                                        },
-                                        baseParams:{
-                                            start: 0,
-                                            limit: 10,
-                                            sort: 'descripcion',
-                                            dir: 'ASC',
-                                            par_filtro:'cat.descripcion',
-                                            cod_subsistema:'KAF',
-                                            catalogo_tipo:'tactivo_fijo__id_cat_estado_compra'
-                                        }
-                                    }),
-                                    valueField: 'id_catalogo',
-                                    displayField: 'descripcion',
-                                    gdisplayField: 'estado_compra',
-                                    mode: 'remote',
-                                    triggerAction: 'all',
-                                    lazyRender: true,
-                                    pageSize: 15
-                                },{
-                                    xtype: 'textfield',
-                                    fieldLabel: 'Nro.Cbte Asociado',
-                                    name: 'c31',
-                                    allowBlank: true,
-                                    id: this.idContenedor+'_c31',
-                                    width: 140
+                                    xtype: 'label',
+                                    text: 'Valor Compra'
                                 }, {
-                                    xtype: 'datefield',
-                                    fieldLabel: 'Fecha.Cbte Asociado',
-                                    name: 'fecha_cbte_asociado',
+                                    xtype: 'numberfield',
+                                    fieldLabel: 'Monto compra 100',
+                                    name: 'precio_compra',
                                     allowBlank: true,
-                                    id: this.idContenedor+'_fecha_cbte_asociado',
-                                    width: 140
-                                },{
-                                    xtype: 'textfield',
-                                    fieldLabel: 'Nro. de Tramite de Compra',
-                                    name: 'tramite_compra',
-                                    allowBlank: true,
-                                    id: this.idContenedor+'_tramite_compra',
-                                    width: 140
-                                },{
-                                    xtype: 'combo',
-                                    fieldLabel: 'Subtipo',
-                                    name: 'subtipo',
-                                    allowBlank: true,
-                                    mode: 'local',
-                                    triggerAction: 'all',
-                                    emptyText: 'Elija una opción',
-                                    id: this.idContenedor+'_subtipo',
-                                    emptyText: 'Elija una opción',
-                                    store: new Ext.data.ArrayStore({
-                                        id: 0,
-                                        fields: ['subtipo'],
-                                        data: [ ['Ninguno'], ['Leasing']]
-                                    }),
-                                    valueField: 'subtipo',
-                                    displayField: 'subtipo'
-
-                                },{
-                                    xtype: 'combo',
-                                    fieldLabel: 'Tipo de Movimiento',
-                                    name: 'movimiento',
-                                    allowBlank: true,
-                                    mode: 'local',
-                                    triggerAction: 'all',
-                                    emptyText: 'Elija una opción',
-                                    id: this.idContenedor+'_movimiento',
-                                    emptyText: 'Elija una opción',
-                                    store: new Ext.data.ArrayStore({
-                                        id: 0,
-                                        fields: ['movimiento'],
-                                        data: [ ['Transito'], ['Normal']]
-                                    }),
-                                    valueField: 'movimiento',
-                                    displayField: 'movimiento'
-
+                                    id: this.idContenedor+'_precio_compra',
+                                    width: 127
                                 }]
                             }, {
-                                title: 'Datos Depreciación',
-                                layout: 'form',
-                                defaults: {
-                                    width: 400
-                                },
-                                defaultType: 'textfield',
-                                items: [{
-                                    xtype: 'datefield',
-                                    fieldLabel: 'Fecha inicio Dep/Act',
-                                    //qtip:'Fecha de inicio de depreciación o de actualización',
-                                    name: 'fecha_conformidad',
-                                    allowBlank: true,
-                                    id: this.idContenedor+'_fecha_conformidad'
-                                },
+                                xtype: 'combo',
+                                fieldLabel: 'Estado Activo Compra',
+                                name: 'id_cat_estado_compra',
+                                allowBlank: false,
+                                id: this.idContenedor+'_id_cat_estado_compra',
+                                emptyText: 'Elija una opción',
+                                store: new Ext.data.JsonStore({
+                                    url: '../../sis_parametros/control/Catalogo/listarCatalogoCombo',
+                                    id: 'id_catalogo',
+                                    root: 'datos',
+                                    fields: ['id_catalogo','codigo','descripcion'],
+                                    totalProperty: 'total',
+                                    sortInfo: {
+                                        field: 'descripcion',
+                                        direction: 'ASC'
+                                    },
+                                    baseParams:{
+                                        start: 0,
+                                        limit: 10,
+                                        sort: 'descripcion',
+                                        dir: 'ASC',
+                                        par_filtro:'cat.descripcion',
+                                        cod_subsistema:'KAF',
+                                        catalogo_tipo:'tactivo_fijo__id_cat_estado_compra'
+                                    }
+                                }),
+                                valueField: 'id_catalogo',
+                                displayField: 'descripcion',
+                                gdisplayField: 'estado_compra',
+                                mode: 'remote',
+                                triggerAction: 'all',
+                                lazyRender: true,
+                                pageSize: 15
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Nro.Cbte Asociado',
+                                name: 'c31',
+                                allowBlank: true,
+                                id: this.idContenedor+'_c31',
+                                width: 140
+                            }, {
+                                xtype: 'datefield',
+                                fieldLabel: 'Fecha.Cbte Asociado',
+                                name: 'fecha_cbte_asociado',
+                                allowBlank: true,
+                                id: this.idContenedor+'_fecha_cbte_asociado',
+                                width: 140
+                            },{
+                                xtype: 'textfield',
+                                fieldLabel: 'Nro. de Tramite de Compra',
+                                name: 'tramite_compra',
+                                allowBlank: true,
+                                id: this.idContenedor+'_tramite_compra',
+                                width: 140
+                            },{
+                                xtype: 'combo',
+                                fieldLabel: 'Subtipo',
+                                name: 'subtipo',
+                                allowBlank: true,
+                                mode: 'local',
+                                triggerAction: 'all',
+                                emptyText: 'Elija una opción',
+                                id: this.idContenedor+'_subtipo',
+                                emptyText: 'Elija una opción',
+                                store: new Ext.data.ArrayStore({
+                                    id: 0,
+                                    fields: ['subtipo'],
+                                    data: [ ['Ninguno'], ['Leasing']]
+                                }),
+                                valueField: 'subtipo',
+                                displayField: 'subtipo'
+
+                            },{
+                                xtype: 'combo',
+                                fieldLabel: 'Tipo de Movimiento',
+                                name: 'movimiento',
+                                allowBlank: true,
+                                mode: 'local',
+                                triggerAction: 'all',
+                                emptyText: 'Elija una opción',
+                                id: this.idContenedor+'_movimiento',
+                                emptyText: 'Elija una opción',
+                                store: new Ext.data.ArrayStore({
+                                    id: 0,
+                                    fields: ['movimiento'],
+                                    data: [ ['Transito'], ['Normal']]
+                                }),
+                                valueField: 'movimiento',
+                                displayField: 'movimiento'
+
+                            },{
+                                xtype: 'datefield',
+                                fieldLabel: 'Fecha Inicio',
+                                name: 'fecha_inicio',
+                                allowBlank: true,
+                                // id: 'fecha_inicio',
+                                id: this.idContenedor+'_fecha_inicio',
+                                width: 140
+                            }, {
+                                xtype: 'datefield',
+                                fieldLabel: 'Fecha Fin',
+                                name: 'fecha_fin',
+                                allowBlank: true,
+                                // id: 'fecha_fin',
+                                id: this.idContenedor+'_fecha_fin',
+                                width: 140
+                            }
+
+                            ]
+                        }, {
+                            title: 'Datos Depreciación',
+                            layout: 'form',
+                            defaults: {
+                                width: 400
+                            },
+                            defaultType: 'textfield',
+                            items: [{
+                                xtype: 'datefield',
+                                fieldLabel: 'Fecha inicio Dep/Act',
+                                //qtip:'Fecha de inicio de depreciación o de actualización',
+                                name: 'fecha_conformidad',
+                                allowBlank: true,
+                                id: this.idContenedor+'_fecha_conformidad'
+                            },
                                 {
                                     fieldLabel: 'Monto Vigente',
                                     name: 'monto_compra',
@@ -1666,130 +1730,130 @@ header("content-type: text/javascript; charset=UTF-8");
                                     allowBlank: true,
                                     id: this.idContenedor+'_monto_compra'
                                 },{
-                                            xtype: 'combo',
-                                            name:'id_proyecto',
-                                            id: this.idContenedor+'_id_proyecto',
-                                            qtip: 'Proyecto o aplicación del activo fijo, se utliza para cargar los gastos  de depreciación (Determinar los centro de costos)',
-                                            fieldLabel:'Proyecto / Aplicación',
-                                            allowBlank:false,
-                                            emptyText:'Proyecto...',
-                                            store: new Ext.data.JsonStore({
-                                                url: '../../sis_parametros/control/Proyecto/ListarProyecto',
-                                                id: 'id_proyecto',
-                                                root: 'datos',
-                                                sortInfo:{
-                                                    field: 'codigo_proyecto',
-                                                    direction: 'ASC'
-                                                },
-                                                totalProperty: 'total',
-                                                fields: ['id_proyecto','codigo_proyecto','nombre_proyecto'],
-                                                // turn on remote sorting
-                                                remoteSort: true,
-                                                baseParams:{par_filtro:'codigo_proyecto#nombre_proyecto'}
-                                            }),
-                                            valueField: 'id_proyecto',
-                                            displayField: 'codigo_proyecto',
-                                            gdisplayField:'desc_proyecto',//mapea al store del grid
-                                            tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo_proyecto}</p><p>{nombre_proyecto}</p> </div></tpl>',
-                                            hiddenName: 'id_proyecto',
-                                            forceSelection:true,
-                                            typeAhead: true,
-                                            triggerAction: 'all',
-                                            lazyRender:true,
-                                            mode:'remote',
-                                            pageSize:10,
-                                            queryDelay:1000,
-                                            minChars:2
-                                    }
-                                ]
-                            }]
+                                    xtype: 'combo',
+                                    name:'id_proyecto',
+                                    id: this.idContenedor+'_id_proyecto',
+                                    qtip: 'Proyecto o aplicación del activo fijo, se utliza para cargar los gastos  de depreciación (Determinar los centro de costos)',
+                                    fieldLabel:'Proyecto / Aplicación',
+                                    allowBlank:false,
+                                    emptyText:'Proyecto...',
+                                    store: new Ext.data.JsonStore({
+                                        url: '../../sis_parametros/control/Proyecto/ListarProyecto',
+                                        id: 'id_proyecto',
+                                        root: 'datos',
+                                        sortInfo:{
+                                            field: 'codigo_proyecto',
+                                            direction: 'ASC'
+                                        },
+                                        totalProperty: 'total',
+                                        fields: ['id_proyecto','codigo_proyecto','nombre_proyecto'],
+                                        // turn on remote sorting
+                                        remoteSort: true,
+                                        baseParams:{par_filtro:'codigo_proyecto#nombre_proyecto'}
+                                    }),
+                                    valueField: 'id_proyecto',
+                                    displayField: 'codigo_proyecto',
+                                    gdisplayField:'desc_proyecto',//mapea al store del grid
+                                    tpl:'<tpl for="."><div class="x-combo-list-item"><p>{codigo_proyecto}</p><p>{nombre_proyecto}</p> </div></tpl>',
+                                    hiddenName: 'id_proyecto',
+                                    forceSelection:true,
+                                    typeAhead: true,
+                                    triggerAction: 'all',
+                                    lazyRender:true,
+                                    mode:'remote',
+                                    pageSize:10,
+                                    queryDelay:1000,
+                                    minChars:2
+                                }
+                            ]
                         }]
-                    }],
-                    //fileUpload: me.fileUpload,
-                    padding: this.paddingForm,
-                    bodyStyle: this.bodyStyleForm,
-                    border: this.borderForm,
-                    frame: this.frameForm,
-                    autoScroll: false,
-                    autoDestroy: true,
-                    autoScroll: false,
-                    region: 'center'
-                });
-
-                this.afWindow = new Ext.Window({
-                    width: 590,
-                    height: 700,
-                    modal: true,
-                    closeAction: 'hide',
-                    labelAlign: 'top',
-                    title: 'Registro Preingreso',
-                    bodyStyle: 'padding:5px',
-                    layout: 'border',
-                    items: [{
-                        region: 'west',
-                        split: false,
-                        //width: 200,
-                      //  minWidth: 150,
-                        //maxWidth: 250
-                        /*items: [{
-                            id: 'img-detail-panel',
-                            region: 'north'
-                        }, {
-                            id: 'img-qr-panel'+this.idContenedor,
-                            region: 'center'
-                        }]*/
-                    },this.form],
-                    buttons: [{
-                        text: 'Guardar',
-                        handler: this.onSubmit,
-                        scope: this
-                    }, {
-                        text: 'Declinar',
-                        handler: function() {
-                            this.afWindow.hide();
-                        },
-                        scope: this
                     }]
-                });
+                }],
+                //fileUpload: me.fileUpload,
+                padding: this.paddingForm,
+                bodyStyle: this.bodyStyleForm,
+                border: this.borderForm,
+                frame: this.frameForm,
+                autoScroll: false,
+                autoDestroy: true,
+                autoScroll: false,
+                region: 'center'
+            });
+
+            this.afWindow = new Ext.Window({
+                width: 590,
+                height: 550,
+                modal: true,
+                closeAction: 'hide',
+                labelAlign: 'top',
+                title: 'Registro Preingreso',
+                bodyStyle: 'padding:5px',
+                layout: 'border',
+                items: [{
+                    region: 'west',
+                    split: false,
+                    //width: 200,
+                    //  minWidth: 150,
+                    //maxWidth: 250
+                    /*items: [{
+                        id: 'img-detail-panel',
+                        region: 'north'
+                    }, {
+                        id: 'img-qr-panel'+this.idContenedor,
+                        region: 'center'
+                    }]*/
+                },this.form],
+                buttons: [{
+                    text: 'Guardar',
+                    handler: this.onSubmit,
+                    scope: this
+                }, {
+                    text: 'Declinar',
+                    handler: function() {
+                        this.afWindow.hide();
+                    },
+                    scope: this
+                }]
+            });
 
 
 
-                /*Ext.getCmp(this.idContenedor+'_id_proveedor').on('blur',function(cmp,rec,index){
-                  Ext.getCmp(this.idContenedor+'_id_proveedor').setValue(rec.data.id_proveedor);
-                  console.log('RECUPERANDO DATO PROVEEDOR',rec.data.id_proveedor);
-                },this);*/
+            /*Ext.getCmp(this.idContenedor+'_id_proveedor').on('blur',function(cmp,rec,index){
+              Ext.getCmp(this.idContenedor+'_id_proveedor').setValue(rec.data.id_proveedor);
+              console.log('RECUPERANDO DATO PROVEEDOR',rec.data.id_proveedor);
+            },this);*/
 
-              /*  console.log('RECUPERANDO DATO PROVEEDOR',this.maestro.desc_proveedor);
-                this.getComponente(this.idContenedor+'_id_proveedor').setValue(this.maestro.desc_proveedor);
-                console.log('RECUPERANDO DATO PROVEEDOR',this.idContenedor+'_id_proveedor');*/
+            /*  console.log('RECUPERANDO DATO PROVEEDOR',this.maestro.desc_proveedor);
+              this.getComponente(this.idContenedor+'_id_proveedor').setValue(this.maestro.desc_proveedor);
+              console.log('RECUPERANDO DATO PROVEEDOR',this.idContenedor+'_id_proveedor');*/
 
 
-                Ext.getCmp(this.idContenedor+'_id_clasificacion').on('select',function(cmp,rec,index){
-                    if(rec.data.depreciable == 'si'){
-                        Ext.getCmp(this.idContenedor+'_vida_util_original').setValue(rec.data.vida_util);
-                        //Convierte a años
-                        Ext.getCmp(this.idContenedor+'_vida_util_original_anios').setValue(this.convertirVidaUtil(rec.data.vida_util));
-                    } else {
-                        Ext.getCmp(this.idContenedor+'_vida_util_original').allowBlank = true;
-                        Ext.getCmp(this.idContenedor+'_vida_util_original_anios').allowBlank = true;
-                        Ext.getCmp(this.idContenedor+'_vida_util_original').setValue('')
-                        Ext.getCmp(this.idContenedor+'_vida_util_original_anios').setValue('')
-                    }
-                  //  this.actualizarSegunClasificacion(rec.data.tipo_activo, rec.data.depreciable);
-
-                },this);
-                //Vida util
-                Ext.getCmp(this.idContenedor+'_vida_util_original').on('blur',function(cmp,rec,index){
-
+            Ext.getCmp(this.idContenedor+'_id_clasificacion').on('select',function(cmp,rec,index){
+                if(rec.data.depreciable == 'si'){
+                    Ext.getCmp(this.idContenedor+'_vida_util_original').setValue(rec.data.vida_util);
                     //Convierte a años
-                    Ext.getCmp(this.idContenedor+'_vida_util_original_anios').setValue(this.convertirVidaUtil(Ext.getCmp(this.idContenedor+'_vida_util_original').getValue()));
+                    Ext.getCmp(this.idContenedor+'_vida_util_original_anios').setValue(this.convertirVidaUtil(rec.data.vida_util));
+                } else {
+                    Ext.getCmp(this.idContenedor+'_vida_util_original').allowBlank = true;
+                    Ext.getCmp(this.idContenedor+'_vida_util_original_anios').allowBlank = true;
+                    Ext.getCmp(this.idContenedor+'_vida_util_original').setValue('')
+                    Ext.getCmp(this.idContenedor+'_vida_util_original_anios').setValue('')
+                }
+                //  this.actualizarSegunClasificacion(rec.data.tipo_activo, rec.data.depreciable);
 
-                },this);
-                //Vida util años
-                Ext.getCmp(this.idContenedor+'_vida_util_original_anios').on('blur',function(cmp,rec,index){
-                    //Convertir a meses
-                    Ext.getCmp(this.idContenedor+'_vida_util_original').setValue(this.convertirVidaUtil(Ext.getCmp(this.idContenedor+'_vida_util_original_anios').getValue(),'anios'));
-                },this);
+            },this);
+            //Vida util
+            Ext.getCmp(this.idContenedor+'_vida_util_original').on('blur',function(cmp,rec,index){
+
+                //Convierte a años
+                Ext.getCmp(this.idContenedor+'_vida_util_original_anios').setValue(this.convertirVidaUtil(Ext.getCmp(this.idContenedor+'_vida_util_original').getValue()));
+
+            },this);
+            //Vida util años
+            Ext.getCmp(this.idContenedor+'_vida_util_original_anios').on('blur',function(cmp,rec,index){
+                //Convertir a meses
+                Ext.getCmp(this.idContenedor+'_vida_util_original').setValue(this.convertirVidaUtil(Ext.getCmp(this.idContenedor+'_vida_util_original_anios').getValue(),'anios'));
+            },this);
 
 
 
@@ -1940,14 +2004,14 @@ header("content-type: text/javascript; charset=UTF-8");
             this.load({params:{start:0, limit:this.tam_pag}});
         },
         onButtonEdit: function (){
-          console.log('RECUPERANDO estado',this.maestro.estado);
-          //Ext.getCmp(this.idContenedor+'_id_proveedor').setValue(this.maestro.desc_proveedor);
-          if (this.maestro.estado=='finalizado') {
-            alert('Acción no permitida, El preingreso ya fue finalizado, no puede hacerse ninguna modificación.');
-          } else{
-            this.crearVentana();
-            this.abrirVentana('edit');
-          }
+            console.log('RECUPERANDO estado',this.maestro.estado);
+            //Ext.getCmp(this.idContenedor+'_id_proveedor').setValue(this.maestro.desc_proveedor);
+            if (this.maestro.estado=='finalizado') {
+                alert('Acción no permitida, El preingreso ya fue finalizado, no puede hacerse ninguna modificación.');
+            } else{
+                this.crearVentana();
+                this.abrirVentana('edit');
+            }
 
         },
         preparaComponentes: function(pMaestro){

@@ -148,6 +148,9 @@ class MODPreingresoDet extends MODbase{
         $this->setParametro('tramite_compra','tramite_compra','varchar');
         $this->setParametro('subtipo','subtipo','varchar');
         $this->setParametro('movimiento','movimiento','varchar');
+
+        $this->setParametro('fecha_inicio','fecha_inicio','date');
+        $this->setParametro('fecha_fin','fecha_fin','date');
         //------------------------------------------------------------------------
 
 
@@ -155,7 +158,7 @@ class MODPreingresoDet extends MODbase{
         $this->armarConsulta();
         //echo $this->consulta;exit;
         $this->ejecutarConsulta();
-          //var_dump( $this->respuesta);exit;
+        //var_dump( $this->respuesta);exit;
         //Devuelve la respuesta
         return $this->respuesta;
     }
@@ -215,6 +218,9 @@ class MODPreingresoDet extends MODbase{
         $this->setParametro('id_clasificacion','id_clasificacion','int4');
         $this->setParametro('sw_generar','sw_generar','varchar');
         $this->setParametro('observaciones','observaciones','varchar');
+
+        $this->setParametro('fecha_inicio','fecha_inicio','date');
+        $this->setParametro('fecha_fin','fecha_fin','date');
 
         //Ejecuta la instruccion
         $this->armarConsulta();
@@ -350,6 +356,9 @@ class MODPreingresoDet extends MODbase{
         $this->captura('nombre_clasi','varchar');
         $this->captura('subtipo','varchar');
         $this->captura('movimiento','varchar');
+
+        $this->captura('fecha_inicio','date');
+        $this->captura('fecha_fin','date');
         //-------------------------------------------------------------------------
 
         //Ejecuta la instruccion

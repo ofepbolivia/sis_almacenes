@@ -219,7 +219,9 @@ BEGIN
             predet.tramite_compra,
             clas.nombre as nombre_clasi,
             predet.subtipo,
-            predet.movimiento
+            predet.movimiento,
+            predet.fecha_inicio,
+            predet.fecha_fin
 
             from alm.tpreingreso_det predet
             inner join segu.tusuario usu1 on usu1.id_usuario = predet.id_usuario_reg

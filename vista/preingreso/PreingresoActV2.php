@@ -55,11 +55,11 @@ header("content-type: text/javascript; charset=UTF-8");
 
             this.addButton('btnAlta',{
                 grupo:[1],
-                text:'Generar Alta de Activos Fijos',
+                text:'Generar Movimiento de Activos Fijos',
                 iconCls: 'badelante',
                 disabled: true,
                 handler: this.onIngreso,
-                tooltip: '<b>Alta Activos Fijos</b><br/><b>Generación del alta de Activo Fijo</b>'
+                tooltip: '<b>Movimiento Activos Fijos</b><br/><b>Generación del movimiento de Activo Fijo</b>'
             });
 
             //this.EnableSelect();
