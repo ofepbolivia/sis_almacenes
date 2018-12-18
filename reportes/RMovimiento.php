@@ -334,7 +334,7 @@ Class RMovimiento extends Report {
 
         if($dataMaestro->getParameter('costos') == 'si'){
             $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = 'Costo Unit.', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-            $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = 'Costo Total', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+            $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = 'Costo Tota', $border = 1, $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
         }
 
         $pdf->Ln();
@@ -351,7 +351,7 @@ Class RMovimiento extends Report {
             $pdf->Cell($w = $wCantidad, $h = $hGlobal, $txt = number_format($datarow['cantidad'], 2), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             if($dataMaestro->getParameter('costos') == 'si'){
                 $pdf->Cell($w = $wCostoUnitario, $h = $hGlobal, $txt = number_format($datarow['costo_unitario'], $numberDecimals), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
-                $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = number_format($datarow['costo_total'], $numberDecimals), $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
+                $pdf->Cell($w = $wCostoTotal, $h = $hGlobal, $txt = $datarow['costo_total'], $border = 1, $ln = 0, $align = 'R', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
             }
             $pdf->Ln();
             $count++;
@@ -383,7 +383,7 @@ Class RMovimiento extends Report {
         $wCostoUnitario = 20;
         $wCostoTotal = 20;
         $cantTot=0;
-		$cantTotSoli=0;
+        $cantTotSoli=0;
         $costoUnitTot=0;
         $pdf->Ln();
 
@@ -422,13 +422,13 @@ Class RMovimiento extends Report {
                 $pdf->tablenumbers=array(0,0,0,0,0,0,2,2);
                 $RowArray = array(
                     's1' => $count,
-                    's2.0' => $datarow['codigo'],
-                    's2' => $datarow['nombre']. ' - ' . $datarow['descripcion_item'],
-                    's3' => $datarow['unidad_medida'],
-                    's4' => number_format($datarow['cantidad_solicitada'], 0),
-                    's5' => number_format($datarow['cantidad'], 0),
-                    's6' => number_format($datarow['costo_unitario'], $numberDecimals),
-                    's7' => number_format($datarow['costo_total'], $numberDecimals)
+                    's2' => $datarow['codigo'],
+                    's3' => $datarow['nombre']. ' - ' . $datarow['descripcion_item'],
+                    's4' => $datarow['unidad_medida'],
+                    's5' => number_format($datarow['cantidad_solicitada'], 0),
+                    's6' => number_format($datarow['cantidad'], 0),
+                    's7' => number_format($datarow['costo_unitario'], $numberDecimals),
+                    's8' => $datarow['costo_total']
                 );
             }else{
                 $pdf->tableborders=array('LRTB','LRTB','LRTB','LRTB','LRTB','LRTB');
@@ -437,18 +437,18 @@ Class RMovimiento extends Report {
                 $pdf->tablenumbers=array(0,0,0,0,0,0);
                 $RowArray = array(
                     's1' => $count,
-                    's2.0' => $datarow['codigo'],
-                    's2' => $datarow['nombre']. ' - ' . $datarow['descripcion_item'],
-                    's3' => $datarow['unidad_medida'],
-                    's4' => number_format($datarow['cantidad_solicitada'], 0),
-                    's5' => number_format($datarow['cantidad'], 0)
+                    's2' => $datarow['codigo'],
+                    's3' => $datarow['nombre']. ' - ' . $datarow['descripcion_item'],
+                    's4' => $datarow['unidad_medida'],
+                    's5' => number_format($datarow['cantidad_solicitada'], 0),
+                    's6' => number_format($datarow['cantidad'], 0)
                 );
             }
             $pdf-> MultiRow($RowArray,false,1);
             //$pdf->Ln();
             $count++;
             $cantTot+=$datarow['cantidad'];
-			$cantTotSoli+=$datarow['cantidad_solicitada'];
+            $cantTotSoli+=$datarow['cantidad_solicitada'];
             $costoUnitTot+=$datarow['costo_unitario'];
         }
 
