@@ -63,7 +63,7 @@ BEGIN
             if v_cantidad <= 0 then
                 po_errores = po_errores || '\nEl item ' || g_registros.nombre_item || ' debe tener registrada una cantidad mayor a cero';
             end if;
-        else
+        else --raise exception 'parametros: %, %, %', g_registros.id_item, v_rec.id_almacen, date(v_rec.fecha_mov);
             --Verificamos que la cantidad no sea nula y que la cantidad requerida no sea mayor que el saldo
             v_saldo_cantidad = alm.f_get_saldo_fisico_item(g_registros.id_item, v_rec.id_almacen, date(v_rec.fecha_mov));
 
@@ -114,19 +114,19 @@ BEGIN
 
         	--Verificamos que la cantidad no sea nula y que la cantidad requerida no sea mayor que el saldo
             v_saldo_cantidad = alm.f_get_saldo_fisico_item(g_registros.id_item, v_rec.id_almacen, COALESCE(date(v_rec.fecha_salida),date(v_rec.fecha_mov)));
-            
+
             po_saldo_total = po_saldo_total + v_saldo_cantidad;
-            
+
 --            raise exception '1:%   2:%   3:%',g_registros.cantidad_item, g_registros.cantidad_solicitada, v_cantidad;
-            
+
             --Alertas
             if v_saldo_cantidad = 0 then
-                po_alertas = po_alertas || '\n- Existencias agotadas para el item: ' || g_registros.nombre_item;             	
+                po_alertas = po_alertas || '\n- Existencias agotadas para el item: ' || g_registros.nombre_item;
             end if;
             if v_cantidad > v_saldo_cantidad then
                 po_alertas = po_alertas || '\n- Existencias insuficientes para el item: ' || g_registros.nombre_item || ' (Disponible: '||v_saldo_cantidad||'; Solicitado:'||v_cantidad||')';
-            end if;	
-        
+            end if;
+
 			--Si es para el estado finalizado, se asume que pasó la verificación en caso de que las existencias sean menores
             --Verifica que la cantidad no sea nula, si lo es asume el campo solicitaddo. Si las existencia son menores, coloca el saldo
         	if p_estado = 'finalizado' then
@@ -136,16 +136,16 @@ BEGIN
                     else
                     	v_cant_aux = v_cantidad;
                     end if;
-                    
+
                 	update alm.tmovimiento_det set
                     cantidad = v_cant_aux
                     where id_movimiento_det = g_registros.id_movimiento_det;
                     raise notice '---------------ITEM:%    %  %',g_registros.id_item,v_cant_aux,g_registros.id_movimiento_det;
                 end if;
             end if;
-        
+
         end if;
-                       
+
     end loop;
 
     --Respuesta
