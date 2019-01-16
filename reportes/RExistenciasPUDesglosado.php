@@ -134,13 +134,13 @@ class RExistenciasPUDesglosado extends  ReportePDF{
                 $total_costo = 0;
             }
 
-            $costo = $record["cantidad"] * $record["costo_unitario"];
+            $costo = $record["saldo_actual"] * $record["costo_unitario"];
             $tbl .= '   <tr>
                             <td  align="center">' . $contador . '</td>
                             <td  align="left"><b>'.$record['codigo'].' '.$record['nombre'].'</b></td>
                             <td  align="center"><br>' . $record["unidad_medida"] . '</td>
                             <td  align="center" >' . number_format($record["saldo_actual"], 0, ',', '.') . '</td>
-                            <td  align="center" valign="center"><br>' . number_format($record["costo_unitario"], 0, ',', '.')  . '</td>
+                            <td  align="center" valign="center"><br>' . number_format($record["costo_unitario"], 2, ',', '.')  . '</td>
                             <td  align="right"><br>' . number_format($costo, 2, ',', '.') . '</td>
                         </tr>';
 
