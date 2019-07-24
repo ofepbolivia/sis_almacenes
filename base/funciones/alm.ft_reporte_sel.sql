@@ -32,6 +32,10 @@ DECLARE
 
   v_items				record;
   v_consulta_aux		varchar;
+
+  --(franklin.espinoza)
+  v_saldo_fisico		boolean;
+  v_saldo_valorado		boolean;
 BEGIN
 
 	v_nombre_funcion='alm.ft_reporte_sel';
@@ -77,11 +81,21 @@ BEGIN
                         v_where = v_where || ' (alm.f_get_saldo_fisico_item(itm.id_item, '||v_parametros.id_almacen||', date('''''|| v_parametros.fecha_hasta||'''''))) < almsto.cantidad_alerta_roja and ';
                     end if;
                 end if;
+                    --(fea)
                     if(v_parametros.saldo_cero = 'no') then
                         v_where = v_where || ' (alm.f_get_saldo_fisico_item(itm.id_item, '||v_parametros.id_almacen||', date('''''|| v_parametros.fecha_hasta||'''''))) > 0 and ';
                     end if;
 
+                    /*if(v_parametros.saldo_cero = 'no') then
+                        v_where = v_where || ' tsf.fisico > 0 and ';
+                    end if;*/
+
     			--raise exception 'v_parametros: %', v_parametros.filtro;
+                /*delete from alm.tsaldo_fisico_item;
+                delete from alm.tsaldo_valorado_item;
+                v_saldo_fisico = alm.f_insertar_saldo_fisico((v_parametros.fecha_hasta+1)::date);
+                v_saldo_valorado = alm.f_insertar_saldo_valorado((v_parametros.fecha_hasta+1)::date);*/
+
                 v_consulta:='select
                             id_item,
                             codigo,
@@ -90,7 +104,7 @@ BEGIN
                             unidad_medida end)::varchar as unidad_medida,
                             clasificacion,
                             cantidad,
-                            case when '''||v_parametros.porcentaje ||''' = ''ochenta'' then (costo*0.87) else costo end as costo,
+                            case when '''||v_parametros.porcentaje ||''' = ''ochenta'' and codigo != ''2.5.6.91'' then (costo*0.87) else costo end as costo,
                             cantidad_min,
                             cantidad_alerta_roja,
                             cantidad_alerta_amarilla
@@ -444,6 +458,7 @@ BEGIN
                 mdval.id_mov_det_val_origen, tpw.nro_tramite, item.id_item, item.codigo, item.descripcion, unidad_medida, clasificacion, nombre_almacen, tipo_movimiento
                 order by mov.fecha_mov, mov.codigo';
 
+                raise notice 'v_consulta: %', v_consulta;
 
                 execute(v_consulta);
             end loop;
@@ -475,6 +490,7 @@ BEGIN
                     from tt_rep_kardex_item
                     --order by  id_item, codigo
                 ';
+            --RAISE NOTICE 'v_consulta: %', v_consulta;
             return v_consulta;
 
 		end;
@@ -577,7 +593,7 @@ BEGIN
                       nro_tramite,
                       tipo_movimiento,
                       cantidad,
-                      case when '''||v_parametros.porcentaje ||''' = ''ochenta'' then (costo_unitario*0.87) else costo_unitario end as costo_unitario,
+                      /*case when '''||v_parametros.porcentaje ||''' = ''ochenta'' then (costo_unitario*0.87) else*/ costo_unitario /*end*/ as costo_unitario,
                       fecha_mov,
                       fecha_salida,
                       saldo_actual,

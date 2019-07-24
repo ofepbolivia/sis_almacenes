@@ -520,7 +520,7 @@ header("content-type: text/javascript; charset=UTF-8");
 					gwidth:200,
 					valueField: 'id_funcionario',
 					gdisplayField: 'nombre_funcionario',
-					baseParams: { fecha: new Date(), id_movimiento_tipo:0, es_combo_solicitud : 'si'},
+					baseParams: { fecha: new Date(), id_movimiento_tipo:0, es_combo_solicitud : 'si',estado_func:'todos'},
 					//renderer:function(value, p, record){return String.format('{0}', record.data['nombre_funcionario']);},
 					renderer: function(value, p, record){
 						var aux;
@@ -1200,8 +1200,8 @@ header("content-type: text/javascript; charset=UTF-8");
 				if (data.estado_mov == 'finalizado') {
 					this.getBoton('btnRevertir').enable();
 				}
-				this.getBoton('edit').disable();
-				this.getBoton('del').disable();
+				//this.getBoton('edit').disable();
+				//this.getBoton('del').disable();
 			} else {
 				this.getBoton('btnCancelar').enable();
 				this.getBoton('btnRevertir').disable();

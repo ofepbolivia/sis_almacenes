@@ -147,7 +147,7 @@ BEGIN
             LEFT JOIN segu.tusuario usu2 on usu2.id_usuario = mov.id_usuario_mod
             LEFT JOIN param.tdepto dpto on dpto.id_depto = mov.id_depto_conta
             left join param.tplantilla pla on pla.id_plantilla = mov.id_plantilla
-			WHERE ';
+			WHERE mov.estado_reg != ''inactivo'' and ';
 
         v_consulta:=v_consulta||v_filtro;
         v_consulta:=v_consulta||v_parametros.filtro;
@@ -231,7 +231,7 @@ BEGIN
             LEFT JOIN segu.tusuario usu2 on usu2.id_usuario = mov.id_usuario_mod
             LEFT JOIN param.tdepto dpto on dpto.id_depto = mov.id_depto_conta
             left join param.tplantilla pla on pla.id_plantilla = mov.id_plantilla
-            WHERE ';
+            WHERE mov.estado_reg != ''inactivo'' and ';
 
 
         v_consulta:=v_consulta||v_filtro;
@@ -355,7 +355,7 @@ BEGIN
             and now() between fun.fecha_asignacion and COALESCE(fun.fecha_finalizacion,now())
             and fun.id_uo_funcionario < 10000000
             left join param.vproveedor prov on prov.id_proveedor = mov.id_proveedor
-            where mov.estado_mov != ''cancelado'' and ';
+            where mov.estado_mov != ''cancelado'' and detval.cantidad > 0 and ';
 
         v_consulta:=v_consulta||v_parametros.filtro;
         v_consulta = v_consulta || ' group by item.codigo,

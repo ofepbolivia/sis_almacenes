@@ -368,11 +368,15 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.init();
 			
 			this.getComponente('catalogo').on('select', function(e, component, index) {
+                
+
 			    if (e.value == 'Todos los Items') {
                     this.getComponente('id_items').reset();
                     this.getComponente('id_items').disable();
                     this.getComponente('clasificacion').reset();
                     this.getComponente('clasificacion').disable();
+                    this.getComponente('id_items').c = true;
+                    this.getComponente('clasificacion').modificado = true;
                     this.getComponente('id_items').allowBlank=true;
                     this.getComponente('clasificacion').allowBlank=true;
                     
@@ -380,10 +384,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.getComponente('id_items').enable();
                     this.getComponente('clasificacion').reset();
                     this.getComponente('clasificacion').disable();
+                    this.getComponente('clasificacion').modificado = true;
                     this.getComponente('id_items').allowBlank=false;
                     this.getComponente('clasificacion').allowBlank=true;
                 } else if(e.value == 'Por Clasificacion') {
                     this.getComponente('id_items').reset();
+                    this.getComponente('id_items').modificado = true;
                 	this.getComponente('id_items').disable();
                     this.getComponente('clasificacion').enable();
                     this.getComponente('id_items').allowBlank=true;

@@ -42,7 +42,7 @@ class ACTMovimiento extends ACTbase {
         if($this->objParam->getParametro('pes_estado')=='entregado'){
             $this->objParam->addFiltro("mov.estado_mov in (''finalizado'')");
         }
-
+        $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
             $this->objReporte = new Reporte($this->objParam, $this);
             $this->res = $this->objReporte->generarReporteListado('MODMovimiento', 'listarMovimiento');
@@ -53,7 +53,7 @@ class ACTMovimiento extends ACTbase {
             if ($this->objParam->getParametro('tipo') != null) {
                 $this->objParam->addFiltro(" movtip.tipo = ''" . $this->objParam->getParametro('tipo') . "'' ");
             }
-            $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
+            //$this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
             $this->objFunc = $this->create('MODMovimiento');
             $this->res = $this->objFunc->listarMovimiento();
         }

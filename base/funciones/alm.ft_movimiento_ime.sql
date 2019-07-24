@@ -417,7 +417,9 @@ BEGIN
                 raise exception '%', 'El movimiento no puede eliminarse porque viene de un Preingreso finalizado';
             end if;
 
-            delete from alm.tmovimiento
+            --delete from alm.tmovimiento
+            update alm.tmovimiento set
+            	estado_reg = 'inactivo'
             where id_movimiento=v_parametros.id_movimiento;
 
             v_respuesta=pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento eliminado');
@@ -831,7 +833,7 @@ BEGIN
 	elseif(p_transaccion='SAL_SIGEMOV_IME')then
         begin
         --obtenermos datos basicos
-
+		--RAISE EXCEPTION 'ESTIMADO USUARIO NO PUEDE PASAR A SIGUIENTE ESTADO FAVOR COMUNCICARSE CON FRANKLIN ESPINOZA (71721380)';
           select
             m.id_proceso_wf,
             m.id_estado_wf,

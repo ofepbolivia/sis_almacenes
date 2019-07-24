@@ -13,13 +13,13 @@ SISTEMA DE ALMACENES
  DESCRIPCIÓN: 	Función para listar las existencias de los materiales
  AUTOR: 		RCM
  FECHA:			02/01/2013
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************
  HISTORIA DE MODIFICACIONES:
 
  DESCRIPCIÓN:
- AUTOR:       
- FECHA:      
+ AUTOR:
+ FECHA:
 
 ***************************************************************************/
 --------------------------
@@ -34,11 +34,11 @@ DECLARE
     v_rec 				record;
 
 BEGIN
-    
-	v_nombre_funcion = 'alm.f_existencias_almacen_sel';  
-    
-    v_consulta:='
-	        	select 
+
+	v_nombre_funcion = 'alm.f_existencias_almacen_sel';
+
+    /*v_consulta:='
+	        	select
 				itm.id_item,
 				itm.codigo,
 				case when itm.codigo like ''3.4.1%'' then itm.descripcion
@@ -50,34 +50,62 @@ BEGIN
 				alm.f_get_saldo_valorado_item(itm.id_item, '||p_id_almacen||', date('''||p_fecha_hasta||''')) costo,
                 almsto.cantidad_min,
                 almsto.cantidad_alerta_amarilla,
-                almsto.cantidad_alerta_roja                
+                almsto.cantidad_alerta_roja
 				from alm.titem itm
 				inner join param.tunidad_medida umed on umed.id_unidad_medida = itm.id_unidad_medida
-                inner join alm.talmacen_stock almsto on almsto.id_item = itm.id_item and 
-                							almsto.estado_reg = ''activo'' and  almsto.id_almacen = ' || p_id_almacen ||'               								
+                inner join alm.talmacen_stock almsto on almsto.id_item = itm.id_item and
+                							almsto.estado_reg = ''activo'' and  almsto.id_almacen = ' || p_id_almacen ||'
 				inner join alm.tclasificacion cla on cla.id_clasificacion = itm.id_clasificacion ' ||
-				p_condicion||'itm.codigo is not null and ';
-			
+				p_condicion||'itm.codigo is not null and ';*/
+
+    v_consulta:='
+	        	select
+				itm.id_item,
+				itm.codigo,
+				case when itm.codigo like ''3.4.1%'' then itm.descripcion
+		    	when itm.codigo like ''3.4.2%'' then itm.descripcion
+            	else itm.nombre end as nombre,
+				umed.codigo unidad_medida,
+				(alm.f_get_codigo_clasificacion_rec(itm.id_clasificacion,''padres'') || '' - ''||cla.nombre)::varchar clasificacion,
+				alm.f_get_saldo_fisico_item(itm.id_item, '||p_id_almacen||', date('''|| p_fecha_hasta||''')) cantidad,
+                --tsf.fisico as cantidad,
+				alm.f_get_saldo_valorado_item(itm.id_item, '||p_id_almacen||', date('''||p_fecha_hasta||''')) costo,
+                --tsv.valorado as costo,
+                almsto.cantidad_min,
+                almsto.cantidad_alerta_amarilla,
+                almsto.cantidad_alerta_roja
+				from alm.titem itm
+				inner join param.tunidad_medida umed on umed.id_unidad_medida = itm.id_unidad_medida
+                inner join alm.talmacen_stock almsto on almsto.id_item = itm.id_item and almsto.estado_reg = ''activo'' and  almsto.id_almacen = ' || p_id_almacen ||'
+				inner join alm.tclasificacion cla on cla.id_clasificacion = itm.id_clasificacion
+
+                --inner join alm.tsaldo_fisico_item tsf on tsf.id_item = itm.id_item
+     			--inner join alm.tsaldo_valorado_item tsv on tsv.id_item = itm.id_item
+                ' ||
+				p_condicion||' itm.codigo is not null and ';
+
+
+
     v_consulta:=v_consulta||p_filtro;
     v_consulta:=v_consulta||' order by alm.f_get_codigo_clasificacion_rec(itm.id_clasificacion,''padres'')';
-    
+    raise notice 'v_consulta_fea: %', v_consulta;
     for v_rec in execute(v_consulta) loop
     	return next v_rec;
     end loop;
-    
-    return; 
+
+    return;
 
 
 
 EXCEPTION
-				
+
 	WHEN OTHERS THEN
 		v_resp='';
 		v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);
 		v_resp = pxp.f_agrega_clave(v_resp,'codigo_error',SQLSTATE);
 		v_resp = pxp.f_agrega_clave(v_resp,'procedimientos',v_nombre_funcion);
 		raise exception '%',v_resp;
-				        
+
 END;
 $body$
 LANGUAGE 'plpgsql'

@@ -61,7 +61,8 @@ BEGIN
               id_movimiento integer,
               id_movimiento_det_valorado integer,
               id_mov_det_val_origen integer,
-              nro_tramite varchar
+              nro_tramite varchar,
+              codigo_item varchar
             ) on commit drop;
 
             --2. Carga el saldo anterior
@@ -90,7 +91,7 @@ BEGIN
             insert into tt_rep_kardex_item(
             fecha,nro_mov,almacen,motivo,ingreso,salida,
             ingreso_val,salida_val,costo_unitario,id_movimiento,
-            id_movimiento_det_valorado, id_mov_det_val_origen, nro_tramite
+            id_movimiento_det_valorado, id_mov_det_val_origen, nro_tramite, codigo_item
             )
             select
             mov.fecha_mov as fecha,
@@ -121,7 +122,8 @@ BEGIN
             mov.id_movimiento,
             mdval.id_movimiento_det_valorado,
             mdval.id_mov_det_val_origen,
-            tpw.nro_tramite
+            tpw.nro_tramite,
+            item.codigo as codigo_item
             from alm.tmovimiento mov
             inner join wf.tproceso_wf tpw on tpw.id_proceso_wf = mov.id_proceso_wf
             inner join alm.tmovimiento_det mdet
@@ -146,7 +148,7 @@ BEGIN
             and mdet.id_item = ' || v_parametros.id_item ||'
             group by mov.fecha_mov, mov.codigo, alma.codigo, mtipo.nombre, mov.id_movimiento, mtipo.tipo,mdval.costo_unitario,
 
-            mdval.id_movimiento_det_valorado, mdval.id_mov_det_val_origen, tpw.nro_tramite
+            mdval.id_movimiento_det_valorado, mdval.id_mov_det_val_origen, tpw.nro_tramite, codigo_item
             order by mov.fecha_mov, mov.codigo';
 
             raise notice 'RRR: %',v_consulta;
@@ -176,7 +178,7 @@ BEGIN
               			round(costo_unitario,6),
                         round(ingreso_val,6),
                         round(salida_val,6),
-              			round(saldo_val,6),
+              			case when codigo_item = '2.5.6.91' then round(saldo_val,6) else round(saldo_val,6)*0.87 end as saldo_val,
                         id_movimiento,
                         id_movimiento_det_valorado,
                         id_mov_det_val_origen,
