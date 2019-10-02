@@ -61,7 +61,7 @@ class ACTMovimiento extends ACTbase {
     }
 
     function insertarMovimiento() {
-       
+
         $this->objFunc = $this->create('MODMovimiento');
         if ($this->objParam->insertar('id_movimiento')) {
             $this->res = $this->objFunc->insertarMovimiento();
@@ -73,6 +73,35 @@ class ACTMovimiento extends ACTbase {
     function insertarMovimientoREST() {
         $this->objFunc = $this->create('MODMovimiento');
         $this->res = $this->objFunc->insertarMovimientoREST();
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    function insertarMovimientosREST() {
+        $this->objFunc = $this->create('MODMovimiento');
+        $this->res = $this->objFunc->insertarMovimientosREST();
+
+        $this->res->imprimirRespuesta(json_encode($this->res->getDatos()));
+        //$this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function revertirMovimientoREST(){
+        $this->objFunc = $this->create('MODMovimiento');
+        $this->res = $this->objFunc->revertirMovimientoREST();
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function revertirMovimientoTranREST(){
+        $this->objFunc = $this->create('MODMovimiento');
+        $this->res = $this->objFunc->revertirMovimientoTranREST();
+
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function actualizarEstadoMovimientoREST(){
+        $this->objFunc=$this->create('MODMovimiento');
+
+        $this->res=$this->objFunc->actualizarEstadoMovimientoREST($this->objParam);
 
         $this->res->imprimirRespuesta($this->res->generarJson());
     }

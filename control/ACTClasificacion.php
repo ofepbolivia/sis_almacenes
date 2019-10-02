@@ -41,7 +41,13 @@ class ACTClasificacion extends ACTbase {
 
         $this->objParam->defecto('dir_ordenacion', 'asc');
         if ($this->objParam->getParametro('filtro') != '') {
-            $this->objParam->addFiltro(" (it.codigo) similar to ''%(" . str_replace(',', '|', strtolower($this->objParam->getParametro('filtro')))  .")%''");
+            //$this->objParam->addFiltro(" (it.codigo) similar to ''%(" . str_replace(',', '|', strtolower($this->objParam->getParametro('filtro')))  .")%''");
+            $codigos =  explode(',',strtolower($this->objParam->getParametro('filtro')));
+            foreach($codigos as &$valor){
+                $valor = $valor . '.%';
+            }
+            $this->objParam->addParametro('filtro', $codigos);
+            $this->objParam->addFiltro(" it.codigo similar to ''(" . implode('|',  $this->objParam->getParametro('filtro'))  .")''");
         }
 
         $this->objFunc = $this->create('MODClasificacion');

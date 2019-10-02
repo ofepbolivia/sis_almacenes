@@ -38,7 +38,7 @@ BEGIN
 	/*********************************
  	#TRANSACCION:  'SAL_ITMALM_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:			rcm
+ 	#AUTOR:			rcm mod Alan
  	#FECHA:			01/08/2013
 	***********************************/
 
@@ -84,7 +84,14 @@ BEGIN
             where mov.estado_mov = ''finalizado''
             and mtipo.tipo = ''salida''
             and date_trunc(''day'',mov.fecha_mov) <=  ''' || v_fecha || '''
-            and mdet.id_item = ' || v_parametros.id_item || ')
+            and mdet.id_item = ' || v_parametros.id_item || '
+            union all
+            SELECT mov.id_almacen, md.id_item, coalesce(-Sum(md.cantidad_solicitada), 0)
+			FROM   alm.tmovimiento_det md
+					inner join alm.tmovimiento mov on mov.id_movimiento=md.id_movimiento
+			WHERE  md.id_item = '|| v_parametros.id_item ||'
+					AND md.estado_dotacion = ''comprometido''
+					group by mov.id_almacen, md.id_item)
             select
             s.id_almacen, s.id_item, sum(s.cantidad),
             a.codigo,a.nombre as almacen
@@ -181,4 +188,8 @@ LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
+PARALLEL UNSAFE
 COST 100;
+
+ALTER FUNCTION alm.f_item_existencia_almacen_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

@@ -122,7 +122,7 @@ header("content-type: text/javascript; charset=UTF-8");
             });
             this.argumentExtraSubmit = {
                 'registros': rec
-            }; 
+            };
             /*this.mostrarComponente(this.cmpMovimientoTipo);
              this.mostrarComponente(this.cmpFechaMov);
              this.mostrarComponente(this.cmpSubtipoMovimiento);
@@ -345,6 +345,10 @@ header("content-type: text/javascript; charset=UTF-8");
                 this.getBoton('fin_grupo').enable();
                 this.getBoton('comail').enable();
             }
+            if(data.codigo_tran.length != 0){
+                this.getBoton('ini_estado').disable();
+                this.getBoton('ant_estado').disable();
+            }
             return tb
         },
         liberaMenu:function(){
@@ -358,12 +362,12 @@ header("content-type: text/javascript; charset=UTF-8");
             return tb
         },
         south:
-        {
-            url:'../../../sis_almacenes/vista/movimientoDetalle/MovimientoDetalleAlm.php',
-            title:'Detalle',
-            height:'50%',
-            cls:'MovimientoDetalleAlm'
-        },
+            {
+                url:'../../../sis_almacenes/vista/movimientoDetalle/MovimientoDetalleAlm.php',
+                title:'Detalle',
+                height:'50%',
+                cls:'MovimientoDetalleAlm'
+            },
         retroceder: function(resp){
             console.log(resp)
             var d= this.sm.getSelected().data;

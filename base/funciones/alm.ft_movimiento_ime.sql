@@ -69,6 +69,10 @@ DECLARE
     v_id_proceso_wf					integer;
     v_id_estado_wf					integer;
     v_codigo_estado					varchar;
+	v_codigo_tran					varchar;
+    v_movimientos					record;
+    v_mov							record;
+    v_id_movs						integer ARRAY;
 
     va_id_tipo_estado 				integer [];
     va_codigo_estado 				varchar [];
@@ -115,6 +119,7 @@ DECLARE
 	v_usuario						varchar;
 
     v_records						integer[];
+	v_control_salida_id   		text;
 
 BEGIN
 
@@ -229,7 +234,8 @@ BEGIN
                     costo_unitario,
                     fecha_caducidad,
                     observaciones,
-                    id_concepto_ingas
+                    id_concepto_ingas,
+                    estado_dotacion
                 ) VALUES (
                     p_id_usuario,
                     now(),
@@ -241,7 +247,8 @@ BEGIN
                     NULL,
                     NULL,
                     NULL,
-                    NULL
+                    NULL,
+                    'comprometido'
                 ) RETURNING id_movimiento_det into v_id_movimiento_det;
 
                 insert into alm.tmovimiento_det_valorado (
@@ -314,7 +321,7 @@ BEGIN
         v_id_tipo_estado_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_tipo_estado_wf','','nada','valor')::integer;
         v_id_funcionario_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_funcionario_wf','','nada','valor')::integer;
 
-        select
+        /*select
         v_id_movimiento as id_movimiento,
         v_parametros.id_almacen as id_almacen,
         'siguiente'::varchar as operacion,
@@ -325,10 +332,379 @@ BEGIN
         into g_registros;
 
         --Llama a la función de registro del movimiento
-        v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+        v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));*/
 
         v_respuesta =pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento almacenado correctamente');
         v_respuesta =pxp.f_agrega_clave(v_respuesta,'id_movimiento',v_id_movimiento::varchar);
+
+        return v_respuesta;
+	end;
+
+    /*********************************
+     #TRANSACCION:  'SAL_MOVS_REST_INS'
+     #DESCRIPCION:  Inserta un movimiento con su detalle y lo finaliza
+     #AUTOR:        Gonzalo Sarmiento
+     #FECHA:        03-10-2012
+    ***********************************/
+	elsif(p_transaccion='SAL_MOVS_REST_INS') then
+    begin
+		CREATE GLOBAL TEMPORARY TABLE temp_movimientos
+        (
+           control_salida_id	INTEGER,
+           id_movimiento		INTEGER
+        )
+        ON COMMIT DELETE ROWS;
+           for v_mov in (select *
+                                        from json_populate_recordset(null::alm.movimiento,v_parametros.movimientos::json)
+                                        limit 1)loop
+                select g.id_gestion into v_id_gestion
+                from param.tgestion g
+                where g.gestion = to_char(v_mov.fecha_mov,'YYYY')::integer;
+        end loop;
+    	FOR v_movimientos in (select *
+                                        from json_populate_recordset(null::alm.movimiento,v_parametros.movimientos::json))loop
+        	--raise exception 'llega %', v_id_movimiento::varchar;
+                /*select g.id_gestion into v_id_gestion
+                from param.tgestion g
+                where g.gestion = to_char(v_movimientos.fecha_mov,'YYYY')::integer;*/
+
+                if (v_movimientos.codigo_tran is not null) then
+
+                    select
+                      v_movimientos.id_movimiento_tipo,
+                      v_movimientos.id_almacen,
+                      v_movimientos.id_funcionario,
+                      NULL,
+                      NULL,
+                      v_movimientos.fecha_mov,
+                      v_movimientos.descripcion,
+                      v_movimientos.codigo_tran,
+                      NULL,
+                      NULL,
+                      v_id_gestion as id_gestion,
+                      NULL
+                      into g_registros;
+
+                else
+                    select
+                    v_movimientos.id_movimiento_tipo,
+                    v_movimientos.id_almacen,
+                    v_movimientos.id_funcionario,
+                    NULL,
+                    NULL,
+                    v_movimientos.fecha_mov,
+                    v_movimientos.descripcion,
+                    NULL,
+                    NULL,
+                    v_id_gestion as id_gestion,
+                    NULL
+                    into g_registros;
+
+                end if;
+
+        		--raise exception 'registros %', g_registros::text;
+                --Llama a la función de registro del movimiento
+                v_id_movimiento = alm.f_insercion_movimiento(p_id_usuario,hstore(g_registros));
+
+                for v_registros in (select *
+                                        from json_populate_recordset(null::alm.detalle_movimiento,v_movimientos.detalle::json))loop
+						--raise exception 'llega %', v_registros.cantidad;
+                        v_id_item = NULL;
+                        select id_item into v_id_item
+                        from alm.titem i
+                        where i.codigo = v_registros.codigo_item;
+
+                        if (v_id_item is null) then
+                            raise exception 'No existe un item con codigo: %', v_registros.codigo_item;
+                        end if;
+
+                        insert into alm.tmovimiento_det(
+                            id_usuario_reg,
+                            fecha_reg,
+                            estado_reg,
+                            id_movimiento,
+                            id_item,
+                            cantidad,
+                            cantidad_solicitada,
+                            costo_unitario,
+                            fecha_caducidad,
+                            observaciones,
+                            id_concepto_ingas,
+                            estado_dotacion
+                        ) VALUES (
+                            p_id_usuario,
+                            now(),
+                            'activo',
+                            v_id_movimiento,
+                            v_id_item,
+                            v_registros.cantidad,
+                            v_registros.cantidad,
+                            NULL,
+                            NULL,
+                            NULL,
+                            NULL,
+                            'comprometido'
+                        ) RETURNING id_movimiento_det into v_id_movimiento_det;
+
+                        insert into alm.tmovimiento_det_valorado (
+                            id_usuario_reg,
+                            fecha_reg,
+                            estado_reg,
+                            id_movimiento_det,
+                            cantidad,
+                            costo_unitario,
+                            aux_saldo_fisico
+                        ) VALUES (
+                            p_id_usuario,
+                            now(),
+                            'activo',
+                            v_id_movimiento_det,
+                            v_registros.cantidad,
+                            NULL,
+                            v_registros.cantidad
+                        );
+                --v_respuesta =pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento almacenado correctamente');
+        		--v_respuesta =pxp.f_agrega_clave(v_respuesta,'id_movimiento',v_id_movimiento::varchar);
+                end loop;
+
+
+                --Llama a la función de registro del movimiento
+                --observaciones a analizar franklin
+                /*v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+
+                v_id_tipo_estado_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_tipo_estado_wf','','nada','valor')::integer;*/
+
+                select
+                m.id_proceso_wf, m.id_estado_wf, m.estado_mov
+                into
+                v_id_proceso_wf, v_id_estado_wf, v_estado_mov
+                from alm.tmovimiento m
+                where m.id_movimiento=v_id_movimiento;
+
+                --Siguiente estado correspondiente al proceso del WF
+                SELECT
+                ps_id_tipo_estado, ps_codigo_estado, ps_disparador, ps_regla, ps_prioridad
+                into
+                va_id_tipo_estado, va_codigo_estado, va_disparador, va_regla, va_prioridad
+                FROM wf.f_obtener_estado_wf(v_id_proceso_wf, v_id_estado_wf,NULL,'siguiente');
+
+                select
+                v_id_movimiento as id_movimiento,
+                v_movimientos.id_almacen as id_almacen,
+                'siguienteRest'::varchar as operacion,
+                v_movimientos.id_funcionario_aprobador as id_funcionario_wf,
+                NULL as fecha_mov,
+                va_id_tipo_estado[1]::varchar as id_tipo_estado,
+                NULL as obs
+                into g_registros;
+        		--raise exception 'registros %', g_registros;
+                --Llama a la función de registro del movimiento
+                v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+
+
+
+                --Generación de Alertas
+
+                /*v_mostrar_alerts = alm.f_generar_alertas_mov(p_id_usuario, v_id_movimiento);
+
+                if v_mostrar_alerts then
+                    v_respuesta=pxp.f_agrega_clave(v_respuesta,'alerts',v_mostrar_alerts::varchar);
+                end if;*/
+
+                --raise 'registrps %', g_registros;
+                /*v_id_tipo_estado_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_tipo_estado_wf','','nada','valor')::integer;
+                v_id_funcionario_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_funcionario_wf','','nada','valor')::integer;*/
+
+                INSERT INTO temp_movimientos VALUES (v_movimientos.control_salida_id ,v_id_movimiento);
+
+			end loop;
+
+			/*SELECT json_agg(json_build_object(	te.control_salida_id :: text,
+												te.id_movimiento :: text))
+			INTO   v_consulta
+			FROM   temp_movimientos te;*/
+
+            SELECT  array_to_json(array_agg(to_json(tm.*)))
+            INTO 	v_consulta
+			FROM 	temp_movimientos tm;
+
+            v_result =pxp.f_agrega_clave(v_result,'mensaje','Movimiento almacenado correctamente');
+        	v_result =pxp.f_agrega_clave(v_result,'movimientos',v_consulta);
+
+            return v_result;
+	end;
+
+
+ /*********************************
+     #TRANSACCION:  'SAL_REVREST_MOD'
+     #DESCRIPCION:  Inserta un movimiento con su detalle y lo finaliza
+     #AUTOR:        Alan Felipez, Yamil Medina
+     #FECHA:        03-10-2012
+    ***********************************/
+	elsif(p_transaccion='SAL_REVREST_MOD') then
+  	begin
+
+
+		--if (pxp.f_existe_parametro(p_tabla,'codigo_tran')) then
+
+			for v_registros in (SELECT id_proceso_wf,
+                                       id_estado_wf,
+                                       id_funcionario,
+                                       id_movimiento,
+                                       estado_mov,
+                                       codigo_tran
+                                FROM   alm.tmovimiento
+                                WHERE  id_movimiento = any (translate(v_parametros.id_movimientos, '[]', '{}')::int[])
+                                AND    codigo_tran is not NULL)loop
+
+				if (v_registros.estado_mov = 'aprobado' or v_registros.estado_mov = 'prefin') then
+
+                	--v_movimientos = v_movimientos || v_registros.id_movimiento;
+                    SELECT te.id_tipo_estado into v_id_tipo_estado
+                    FROM   wf.tproceso_wf pw
+                           INNER JOIN wf.ttipo_proceso tp
+                                   ON pw.id_tipo_proceso = tp.id_tipo_proceso
+                           INNER JOIN wf.ttipo_estado te
+                                   ON te.id_tipo_proceso = tp.id_tipo_proceso
+                                      AND te.codigo = 'anulado'
+                    WHERE  pw.id_proceso_wf = v_registros.id_proceso_wf;
+
+                    if v_id_tipo_estado is null  then
+                        raise exception 'No se parametrizo el estado "anulado" para reclamos';
+                    end if;
+
+                    -- pasamos el reclamo  al siguiente anulado
+                    v_id_estado_actual =  wf.f_registra_estado_wf(
+                        v_id_tipo_estado,
+                        v_registros.id_funcionario,
+                        v_registros.id_estado_wf,
+                        v_registros.id_proceso_wf,
+                        p_id_usuario,
+                        null,
+                        null,
+                        null,
+                        'Revercion de movimiento'|| COALESCE(v_registros.codigo_tran,'--')
+                    );
+
+                    update 	alm.tmovimiento
+                    set 	estado_mov = 'anulado', fecha_mod = now()
+                    where 	id_movimiento  = v_registros.id_movimiento;
+
+                    update 	alm.tmovimiento_det
+                    set 	estado_dotacion = 'revertido'
+                    where 	id_movimiento = v_registros.id_movimiento;
+                    v_id_movs = v_id_movs || v_registros.id_movimiento;
+               --ELSE
+               		--raise exception 'no se puede revertir un movimiento finalizado';
+               end if;
+            end loop;
+        --else
+        	--raise 'sin codigo de transaccion';
+       -- end if;
+
+		/*select
+        v_id_movimiento as id_movimiento,
+        v_parametros.id_almacen as id_almacen,
+        'verificar'::varchar as operacion,
+        NULL as id_funcionario_wf,
+        NULL as fecha_mov,
+        NULL as id_tipo_estado,
+        NULL as obs
+        into g_registros;
+
+        --Llama a la función de registro del movimiento
+        v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+
+
+        --Llama a la función de registro del movimiento
+        v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+
+        --Generación de Alertas
+        v_mostrar_alerts = alm.f_generar_alertas_mov(p_id_usuario, v_id_movimiento);
+
+        if v_mostrar_alerts then
+            v_respuesta=pxp.f_agrega_clave(v_respuesta,'alerts',v_mostrar_alerts::varchar);
+        end if;
+
+        v_id_tipo_estado_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_tipo_estado_wf','','nada','valor')::integer;
+        v_id_funcionario_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_funcionario_wf','','nada','valor')::integer;*/
+
+        --raise exception 'id movimiento %', v_id_movimiento;
+        v_respuesta =pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento almacenado correctamente');
+        --v_respuesta =pxp.f_agrega_clave(v_respuesta,'id_movimientos',array_to_string(v_id_movs, ',', '*')::varchar);
+        v_respuesta =pxp.f_agrega_clave(v_respuesta,'respuesta','ok');
+
+        return v_respuesta;
+	end;
+
+    /*********************************
+     #TRANSACCION:  'SAL_REV_TRANREST_MOD'
+     #DESCRIPCION:  Inserta un movimiento con su detalle y lo finaliza
+     #AUTOR:        Gonzalo Sarmiento
+     #FECHA:        03-10-2012
+    ***********************************/
+	elsif(p_transaccion='SAL_REV_TRANREST_MOD') then
+  	begin
+
+
+		if (pxp.f_existe_parametro(p_tabla,'codigo_tran')) then
+        	v_result = 'ok';
+			for v_registros in (SELECT id_proceso_wf,
+                                       id_estado_wf,
+                                       id_funcionario,
+                                       id_movimiento,
+                                       estado_mov
+                                FROM   alm.tmovimiento
+                                WHERE  codigo_tran  = any (translate(v_parametros.codigo_tran, '[]', '{}')::varchar[]))loop
+
+				if (v_registros.estado_mov = 'aprobado' or v_registros.estado_mov = 'prefin') then
+                    SELECT te.id_tipo_estado into v_id_tipo_estado
+                    FROM   wf.tproceso_wf pw
+                           INNER JOIN wf.ttipo_proceso tp
+                                   ON pw.id_tipo_proceso = tp.id_tipo_proceso
+                           INNER JOIN wf.ttipo_estado te
+                                   ON te.id_tipo_proceso = tp.id_tipo_proceso
+                                      AND te.codigo = 'anulado'
+                    WHERE  pw.id_proceso_wf = v_registros.id_proceso_wf;
+
+                    if v_id_tipo_estado is null  then
+                        raise exception 'No se parametrizo el estado "anulado" para reclamos';
+                    end if;
+
+                    -- pasamos el reclamo  al siguiente anulado
+                    v_id_estado_actual =  wf.f_registra_estado_wf(
+                        v_id_tipo_estado,
+                        v_registros.id_funcionario,
+                        v_registros.id_estado_wf,
+                        v_registros.id_proceso_wf,
+                        p_id_usuario,
+                        null,
+                        null,
+                        null,
+                        'Revercion de movimiento'|| COALESCE(v_parametros.codigo_tran,'--')
+                    );
+
+                    update 	alm.tmovimiento
+                    set 	estado_mov = 'anulado', fecha_mod = now()
+                    where 	id_movimiento  = v_registros.id_movimiento;
+
+                    update 	alm.tmovimiento_det
+                    set 	estado_dotacion = 'revertido'
+                    where 	id_movimiento = v_registros.id_movimiento;
+                    v_id_movs = v_id_movs || v_registros.id_movimiento;
+
+               ELSE
+               		--raise exception 'no se puede revertir un movimiento finalizado';
+                    v_result = 'movimiento:, %' || v_registros.id_movimiento || ' ,se encuentra en estado finalizado';
+               end if;
+            end loop;
+
+        else
+        	raise 'sin codigo de transaccion';
+        end if;
+		--raise exception 'movvv %', v_id_movs::varchar;
+        v_respuesta =pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento revertido correctamente');
+       v_respuesta =pxp.f_agrega_clave(v_respuesta,'respuesta',v_result);
 
         return v_respuesta;
 	end;
@@ -678,11 +1054,19 @@ BEGIN
 	elseif(p_transaccion='SAL_ANTEMOV_IME')then
         begin
 
+		---------------------
+        --Verificamos el estado del movimiento
+        ---------------------
+		select estado_mov,codigo_tran into v_estado_mov, v_codigo_tran
+        from alm.tmovimiento
+        where id_movimiento = v_parametros.id_movimiento;
         --------------------------------------------------
         --REtrocede al estado inmediatamente anterior
         -------------------------------------------------
          IF  v_parametros.operacion = 'cambiar' THEN
-
+			if (v_estado_mov = 'aprobado' and v_codigo_tran is not null) then
+            	v_respuesta='no se puede volver al estado borrador una salida de trabajo aprobada';
+            else
                raise notice 'es_estado_wf %',v_parametros.id_estado_wf;
 
                       --recupera estado anterior segun Log del WF
@@ -740,83 +1124,86 @@ BEGIN
 
                       --Devuelve la respuesta
                         return v_respuesta;
-
+				end if;
            ----------------------------------------------------------------------
            -- PAra retornar al estado borrador de la solicitud de manera directa
            ---------------------------------------------------------------------
            ELSEIF  v_parametros.operacion = 'inicio' THEN
+			if ((v_estado_mov = 'aprobado' or v_estado_mov = 'prefin') and v_codigo_tran is not null) then
+            	v_respuesta='no se puede volver al estado borrador una salida de trabajo aprobada o en prefin';
+            else
+               SELECT
+                mov.id_estado_wf,
+                pw.id_tipo_proceso,
+                pw.id_proceso_wf
+               into
+                v_id_estado_wf,
+                v_id_tipo_proceso,
+                v_id_proceso_wf
 
-           SELECT
-            mov.id_estado_wf,
-            pw.id_tipo_proceso,
-           	pw.id_proceso_wf
-           into
-            v_id_estado_wf,
-            v_id_tipo_proceso,
-            v_id_proceso_wf
+               FROM alm.tmovimiento mov
+               inner join wf.tproceso_wf pw on pw.id_proceso_wf = mov.id_proceso_wf
+               WHERE  mov.id_movimiento = v_parametros.id_movimiento;
 
-           FROM alm.tmovimiento mov
-           inner join wf.tproceso_wf pw on pw.id_proceso_wf = mov.id_proceso_wf
-           WHERE  mov.id_movimiento = v_parametros.id_movimiento;
+                 raise notice 'BUSCAMOS EL INICIO PARA %',v_id_tipo_proceso;
 
-             raise notice 'BUSCAMOS EL INICIO PARA %',v_id_tipo_proceso;
+                -- recuperamos el estado inicial segun tipo_proceso
 
-            -- recuperamos el estado inicial segun tipo_proceso
+                 SELECT
+                   ps_id_tipo_estado,
+                   ps_codigo_estado
+                 into
+                   v_id_tipo_estado,
+                   v_codigo_estado
+                 FROM wf.f_obtener_tipo_estado_inicial_del_tipo_proceso(v_id_tipo_proceso);
 
-             SELECT
-               ps_id_tipo_estado,
-               ps_codigo_estado
-             into
-               v_id_tipo_estado,
-               v_codigo_estado
-             FROM wf.f_obtener_tipo_estado_inicial_del_tipo_proceso(v_id_tipo_proceso);
+                 --recupera el funcionario segun ultimo log borrador
+                 raise notice 'CODIGO ESTADO BUSCADO %',v_codigo_estado ;
 
-             --recupera el funcionario segun ultimo log borrador
-             raise notice 'CODIGO ESTADO BUSCADO %',v_codigo_estado ;
-
-             SELECT
-               ps_id_funcionario,
-               ps_codigo_estado ,
-               ps_id_depto
-             into
-              v_id_funcionario,
-              v_codigo_estado,
-              v_id_depto
-
-             FROM wf.f_obtener_estado_segun_log_wf(v_id_estado_wf, v_id_tipo_estado);
-
-              raise notice 'CODIGO ESTADO ENCONTRADO %',v_codigo_estado ;
-
-             --registra estado borrador
-              v_id_estado_actual = wf.f_registra_estado_wf(
-                  v_id_tipo_estado,
+                 SELECT
+                   ps_id_funcionario,
+                   ps_codigo_estado ,
+                   ps_id_depto
+                 into
                   v_id_funcionario,
-                  v_parametros.id_estado_wf,
-                  v_id_proceso_wf,
-                  p_id_usuario,
-                  v_parametros._id_usuario_ai,
-                  v_parametros._nombre_usuario_ai,
-                  v_id_depto,
-                  v_parametros.obs);
+                  v_codigo_estado,
+                  v_id_depto
 
-              -- actualiza estado en el movimiento
-                update alm.tmovimiento  m set
-                   id_estado_wf =  v_id_estado_actual,
-                   estado_mov = v_codigo_estado,
-                   id_usuario_mod=p_id_usuario,
-                   fecha_mod=now(),
-                   id_usuario_ai = v_parametros._id_usuario_ai,
-                   usuario_ai = v_parametros._nombre_usuario_ai
-                 where id_movimiento = v_parametros.id_movimiento;
+                 FROM wf.f_obtener_estado_segun_log_wf(v_id_estado_wf, v_id_tipo_estado);
 
-               -- si hay mas de un estado disponible  preguntamos al usuario
-                v_respuesta = pxp.f_agrega_clave(v_respuesta,'mensaje','Se regresoa borrador con exito)');
-                v_respuesta = pxp.f_agrega_clave(v_respuesta,'operacion','cambio_exitoso');
+                  raise notice 'CODIGO ESTADO ENCONTRADO %',v_codigo_estado ;
 
-              --Devuelve la respuesta
-                return v_respuesta;
+                 --registra estado borrador
+                  v_id_estado_actual = wf.f_registra_estado_wf(
+                      v_id_tipo_estado,
+                      v_id_funcionario,
+                      v_parametros.id_estado_wf,
+                      v_id_proceso_wf,
+                      p_id_usuario,
+                      v_parametros._id_usuario_ai,
+                      v_parametros._nombre_usuario_ai,
+                      v_id_depto,
+                      v_parametros.obs);
 
-           ELSE
+                  -- actualiza estado en el movimiento
+                    update alm.tmovimiento  m set
+                       id_estado_wf =  v_id_estado_actual,
+                       estado_mov = v_codigo_estado,
+                       id_usuario_mod=p_id_usuario,
+                       fecha_mod=now(),
+                       id_usuario_ai = v_parametros._id_usuario_ai,
+                       usuario_ai = v_parametros._nombre_usuario_ai
+                     where id_movimiento = v_parametros.id_movimiento;
+
+                   -- si hay mas de un estado disponible  preguntamos al usuario
+                    v_respuesta = pxp.f_agrega_clave(v_respuesta,'mensaje','Se regresoa borrador con exito)');
+                    v_respuesta = pxp.f_agrega_clave(v_respuesta,'operacion','cambio_exitoso');
+
+                  --Devuelve la respuesta
+
+                  return v_respuesta;
+			end if;
+         ELSE
 
            		raise exception 'Operacion no reconocida %',v_parametros.operacion;
 
@@ -1156,6 +1543,69 @@ BEGIN
 
         end;
 
+		/*********************************
+  		#TRANSACCION:  'SAL_MOVAREST_MOD'
+        #DESCRIPCION:	Modificacion de registros
+        #AUTOR:		franklin.espinoza
+        #FECHA:		10-09-2019 19:52:53
+        ***********************************/
+
+	elsif(p_transaccion='SAL_MOVAREST_MOD')then
+
+		begin
+
+        	for v_registros in (SELECT mm.id_movimiento,
+                                       mm.id_almacen
+                                FROM   alm.tmovimiento mm
+                                WHERE  mm.codigo_tran = v_parametros.codigo_tran)loop
+
+        		select
+                v_registros.id_movimiento as id_movimiento,
+                v_registros.id_almacen as id_almacen,
+                'verificar'::varchar as operacion,
+                NULL as id_funcionario_wf,
+                NULL as fecha_mov,
+                NULL as id_tipo_estado,
+                NULL as obs
+                into g_registros;
+
+                 --Llama a la función de registro del movimiento
+        		v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+
+                --Generación de Alertas
+                  v_mostrar_alerts = alm.f_generar_alertas_mov(p_id_usuario, v_registros.id_movimiento);
+
+                  if v_mostrar_alerts then
+                      v_respuesta=pxp.f_agrega_clave(v_respuesta,'alerts',v_mostrar_alerts::varchar);
+                  end if;
+
+                v_id_tipo_estado_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_tipo_estado_wf','','nada','valor')::integer;
+
+                v_id_funcionario_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_funcionario_wf','','nada','valor')::varchar;
+
+                select
+                v_registros.id_movimiento as id_movimiento,
+                v_registros.id_almacen  as id_almacen,
+                'siguiente'::varchar as operacion,
+                v_id_funcionario_wf as id_funcionario_wf,
+                NULL as fecha_mov,
+                v_id_tipo_estado_wf as id_tipo_estado,
+                NULL as obs
+                into g_registros;
+                --Llama a la función de registro del movimiento
+                v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+
+                v_id_movs = v_id_movs || v_registros.id_movimiento;
+
+            end loop;
+
+            v_respuesta =pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento almacenado correctamente');
+        	v_respuesta =pxp.f_agrega_clave(v_respuesta,'respuesta','ok');
+
+            --Devuelve la respuesta
+            return v_respuesta;
+
+		end;
 
   else
      raise exception 'Transaccion inexistente: %',p_transaccion;

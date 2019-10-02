@@ -809,3 +809,9 @@ ALTER TABLE alm.tpreingreso_det
 ALTER TABLE alm.tpreingreso_det
   ADD COLUMN fecha_fin DATE;
 /***********************************F-SCP-MAY-ALM-0-13/11/2018*****************************************/
+
+/***********************************I-SCP-ALAN-ALM-0-02/10/2019*****************************************/
+ALTER TABLE alm.tmovimiento_det
+  ADD COLUMN estado_dotacion VARCHAR;
+
+/***********************************F-SCP-ALAN-ALM-0-02/10/2019*****************************************/

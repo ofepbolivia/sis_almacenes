@@ -25,7 +25,7 @@ Phx.vista.MovimientoVb = {
     	this.addButton('ini_estado',{argument: {operacion: 'inicio'},text:'Dev. a Borrador',iconCls: 'batras',disabled:true,handler:this.retroceder,tooltip: '<b>Retorna Movimiento al estado borrador</b>'});
 	    this.addButton('ant_estado',{argument: {operacion: 'anterior'},text:'Anterior',iconCls: 'batras',disabled:true,handler:this.retroceder,tooltip: '<b>Pasar al Anterior Estado</b>'});
 	    //Botón de finalización
-    	this.addButton('fin_requerimiento',{text:'Siguiente',iconCls: 'badelante',disabled:true,handler:this.fin_requerimiento,tooltip: '<b>Finalizar</b>'});
+    	this.addButton('fin_requerimiento',{text:'Siguiente',iconCls: 'badelante',disabled:false,handler:this.fin_requerimiento,tooltip: '<b>Finalizar</b>'});
 		//Creación de ventana para workflow
 		this.crearVentanaWF();
 	    //Oculta botones 
@@ -157,16 +157,24 @@ Phx.vista.MovimientoVb = {
             alert('ocurrio un error durante el proceso')
         }
     },
-     
-  	preparaMenu:function(n){
-	  var tb = Phx.vista.MovimientoVb.superclass.preparaMenu.call(this);
-      var data = this.getSelectedData();
-	  this.getBoton('ant_estado').enable();
-	  this.getBoton('fin_requerimiento').enable();
-	  this.getBoton('ini_estado').enable();
 
-      return tb 
-     }, 
+    preparaMenu:function(n){
+        var tb = Phx.vista.MovimientoVb.superclass.preparaMenu.call(this);
+        var data = this.getSelectedData();
+        if(data.codigo_tran.length != 0){
+            this.getBoton('ini_estado').disable();
+            this.getBoton('ant_estado').disable();
+        }
+        else{
+            this.getBoton('ant_estado').enable();
+            this.getBoton('ini_estado').enable();
+        }
+        //
+        this.getBoton('fin_requerimiento').enable();
+        //
+
+        return tb
+    },
      
      liberaMenu:function(){
         var tb = Phx.vista.MovimientoVb.superclass.liberaMenu.call(this);

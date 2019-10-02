@@ -110,6 +110,64 @@ class MODMovimiento extends MODbase {
         //Devuelve la respuesta
         return $this->respuesta;
     }
+    function insertarMovimientosREST(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='alm.ft_movimiento_ime';
+        $this->transaccion='SAL_MOVS_REST_INS';
+        $this->tipo_procedimiento='IME';
+        $this->setParametro('movimientos','movimientos','text');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function revertirMovimientoREST(){
+        $this->procedimiento='alm.ft_movimiento_ime';
+        $this->transaccion='SAL_REVREST_MOD';
+        $this->tipo_procedimiento='IME';
+        $this->setParametro('id_movimientos', 'id_movimientos', 'text');
+        //$this->setParametro('codigo_tran','codigo_tran','varchar');
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function revertirMovimientoTranREST(){
+        $this->procedimiento='alm.ft_movimiento_ime';
+        $this->transaccion='SAL_REV_TRANREST_MOD';
+        $this->tipo_procedimiento='IME';
+        //$this->setParametro('id_movimientos', 'id_movimientos', 'text');
+        $this->setParametro('codigo_tran','codigo_tran','varchar');
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
+    function actualizarEstadoMovimientoREST(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='alm.ft_movimiento_ime';
+        $this->transaccion='SAL_MOVAREST_MOD';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('codigo_tran','codigo_tran','varchar');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
     function modificarMovimiento() {
         $this->procedimiento = 'alm.ft_movimiento_ime';
         $this->transaccion = 'SAL_MOV_MOD';
