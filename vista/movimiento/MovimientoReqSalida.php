@@ -18,7 +18,8 @@ Phx.vista.MovimientoReqSalida= {
 	gruposBarraTareas:[{name:'borrador',title:'<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Borradores</h1>',grupo:0,height:0},
                        {name:'en_aprobacion',title:'<H1 align="center"><i class="fa fa-eye"></i> En Aprobacion</h1>',grupo:1,height:0},
                        {name:'en_almacenes',title:'<H1 align="center"><i class="fa fa-eye"></i> En Almacenes</h1>',grupo:2,height:0},
-                       {name:'entregado',title:'<H1 align="center"><i class="fa fa-thumbs-o-up"></i> Entregado</h1>',grupo:3,height:0}],
+                       {name:'entregado',title:'<H1 align="center"><i class="fa fa-thumbs-o-up"></i> Entregado</h1>',grupo:3,height:0},
+                        {name:'anulado',title:'<H1 align="center"><i class="fa fa-thumbs-o-down"></i> Anulados</h1>',grupo:4,height:0}],
 		
 	actualizarSegunTab: function(name, indice){		
 		if(this.finCons){

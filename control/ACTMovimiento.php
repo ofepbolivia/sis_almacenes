@@ -42,6 +42,9 @@ class ACTMovimiento extends ACTbase {
         if($this->objParam->getParametro('pes_estado')=='entregado'){
             $this->objParam->addFiltro("mov.estado_mov in (''finalizado'')");
         }
+        if($this->objParam->getParametro('pes_estado')=='anulado'){
+            $this->objParam->addFiltro("mov.estado_mov in (''anulado'')");
+        }
         $this->objParam->addParametro('id_funcionario_usu',$_SESSION["ss_id_funcionario"]);
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
             $this->objReporte = new Reporte($this->objParam, $this);
