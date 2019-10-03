@@ -148,6 +148,3 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
-
-ALTER FUNCTION alm.f_get_saldo_fisico_item_v2 (p_id_item integer, p_id_almacen integer, p_fecha_hasta date, p_incluir_pendientes varchar)
-  OWNER TO afelipez;
