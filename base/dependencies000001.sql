@@ -2986,3 +2986,17 @@ ALTER TABLE alm.titem_concepto_ingas
     NOT DEFERRABLE;
 
 /***********************************F-DEP-GSS-ALM-1-18/05/2017*****************************************/
+
+/***********************************I-DEP-YMR-ALM-0-02/10/2019*****************************************/
+CREATE TYPE alm.movimiento AS (
+  id_movimiento_tipo INTEGER,
+  id_almacen INTEGER,
+  id_funcionario INTEGER,
+  fecha_mov DATE,
+  descripcion VARCHAR(1000),
+  detalle TEXT,
+  id_funcionario_aprobador INTEGER,
+  codigo_tran VARCHAR(26),
+  control_salida_id INTEGER
+);
+/***********************************F-DEP-YMR-ALM-0-02/10/2019*****************************************/
