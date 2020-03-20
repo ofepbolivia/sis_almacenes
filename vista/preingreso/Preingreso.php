@@ -485,26 +485,54 @@ header("content-type: text/javascript; charset=UTF-8");
                     // aux=' el Alta de Activos Fijos';
                     aux=' el Movimiento de Activos Fijos';
                 }
+                
+                //agregado breydi vasquez 18/03/2020
+                if (rec.data.estado == 'borrador') {
+                    Ext.Ajax.request({
+                                    url:'../../sis_kactivos_fijos/control/ActivoFijo/verificarNoTramiteCompra',
+                                    params:{tramite_compra:rec.data.nro_tramite, id_preingreso:rec.data.id_preingreso,id_activo_fijo:0},
+                                    success: function(resp) {
+                                        var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));                                                                          
+                                        if (reg.ROOT.datos.existe == 'si') {                                        
+                                            Ext.Msg.confirm('Mensaje', 'EL N° DE TRAMITE: '+rec.data.nro_tramite+' YA ESTA REGISTRADO CON UN ACTIVO FIJO DE ALTA',
+                                            function(btn) {
+                                                if (btn=="yes"){
+                                                    this.registrar(reg.ROOT.datos, aux) 
+                                                }
+                                            }, this);                                      
+                                                                                
+                                        }else{
+                                            this.registrar(reg.ROOT.datos, aux)
+                                        }                                                                          
+                                    },
+                                    failure: this.conexionFailure,
+                                    timeout:this.timeout,
+                                    scope:this
+                                });
+                }else{
+                    this.registrar(rec.data, aux)
+                }
 
-                Ext.Msg.confirm('Confirmación','¿Está seguro de generar '+aux+'?',
+            } else{
+                Ext.Msg.alert('Mensaje','Seleccione un registro y vuelva a intentarlo');
+            }
+        },
+        registrar:function(resp, aux){
+            Ext.Msg.confirm('Confirmación','¿Está seguro de generar '+aux+'?',
                     function(btn) {
                         if (btn == "yes") {
                             Phx.CP.loadingShow();
                             Ext.Ajax.request({
                                 url:'../../sis_almacenes/control/Preingreso/generarIngreso',
-                                params:{id_preingreso:rec.data.id_preingreso},
+                                params:{id_preingreso:resp.id_preingreso},
                                 success:this.successSinc,
                                 failure: this.conexionFailure,
                                 timeout:this.timeout,
                                 scope:this
                             });
                         }
-                    },this);
-
-            } else{
-                Ext.Msg.alert('Mensaje','Seleccione un registro y vuelva a intentarlo');
-            }
-        },
+                    },this);            
+        },        
         preparaMenu:function(n){
             var rec = this.getSelectedData();
             var tb =this.tbar;
