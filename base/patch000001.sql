@@ -816,7 +816,467 @@ ALTER TABLE alm.tmovimiento_det
 
 /***********************************F-SCP-ALAN-ALM-0-02/10/2019*****************************************/
 
+
 /***********************************I-SCP-FEA-ALM-0-07/01/2020*****************************************/
 ALTER TABLE alm.tsaldo_fisico_item
   ADD COLUMN id_gestion INTEGER;
 /***********************************F-SCP-FEA-ALM-0-07/01/2020*****************************************/
+
+/***********************************I-SCP-ALAN-ALM-0-29/11/2019*****************************************/
+--patch esquema alm. tablas
+
+COMMENT ON TABLE alm.talmacen
+IS 'Esta Tabla contiene informacion basica de los distintos Almacenes como ser su codigo y ubicacion entre otros';
+COMMENT ON COLUMN alm.talmacen.id_metodo_val
+IS 'este es el identificador del tipo evaluacion de inventarios';
+COMMENT ON COLUMN alm.talmacen.id_departamento
+IS 'este es el identificador de a que departamento de la empresa pertenece el almacen ej:Almacen de Servicios  a Bordo SRZ';
+COMMENT ON TABLE alm.talmacen_gestion
+IS 'esta tabla contiene informacion del estado (abierto,cerrado,registrado) de un almacen en una gestion especifica';
+COMMENT ON COLUMN alm.talmacen_gestion.estado
+IS 'estado del almacen en la gestion puede ser abierta, cerrado, registrado';
+COMMENT ON COLUMN alm.talmacen_gestion.id_gestion
+IS 'es el identificador de la gestion en la que se encuentra el almacen';
+COMMENT ON TABLE alm.talmacen_stock
+IS 'Esta tabla contiene informacion del stock en tres niveles (minimo, alerta_amarilla y alerta roja) por item y almacen correspondiente';
+COMMENT ON COLUMN alm.talmacen_stock.id_metodo_val
+IS 'identificador del metodo valorado del almacen ej: PEPS';
+COMMENT ON COLUMN alm.talmacen_stock.id_item
+IS 'identificador del item para el stock en su respectivo almacen';
+COMMENT ON COLUMN alm.talmacen_stock.id_almacen
+IS 'identificador del almacen del que proviene el item en stock correspondiente';
+COMMENT ON TABLE alm.talmacen_usuario
+IS 'esta tabla contiene informacion de la responsabilidad (asistente, responsable) de un usuario en almacen';
+COMMENT ON TABLE alm.talmacen_usuario.tipo
+IS 'responsabilidad del usuario en su almacen correspondiente';
+COMMENT ON TABLE alm.talmacen_usuario.id_usuario
+IS 'identificador del usuario asignado a un almacen';
+COMMENT ON TABLE alm.tclasificacion
+IS 'Esta tabla contiene informacion de los codigos de los items para el buscador de materiales';
+COMMENT ON TABLE alm.tclasificacion.codigo_largo
+IS 'contiene informacion del codigo de un item o categoria o sub categoria al que pertenece un item';
+COMMENT ON TABLE alm.titem
+IS 'esta tabla contiene informacion basica de los items que puede existir en un almacen como ser nombre,descripcion,clasificacion';
+
+COMMENT ON COLUMN alm.titem.codigo
+IS 'codigo del item';
+COMMENT ON COLUMN alm.titem.nombre
+IS 'nombre del item';
+COMMENT ON COLUMN alm.titem.descripcion
+IS 'descripcion del item';
+COMMENT ON COLUMN alm.titem.cantidad_max_sol
+IS 'cantidad maxima por solicitud';
+
+COMMENT ON TABLE alm.titem_concepto_ingas
+IS 'esta tabla relaciona el tipo de concepto de la tabla param.tconcepto_ingas con un item';
+COMMENT ON COLUMN alm.titem_concepto_ingas.id_item
+IS 'identificador del item';
+COMMENT ON COLUMN alm.titem_concepto_ingas.id_concepto_ingas
+IS 'identificador del concepto de ingreso gasto de un item';
+
+COMMENT ON TABLE alm.tmetodo_val
+IS 'esta tabla contiene informacion del tipo de control de inventarios para un almacen';
+COMMENT ON COLUMN alm.tmetodo_val.codigo
+IS 'codigo del metodo de control de inventario';
+COMMENT ON COLUMN alm.tmetodo_val.nombre
+IS 'nombre del metodo de control de inventario';
+COMMENT ON COLUMN alm.tmetodo_val.descripcion
+IS 'descripcion del metodo de control de inventario';
+
+COMMENT ON TABLE alm.tmovimiento
+IS 'esta tabla contiene informacion de un movimiento de almacen asi como el estado en el flujo de trabajo correspondiente';
+COMMENT ON COLUMN alm.tmovimiento.id_movimiento_tipo
+IS 'identificador del tipo de movimiento';
+COMMENT ON COLUMN alm.tmovimiento.id_almacen
+IS 'identificador del almacen';
+COMMENT ON COLUMN alm.tmovimiento.id_funcionario
+IS 'identificador del funcionario que hace el movimiento';
+COMMENT ON COLUMN alm.tmovimiento.id_proveedor
+IS 'identificador de un proveedor';
+COMMENT ON COLUMN alm.tmovimiento.id_almacen_dest
+IS 'identificador del almacen destino';
+COMMENT ON COLUMN alm.tmovimiento.fecha_mov
+IS 'fecha de inicio del movimiento';
+COMMENT ON COLUMN alm.tmovimiento.codigo
+IS 'codigo del movimiento';
+COMMENT ON COLUMN alm.tmovimiento.descripcion
+IS 'descripcion del movimiento';
+COMMENT ON COLUMN alm.tmovimiento.estado_mov
+IS 'estado del movimiento en el flujo de trabajo';
+COMMENT ON COLUMN alm.tmovimiento.id_estado_wf
+IS 'identificador del estado en el flujo de trabajo';
+COMMENT ON COLUMN alm.tmovimiento.id_proceso_wf
+IS 'identificador del proceso en el flujo de trabajo';
+COMMENT ON COLUMN alm.tmovimiento.id_depto_conta
+IS 'identificador del departamento de contabilidad';
+COMMENT ON COLUMN alm.tmovimiento.codigo_tran
+IS 'codigo de transaccion para el uso de servicios web';
+
+COMMENT ON TABLE alm.tmovimiento_det
+IS 'esta tabla contiene los detalles de un movimiento de almacen ';
+COMMENT ON COLUMN alm.tmovimiento_det.id_movimiento
+IS 'identificador del movimiento';
+COMMENT ON COLUMN alm.tmovimiento_det.id_item
+IS 'identificador de un item';
+COMMENT ON COLUMN alm.tmovimiento_det.cantidad
+IS 'cantidad de un item';
+COMMENT ON COLUMN alm.tmovimiento_det.costo_unitario
+IS 'costo unitario de un item';
+COMMENT ON COLUMN alm.tmovimiento_det.id_concepto_ingas
+IS 'identificador del concepto del ingreso o gasto';
+
+COMMENT ON TABLE alm.tmovimiento_det_valorado
+IS 'esta tabla tiene informacion valorada del detalle del movimiento';
+COMMENT ON COLUMN alm.tmovimiento_det_valorado.id_movimiento_det
+IS 'identificador del detalle del movimiento';
+
+COMMENT ON TABLE alm.tmovimiento_tipo
+IS 'esta tabla contiene informacion del tipo de movimiento que se puede generar';
+COMMENT ON COLUMN alm.tmovimiento_tipo.codigo
+IS 'codigo del tipo de movimiento';
+COMMENT ON COLUMN alm.tmovimiento_tipo.nombre
+IS 'nombre del tipo de movimiento';
+COMMENT ON COLUMN alm.tmovimiento_tipo.tipo
+IS 'tipo de movimiento ingreso-salida';
+COMMENT ON COLUMN alm.tmovimiento_tipo.id_proceso_macro
+IS 'identificador del proceso macro del flujo de trabajo';
+
+COMMENT ON TABLE alm.tmovimiento_tipo_almacen
+IS 'esta tabla cruza informacion de que tipos de movimientos realiza un almacen';
+COMMENT ON COLUMN alm.tmovimiento_tipo_almacen.id_movimiento_tipo
+IS 'identificador del tipo de movimiento';
+COMMENT ON COLUMN alm.tmovimiento_tipo_almacen.id_almacen
+IS 'identificador del almacen';
+
+COMMENT ON TABLE alm.tmovimiento_tipo_item
+IS 'esta tabla cruza informacion del tipo de movimiento, item y clasificacion del item';
+COMMENT ON COLUMN alm.tmovimiento_tipo_item.id_movimiento_tipo
+IS 'identificador del tipo de movimiento';
+COMMENT ON COLUMN alm.tmovimiento_tipo_item.id_item
+IS 'identificador del item';
+COMMENT ON COLUMN alm.tmovimiento_tipo_item.id_clasificacion
+IS 'identificador de la clasificacion de clase de un item o item';
+
+COMMENT ON TABLE alm.tmovimiento_tipo_uo
+IS 'esta tabla cruza informacion del tipo de movimiento con la unidad operativa de la organizacion';
+COMMENT ON COLUMN alm.tmovimiento_tipo_uo.id_movimiento_tipo
+IS 'identificador del tipo de movimiento';
+COMMENT ON COLUMN alm.tmovimiento_tipo_uo.id_uo
+IS 'identificador de la unidad operativa orga.tuo';
+
+COMMENT ON TABLE alm.tpreingreso
+IS 'esta tabla cruza informacion con el almacen, cotizaciones de adquisiciones, departamento y departamento de contabilidad, para el preingreso de un item';
+COMMENT ON COLUMN alm.tpreingreso.id_cotizacion
+IS 'identificador de una cotizacion adq.tcotizacion';
+COMMENT ON COLUMN alm.tpreingreso.id_almacen
+IS 'identificador de un almacen';
+COMMENT ON COLUMN alm.tpreingreso.id_depto_conta
+IS 'identificador del departamento de contabilidad';
+
+COMMENT ON TABLE alm.tpreingreso_det
+IS 'esta tabla contiene la informacion de un preingreso de un item a un determinado almacen';
+
+COMMENT ON COLUMN alm.tpreingreso_det.id_preingreso
+IS 'identificador del preingreso';
+
+COMMENT ON COLUMN alm.tpreingreso_det.id_cotizacion_det
+IS 'identificador de la cotizacion por detalle adq.tcotizacion_det';
+COMMENT ON COLUMN alm.tpreingreso_det.id_item
+IS 'identificador del item';
+COMMENT ON COLUMN alm.tpreingreso_det.id_almacen
+IS 'identificador del almacen';
+COMMENT ON COLUMN alm.tpreingreso_det.cantidad_det
+IS 'detalle de cantidad de un preingreso de un item';
+COMMENT ON COLUMN alm.tpreingreso_det.precio_compra
+IS 'precio de compra del item';
+COMMENT ON COLUMN alm.tpreingreso_det.estado
+IS 'Indica si el registro es creado desde adquisiciones al generar el preingreso (''orig''), si es modificado desde preingreso (''mod'')';
+COMMENT ON COLUMN alm.tpreingreso_det.nombre
+IS 'nombre de la compra del item del pre ingreso';
+COMMENT ON COLUMN alm.tpreingreso_det.descripcion
+IS 'descripcion de la compra';
+COMMENT ON COLUMN alm.tpreingreso_det.ubicacion
+IS 'ubicacion destino';
+
+COMMENT ON TABLE alm.tsaldo_fisico_item
+IS 'esta tabla contiene informacion del saldo fisico de un item en un almacen';
+COMMENT ON COLUMN alm.tsaldo_fisico_item.id_item
+IS 'identificador del item';
+COMMENT ON COLUMN alm.tsaldo_fisico_item.id_almacen
+IS 'identificador del almacen';
+COMMENT ON COLUMN alm.tsaldo_fisico_item.fisico
+IS 'saldo fisico';
+
+COMMENT ON TABLE alm.tsaldo_valorado_item
+IS 'esta tabla contiene informacion del valor del saldo fisico de un item en un almacen';
+COMMENT ON COLUMN alm.tsaldo_valorado_item.id_item
+IS 'identificador del item';
+COMMENT ON COLUMN alm.tsaldo_valorado_item.id_almacen
+IS 'identificador del almacen';
+COMMENT ON COLUMN alm.tsaldo_valorado_item.valorado
+IS 'valor del saldo fisico';
+
+COMMENT ON TABLE alm.ttemporal
+IS 'esta tabla contiene informacion temporal de precio y cantidad de un item con su respectivo codigo';
+COMMENT ON COLUMN alm.ttemporal.codigo
+IS 'codigo del item';
+COMMENT ON COLUMN alm.ttemporal.cantidad
+IS 'cantidad del item';
+COMMENT ON COLUMN alm.ttemporal.precio
+IS 'precio del item x cantidad';
+COMMENT ON COLUMN alm.ttemporal.id_item
+IS 'identificador del item';
+
+
+--alm. funciones
+
+COMMENT ON FUNCTION alm.f_actualizar_saldos_inventario(p_id_inventario integer)
+IS 'actualiza los saldos de los items por inventario';
+COMMENT ON FUNCTION alm.f_cbte_validado_ingreso(p_id_usuario integer, p_id_int_comprobante integer)
+IS 'Función para finalización de ingresos después de la validación del comprobante';
+COMMENT ON FUNCTION alm.f_codigo_clasificaciones_recursivo(v_id_clasificacion integer)
+IS 'esta funcion clasifica el codigo de un item recursivamente';
+COMMENT ON FUNCTION alm.f_existencias_almacen_sel(p_id_almacen integer, p_fecha_hasta date, p_condicion varchar, p_filtro varchar)
+IS 'Función para listar las existencias de los materiales';
+COMMENT ON FUNCTION alm.f_finalizar_movimientos_intermedios()
+IS 'funcion que finaliza movimientos en el flujo de trabajo con el mensaje Proceso anulado por cierre de Gestión';
+COMMENT ON FUNCTION alm.f_fun_inicio_movimiento_wf(p_id_usuario integer, p_id_usuario_ai integer, p_usuario_ai varchar, p_id_estado_wf integer, p_id_proceso_wf integer, p_codigo_estado varchar)
+IS 'funcion que actualiza los estados despues del registro de un retroceso en el plan de pago';
+COMMENT ON FUNCTION alm.f_generar_alta(p_id_usuario integer, p_id_usuario_ai integer, p_usuario varchar, p_id_preingreso integer)
+IS 'Genera el ingreso a Almacén o a Activos Fijos a partir de un preingreso';
+COMMENT ON FUNCTION alm.f_generar_alertas_mov(p_id_usuario integer, p_id_movimiento integer)
+IS 'Generación de alertas en función de la definición de alarmas por item y almacén';
+COMMENT ON FUNCTION alm.f_fun_regreso_movimiento_wf(p_id_usuario integer, p_id_usuario_ai integer, p_usuario_ai varchar, p_id_estado_wf integer, p_id_proceso_wf integer, p_codigo_estado varchar)
+IS 'funcion que actualiza los estados despues del registro de un retroceso en el plan de pago';
+COMMENT ON FUNCTION alm.f_generar_alta_old(p_id_usuario integer, p_id_usuario_ai integer, p_usuario varchar, p_id_preingreso integer)
+IS 'Genera el ingreso a Almacén o a Activos Fijos a partir de un preingreso';
+COMMENT ON FUNCTION alm.f_generar_cbtes(p_id_usuario integer, p_codigo_plantilla varchar, p_id_movimiento integer, p_parametros public.hstore)
+IS 'Generación de comprobantes de almacén a partir de una Plantilla de Comprobante,
+y empleando el generador de Comprobantes de PXP';
+COMMENT ON FUNCTION alm.f_generar_ingreso(p_id_usuario integer, p_id_usuario_ai integer, p_usuario varchar, p_id_preingreso integer)
+IS 'Genera el ingreso a Almacén o a Activos Fijos a partir de un preingreso';
+COMMENT ON FUNCTION alm.f_generar_ingreso_old(p_id_usuario integer, p_id_usuario_ai integer, p_usuario varchar, p_id_preingreso integer)
+IS 'Genera el ingreso a Almacén o a Activos Fijos a partir de un preingreso';
+COMMENT ON FUNCTION alm.f_generar_mov_gestion(p_id_usuario integer, p_id_almacen_gestion_log integer, p_accion varchar)
+IS 'Genera el(los) ingreso(s) o salida(s) para la acción requerida por gestión (apertura, cierre)';
+COMMENT ON FUNCTION alm.f_generar_salida_func(p_id_usuario integer, p_id_salida_grupo integer)
+IS 'Función que genera salidas para cada funcionario a partir de una salida grupal';
+COMMENT ON FUNCTION alm.f_get_codigo_clasificacion_rec(p_id_clasificacion integer, p_padres_hijos varchar)
+IS 'Funcion que devuelve los codigos los items en una categoria dada un codigo padre';
+COMMENT ON FUNCTION alm.f_get_ruta_clasificacion(p_id_clasificacion integer)
+IS 'funcion que devuelve la ruta de una clasificacion desde un identificador de tclasificacion';
+COMMENT ON FUNCTION alm.f_get_num_mov(v_id_almacen integer, v_id_movimiento_tipo integer, v_fecha_mov timestamp)
+IS 'Funcion que devuelve el numero de un movimiento dado el identificador del almacen,
+el tipo de movimeinto y la fecha del movimiento';
+COMMENT ON FUNCTION alm.f_get_items_movimiento(p_id_movimiento integer)
+IS 'Funcion que devuelve la descripcion y cantidad de items de un movimiento';
+COMMENT ON FUNCTION alm.f_get_id_tipo_mov_por_codigo(p_codigo_tipo_mov varchar)
+IS 'Función que devuelve el id_movimiento_tipo en función al código del tipo mov';
+COMMENT ON FUNCTION alm.f_get_id_clasificaciones_varios(p_id_clasificacion varchar, p_padres_hijos varchar)
+IS 'Funcion que devuelve el id_clasificacion dada el id_clasificacion de un padre o hijo';
+COMMENT ON FUNCTION alm.f_get_id_clasificaciones(p_id_clasificacion integer, p_padres_hijos varchar)
+IS 'Funcion que devuelve los codigos de alm.tclafisifcacion de codigos padre o hijo ';
+COMMENT ON FUNCTION alm.f_get_existencias_item(p_id_item integer)
+IS 'Función que devuelve los la cantidad restante (saldo) existente del item con ID: p_id_item
+ RETORNA:			Devuelve el valor de la cantidad disponible para el item: p_id_item
+ 					devuleve -1 cuando el saldo es negativo y null cuando el item no existe.';
+COMMENT ON FUNCTION alm.f_get_correlativo(v_id_almacen integer, v_id_movimiento_tipo integer, v_periodo varchar)
+IS ' Funcion que devuelve el dato correle_sig de alm.talmacen_correlativo dado los datos
+id_almacen
+id_movimiento_tipo
+periodo ';
+COMMENT ON FUNCTION alm.f_get_valorado_item(p_id_item integer, p_criterio_valoracion numeric)
+IS 'Función que devuelve el costo unitario para el item: p_id_item en base
+					al parametro de criterio de valoración: p_criterio_valoracion que puede ser
+                    FIFO, LIFO o Promedio.
+                    Posibles Valores  de p_criterio_valoracion:
+                    FIFO: 1, LIFO: 2, Promedio: 3
+
+RETORNA:			Devuelve el valor del costo unitario correspondiente al item: p_id_item
+					segun el criterio de valoracion: p_criterio_valoracion.';
+COMMENT ON FUNCTION alm.f_get_valorado_item(p_id_item integer, p_id_almacen integer, p_valoracion varchar, p_cantidad_sol numeric, p_fecha_mov date, out r_costo_valorado numeric, out r_cantidad_valorada numeric, out r_id_movimiento_det_val_desc integer)
+IS 'Función que devuelve el costo unitario para el item: p_id_item en base
+al parametro de criterio de valoración: p_criterio_valoracion que puede ser
+                Promedio Ponderado, PEPS y UEPS.
+                Posibles Valores  de p_criterio_valoracion:
+                PP, PEPS, UEPS';
+COMMENT ON FUNCTION alm.f_get_solicitantes_movimiento_dotaciones(p_codigo_dotaciones varchar)
+IS 'Funcion que devuelve los datos de los funcionarios involucrados en un movimiento
+RETORNA:desc_funcionario1
+		funcionario.lugar_nombre
+        funcionario.oficina_nombre
+        item';
+COMMENT ON FUNCTION alm.f_get_saldo_valorado_item(p_id_item integer, p_id_almacen integer, p_fecha_hasta date)
+IS 'Función que devuelve la cantidad valorada existente del item con ID: p_id_item
+ RETORNA:		Devuelve el valor de la cantidad disponible para el item: p_id_item';
+COMMENT ON FUNCTION alm.f_get_saldo_item_val(p_id_item integer, p_id_almacen varchar, p_fecha_hasta date)
+IS 'Función que devuelve la cantidad valorada existente del item con ID: p_id_item
+ RETORNA:		Devuelve el valor de la cantidad disponible para el item: p_id_item';
+COMMENT ON FUNCTION alm.f_get_saldo_item(p_id_item integer, pa_id_almacen varchar, p_fecha_hasta date)
+IS 'Función que devuelve el saldo a una fecha de un item de uno o varios almacenes';
+COMMENT ON FUNCTION alm.f_get_saldo_fisico_item_v2(p_id_item integer, p_id_almacen integer, p_fecha_hasta date, p_incluir_pendientes varchar)
+IS 'Función que devuelve la cantidad existente del item con ID: p_id_item
+ RETORNA:		Devuelve el valor de la cantidad disponible para el item: p_id_item';
+COMMENT ON FUNCTION alm.f_get_saldo_fisico_item(p_id_item integer, p_id_almacen integer, p_fecha_hasta date, p_incluir_pendientes varchar)
+IS 'Función que devuelve la cantidad existente del item con ID: p_id_item
+ RETORNA:		Devuelve el valor de la cantidad disponible para el item: p_id_item';
+COMMENT ON FUNCTION alm.f_movimiento_workflow_principal(p_id_usuario integer, p_parametros public.hstore)
+IS 'Función que se encarga de direccionar el worflow principal de los movimientos.';
+COMMENT ON FUNCTION alm.f_lista_funcionario_jefe_superior_wf_sel(p_id_usuario integer, p_id_tipo_estado integer, p_fecha date, p_id_estado_wf integer, p_count boolean, p_limit integer, p_start integer, p_filtro varchar)
+IS 'Funcion que lista los fucionarios jefes superiores del funcionario';
+COMMENT ON FUNCTION alm.f_item_existencia_almacen_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Función que a partir de un id_item y una fecha lista los almacenes
+ 			y la cantidad donde hayan existencia del item solicitado';
+COMMENT ON FUNCTION alm.f_insertar_saldo_valorado(p_fecha date)
+IS 'Funcion que inserta el saldo valorado de un item';
+COMMENT ON FUNCTION alm.f_insertar_saldo_fisico(p_fecha date)
+IS 'Funcion que inserta el saldo fisico de un item';
+COMMENT ON FUNCTION alm.f_insercion_movimiento_externo(p_id_usuario integer, p_id_movimiento_tipo integer, p_id_almacen integer, p_id_funcionario integer, p_id_proveedor integer, p_id_almacen_dest integer, p_fecha_mov date, p_descripcion varchar, p_observaciones varchar, p_id_movimiento_origen integer, p_id_gestion integer, p_id_depto_conta integer)
+IS 'Funcion que inserta un movimiento';
+COMMENT ON FUNCTION alm.f_insercion_movimiento(p_id_usuario integer, p_parametros public.hstore)
+IS 'Función para insertar un movimiento (Se la independiza para poder llamarla desde otras funciones)';
+COMMENT ON FUNCTION alm.ft_almacen_gestion_log_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.talmacen_gestion_log''';
+COMMENT ON FUNCTION alm.ft_almacen_gestion_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.talmacen_gestion''';
+COMMENT ON FUNCTION alm.f_verificar_registro(v_id_almacen integer, v_id_movimiento_tipo integer, v_periodo varchar)
+IS 'Funcion que verifica la cantidad de almacenes correlativo de un tipo de movimiento y periodo';
+COMMENT ON FUNCTION alm.f_verificar_existencias_item(p_id_movimiento integer, p_estado varchar, out po_errores varchar, out po_contador integer, out po_alertas varchar, out po_saldo_total numeric)
+IS 'Funcion que verifica si hay las existencias suficientes de un movimiento';
+COMMENT ON FUNCTION alm.f_valoracion_mov(p_id_usuario integer, p_id_movimiento integer)
+IS 'Función que realiza la valoración de los movimientos siguiendo los Métodos PEPS, UEPS o Promedio Ponderado,
+en función de como está parametrizado el item por almacén';
+COMMENT ON FUNCTION alm.f_update_estado_clasificacion_recursivo(v_id_clasificacion integer, v_estado_nuevo varchar, p_id_usuario integer)
+IS 'Funcion que actualiza el estado de la tabla alm.tclasificacion ';
+COMMENT ON FUNCTION alm.f_tri_talmacen_gestion()
+IS 'Funcion que verifica que al eliminar un registro no tenga movimientos en su gestión';
+COMMENT ON FUNCTION alm.f_regularizar()
+IS 'funcion que notifica la cantidad de un momiento detalle valorado ';
+COMMENT ON FUNCTION alm.f_registrar_almacen_gestion_log(p_id_usuario integer, p_id_almacen_gestion integer, p_accion varchar)
+IS 'Función que genera el registro del log de la gestión de almacén en función
+de la acción determinada (abrir, cerrar)';
+COMMENT ON FUNCTION alm.f_nombre_clasificaciones_recursivo(v_id_clasificacion integer)
+IS 'Funcion que devuelve el nombre de una clasificacion dependiendo del codigo de la tabla alm.tclasificacion';
+COMMENT ON FUNCTION alm.ft_clasificacion_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tclasificacion''  ';
+COMMENT ON FUNCTION alm.ft_clasificacion_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tclasificacion''';
+COMMENT ON FUNCTION alm.ft_almacen_usuario_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.talmacen_usuario''';
+COMMENT ON FUNCTION alm.ft_almacen_usuario_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.talmacen_usuario''';
+COMMENT ON FUNCTION alm.ft_almacen_stock_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''param.tdepto_usuario''';
+COMMENT ON FUNCTION alm.ft_almacen_stock_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.talmacen_stock''';
+COMMENT ON FUNCTION alm.ft_almacen_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.talmacen''';
+COMMENT ON FUNCTION alm.ft_almacen_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.talmacen''';
+COMMENT ON FUNCTION alm.ft_almacen_gestion_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.talmacen_gestion''';
+COMMENT ON FUNCTION alm.ft_almacen_gestion_log_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.talmacen_gestion_log''';
+COMMENT ON FUNCTION alm.ft_item_reemplazo_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones) de la tabla ''alm.titem''';
+COMMENT ON FUNCTION alm.ft_item_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS ' Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones) de la tabla ''alm.titem''';
+COMMENT ON FUNCTION alm.ft_item_concepto_ingas_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.titem_concepto_ingas''';
+COMMENT ON FUNCTION alm.ft_item_concepto_ingas_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.titem_concepto_ingas''';
+COMMENT ON FUNCTION alm.ft_item_archivo_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.titem_archivo''';
+COMMENT ON FUNCTION alm.ft_item_archivo_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.titem_archivo''';
+COMMENT ON FUNCTION alm.ft_inventario_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tinventario''';
+COMMENT ON FUNCTION alm.ft_inventario_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS ' Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tinventario''';
+COMMENT ON FUNCTION alm.ft_inventario_det_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tinventario_det''';
+COMMENT ON FUNCTION alm.ft_inventario_det_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tinventario_det''';
+COMMENT ON FUNCTION alm.ft_movimiento_grupo_det_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento_grupo_det''';
+COMMENT ON FUNCTION alm.ft_movimiento_grupo_det_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tmovimiento_grupo_det''';
+COMMENT ON FUNCTION alm.ft_movimiento_det_valorado_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''param.tdepto_usuario''';
+COMMENT ON FUNCTION alm.ft_movimiento_det_valorado_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tmovimiento_det''';
+COMMENT ON FUNCTION alm.ft_movimiento_det_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''param.tdepto_usuario''';
+COMMENT ON FUNCTION alm.ft_movimiento_det_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla alm.tmovimiento_det';
+COMMENT ON FUNCTION alm.ft_metodo_val_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento''';
+COMMENT ON FUNCTION alm.ft_metodo_val_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones) de la tabla ''alm.tmovimiento''';
+COMMENT ON FUNCTION alm.ft_item_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.titem''';
+COMMENT ON FUNCTION alm.ft_item_reemplazo_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.titem''';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento''';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_item_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento_tipo_item''';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_item_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tmovimiento_tipo_item''	';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones) de la tabla ''alm.tmovimiento''';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_almacen_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento_tipo_almacen''';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_almacen_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tmovimiento_tipo_almacen''';
+COMMENT ON FUNCTION alm.ft_movimiento_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento''';
+COMMENT ON FUNCTION alm.ft_movimiento_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones) de la tabla ''alm.tmovimiento''';
+COMMENT ON FUNCTION alm.ft_movimiento_grupo_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento_grupo''';
+COMMENT ON FUNCTION alm.ft_movimiento_grupo_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tmovimiento_grupo''';
+COMMENT ON FUNCTION alm.ft_reporte_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros para los reportes del sistema de almacenes';
+COMMENT ON FUNCTION alm.ft_rep_kardex_item_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve el kardex de un item de uno o varios almacenes en un periodo de tiempo';
+COMMENT ON FUNCTION alm.ft_preingreso_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tpreingreso''';
+COMMENT ON FUNCTION alm.ft_preingreso_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tpreingreso''';
+COMMENT ON FUNCTION alm.ft_preingreso_det_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tpreingreso_det''';
+COMMENT ON FUNCTION alm.ft_preingreso_det_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tpreingreso_det''';
+COMMENT ON FUNCTION alm.ft_periodo_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tperiodo''';
+COMMENT ON FUNCTION alm.ft_periodo_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tperiodo''';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_uo_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS ' Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tmovimiento_tipo_uo''';
+COMMENT ON FUNCTION alm.ft_movimiento_tipo_uo_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tmovimiento_tipo_uo''';
+COMMENT ON FUNCTION alm.ftmp_mig_comibol(p_id_movimiento integer)
+IS 'Funcion que genera el detalle para el movimiento inicial COMIBOL';
+COMMENT ON FUNCTION alm.ft_salida_grupo_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tsalida_grupo''';
+COMMENT ON FUNCTION alm.ft_salida_grupo_item_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tsalida_grupo_item''';
+COMMENT ON FUNCTION alm.ft_salida_grupo_item_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tsalida_grupo_item''';
+COMMENT ON FUNCTION alm.ft_salida_grupo_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tsalida_grupo''';
+COMMENT ON FUNCTION alm.ft_salida_grupo_fun_sel(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que devuelve conjuntos de registros de las consultas relacionadas con la tabla ''alm.tsalida_grupo_fun''';
+COMMENT ON FUNCTION alm.ft_salida_grupo_fun_ime(p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla ''alm.tsalida_grupo_fun''';
+
+
+
+
+
+
+
+/***********************************F-SCP-ALAN-ALM-0-29/11/2019*****************************************/
+
