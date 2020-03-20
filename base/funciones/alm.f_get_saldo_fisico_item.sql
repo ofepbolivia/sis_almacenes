@@ -43,18 +43,18 @@ DECLARE
 	v_estado_salida		varchar;v_cadena varchar;
 
     v_condicion 		VARCHAR = '';
-
+    v_fecha_actual  date;
+    v_fecha_ini     date;
 BEGIN
 
-  --raise exception '%',p_fecha_hasta;
+    v_nombre_funcion = 'alm.f_get_saldo_fisico_item';
 
+    v_fecha_ini = date_trunc('year', p_fecha_hasta);
     v_fecha_fin = p_fecha_hasta::DATE;
     if p_id_almacen = 1 then
     	 v_fecha_fin = v_fecha_fin + interval '1 day';
     end if;
-
     p_fecha_hasta = p_fecha_hasta + interval '1 day';
-    v_nombre_funcion = 'alm.f_get_saldo_fisico_item';
     v_item_saldo := 0;
 
     --  identifica si tiene cirres al dia solcitado
@@ -79,33 +79,33 @@ BEGIN
         and mov.id_almacen = p_id_almacen
         and mov.fecha_mov < p_fecha_hasta;
         --and (mov.fecha_mov::date between '1/1/2018'::date and p_fecha_hasta);*/
-
+  --v_fecha_actual = ('01/01/'||date_part('year',current_date))::date;
 	if p_id_almacen = 1 then
     	select coalesce(sum(movdet.cantidad),0) into v_ingresos
-        from alm.tmovimiento_det movdet
-        inner join alm.tmovimiento mov on mov.id_movimiento = movdet.id_movimiento
-        inner join alm.tmovimiento_tipo movtip on movtip.id_movimiento_tipo = mov.id_movimiento_tipo
-        where movdet.estado_reg = 'activo'
-            and movtip.tipo like '%ingreso%'
-        and movdet.id_item = p_id_item
-            and mov.estado_mov = 'finalizado'
-            and mov.id_almacen = p_id_almacen
-            and (mov.fecha_mov::date between '1/1/2018'::date and p_fecha_hasta);
+      from alm.tmovimiento_det movdet
+      inner join alm.tmovimiento mov on mov.id_movimiento = movdet.id_movimiento
+      inner join alm.tmovimiento_tipo movtip on movtip.id_movimiento_tipo = mov.id_movimiento_tipo
+      where movdet.estado_reg = 'activo'
+          and movtip.tipo like '%ingreso%'
+      and movdet.id_item = p_id_item
+          and mov.estado_mov = 'finalizado'
+          and mov.id_almacen = p_id_almacen
+          and (mov.fecha_mov::date between v_fecha_ini and p_fecha_hasta);
     else
     	select coalesce(sum(movdet.cantidad),0) into v_ingresos
-        from alm.tmovimiento_det movdet
-        inner join alm.tmovimiento mov on mov.id_movimiento = movdet.id_movimiento
-        inner join alm.tmovimiento_tipo movtip on movtip.id_movimiento_tipo = mov.id_movimiento_tipo
-        where movdet.estado_reg = 'activo'
-            and movtip.tipo like '%ingreso%'
-        and movdet.id_item = p_id_item
-            and mov.estado_mov = 'finalizado'
-            and mov.id_almacen = p_id_almacen
-            and mov.fecha_mov < p_fecha_hasta;
+      from alm.tmovimiento_det movdet
+      inner join alm.tmovimiento mov on mov.id_movimiento = movdet.id_movimiento
+      inner join alm.tmovimiento_tipo movtip on movtip.id_movimiento_tipo = mov.id_movimiento_tipo
+      where movdet.estado_reg = 'activo'
+          and movtip.tipo like '%ingreso%'
+      and movdet.id_item = p_id_item
+          and mov.estado_mov = 'finalizado'
+          and mov.id_almacen = p_id_almacen
+          and mov.fecha_mov < p_fecha_hasta;
     end if;
    --salidas
 
-	if (p_incluir_pendientes = 'si') then
+	  if (p_incluir_pendientes = 'si') then
     	v_estado_salida = ' and mov.estado_mov not in(''anulado'', ''eliminado'', ''cancelado'') ';
     else
     	v_estado_salida = ' and mov.estado_mov = ''finalizado'' ';
@@ -114,11 +114,12 @@ BEGIN
 --
 --
 
-	if p_id_almacen = 1 then
-    	v_condicion = ' and (mov.fecha_mov between ''1/1/2018''::date and '''||p_fecha_hasta||'''::date) ';
+	  if p_id_almacen = 1 then
+    	v_condicion = ' and (mov.fecha_mov between '''||v_fecha_ini||'''::date and '''||p_fecha_hasta||'''::date) ';
     else
     	v_condicion = ' and mov.fecha_mov < '''||p_fecha_hasta||'''::date ';
     end if;
+
     execute('select coalesce(sum(movdet.cantidad),0)
     from alm.tmovimiento_det movdet
 
@@ -130,7 +131,8 @@ BEGIN
         and movtip.tipo like ''%salida%''
         and movdet.id_item = '||p_id_item|| v_estado_salida || '
 
-        and mov.id_almacen = '||p_id_almacen|| v_condicion
+        and mov.id_almacen = '||p_id_almacen||
+        v_condicion
         ) into v_salidas;
 
     if (v_ingresos is null) then
@@ -140,7 +142,7 @@ BEGIN
     else
     	v_existencias = v_ingresos - v_salidas;
     end if;
-    --raise exception 'v_existencias: %',v_existencias;
+    --raise notice 'v_saldo_fisico: %, %',p_id_item, v_existencias;
     return coalesce(v_existencias,0);
 
 EXCEPTION

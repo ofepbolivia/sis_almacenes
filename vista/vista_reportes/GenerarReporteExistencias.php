@@ -21,7 +21,12 @@ header("content-type: text/javascript; charset=UTF-8");
                     mode : 'local',
                     store : new Ext.data.ArrayStore({
                         fields : ['tipo', 'valor'],
-                        data : [['antiguo', 'Existencias Prec. Unit. Promedio'], ['ingresos', 'Existencias Prec. Unit. Desglosado'], ['nuevo', 'Existencias Detalle Ingreso/Salida']]
+                        data : [
+                            ['antiguo', 'Existencias Prec. Unit. Promedio'],
+                            ['ingresos', 'Existencias Prec. Unit. Desglosado (Nuevo)'],
+                            ['nuevo', 'Existencias Detalle Ingreso/Salida (Nuevo)'],
+                            ['ministerio', 'Existencias Ministerio (Nuevo)']
+                        ]
                     }),
                     anchor : '100%',
                     valueField : 'tipo',

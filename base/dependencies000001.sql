@@ -3000,3 +3000,22 @@ CREATE TYPE alm.movimiento AS (
   control_salida_id INTEGER
 );
 /***********************************F-DEP-YMR-ALM-0-02/10/2019*****************************************/
+
+/***********************************I-DEP-FEA-ALM-0-18/02/2020*****************************************/
+CREATE OR REPLACE VIEW alm.vlistar_cantidad_item_clasificacion(
+    codigo,
+    nombre,
+    saldo_ini,
+    ingreso,
+    salida,
+    saldo_fin)
+AS
+  SELECT item.codigo,
+         item.nombre,
+         item.saldo_ini,
+         item.ingreso,
+         item.salida,
+         item.saldo_fin
+  FROM alm.f_get_arbol_item() item(codigo, nombre, saldo_ini, ingreso, salida,
+    saldo_fin);
+/***********************************F-DEP-FEA-ALM-0-18/02/2020*****************************************/

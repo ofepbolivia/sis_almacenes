@@ -611,7 +611,30 @@ BEGIN
             return v_consulta;
 
 		end;
+	/*********************************
+     #TRANSACCION:  'SAL_MIN_EXIST_SEL'
+     #DESCRIPCION:  Retorna las existencias de items a nivel clasificacion totales
+     #AUTOR:        franklin.espinoza
+     #FECHA:        26-02-2020
+    ***********************************/
 
+	elsif(p_transaccion='SAL_MIN_EXIST_SEL') then
+		begin
+      v_consulta = '
+                    select
+                    codigo,
+                    nombre,
+                    saldo_ini::numeric,
+                    ingreso::numeric,
+                    salida::numeric,
+                    saldo_fin::numeric,
+                    descripcion,
+                    tamano,
+                    id_clasificacion_fk
+                    from alm.f_get_arbol_item('''||v_parametros.id_clasificacion||''','|| v_parametros.id_almacen||','''||v_parametros.all_alm||''', '''||v_parametros.fecha_ini||'''::date, '''||v_parametros.fecha_fin||'''::date)
+      ';
+	        return v_consulta;
+	    end;
 	else
   		raise exception 'Transacción inexistente';
 	end if;

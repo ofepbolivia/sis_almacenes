@@ -12,6 +12,7 @@ require_once (dirname(__FILE__) . '/../reportes/RExistenciasUpdate.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistenciasPUDesglosado.php');
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistenciasExcel.php');
+require_once (dirname(__FILE__) . '/../reportes/RMinisterioExistenciasXLS.php');
 
 class ACTReportes extends ACTbase {
     function reporteExistencias() {
@@ -29,7 +30,7 @@ class ACTReportes extends ACTbase {
             $this->objParam->addParametroConsulta('puntero', 0);
 
             $nombreArchivo = 'Existencias.pdf';
-
+//var_dump($this->objParam->getParametro('formato'));exit;
             if($this->objParam->getParametro('formato') == 'antiguo') {
                 $this->objFunc = $this->create('MODReporte');
                 $resultRepExistencias = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
@@ -119,25 +120,44 @@ class ACTReportes extends ACTbase {
             $this->res = $mensajeExito;
             $this->res->imprimirRespuesta($this->res->generarJson());
         }else{
-            $this->objParam->addParametroConsulta('ordenacion', 'cla.id_clasificacion');
-            $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
-            $this->objParam->addParametroConsulta('cantidad', 10000);
-            $this->objParam->addParametroConsulta('puntero', 0);
-            $this->objFunc = $this->create('MODReporte');
-            $this->res = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
-            //var_dump( $this->res);exit;
-            //obtener titulo de reporte
-            $titulo = 'Reporte Existencias';
-            //Genera el nombre del archivo (aleatorio + titulo)
-            $nombreArchivo = uniqid(md5(session_id()) . $titulo);
-            $nombreArchivo .= '.xls';
-            $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
-            $this->objParam->addParametro('datos', $this->res->datos);
-            $this->objParam->addParametro('fechaHasta', $fechaHasta);
-            //Instancia la clase de excel
-            $this->objReporteFormato = new RExistenciasExcel($this->objParam);
-            $this->objReporteFormato->generarDatos();
-            $this->objReporteFormato->generarReporte();
+
+            if ($this->objParam->getParametro('formato') != 'ministerio') {
+                $this->objParam->addParametroConsulta('ordenacion', 'cla.id_clasificacion');
+                $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
+                $this->objParam->addParametroConsulta('cantidad', 10000);
+                $this->objParam->addParametroConsulta('puntero', 0);
+                $this->objFunc = $this->create('MODReporte');
+                $this->res = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
+                //var_dump( $this->res);exit;
+                //obtener titulo de reporte
+                $titulo = 'Reporte Existencias';
+                //Genera el nombre del archivo (aleatorio + titulo)
+                $nombreArchivo = uniqid(md5(session_id()) . $titulo);
+                $nombreArchivo .= '.xls';
+                $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+                $this->objParam->addParametro('datos', $this->res->datos);
+                $this->objParam->addParametro('fechaHasta', $fechaHasta);
+                //Instancia la clase de excel
+                $this->objReporteFormato = new RExistenciasExcel($this->objParam);
+                $this->objReporteFormato->generarDatos();
+                $this->objReporteFormato->generarReporte();
+
+            }else{
+                $this->objFunc = $this->create('MODReporte');
+                $this->res=$this->objFunc->listarCantidadesClasificacion($this->objParam);
+                $titulo_archivo = 'Reporte Ministerio Existencias';
+                $this->datos=$this->res->getDatos();
+
+                $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
+                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+                $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
+                $this->objParam->addParametro('datos',$this->datos);
+                $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_hasta'));
+
+                $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
+                $this->objReporte->generarReporte();
+            }
+            
             $this->mensajeExito = new Mensaje();
             $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
             $this->mensajeExito->setArchivoGenerado($nombreArchivo);
@@ -170,6 +190,30 @@ class ACTReportes extends ACTbase {
             $this->res = $this->objFunc->listarItemEntRec();
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    //{'develop':'franklin.espinoza', 'date':'26/2/2020'}
+    function listarCantidadesClasificacion(){
+
+        $this->objFunc = $this->create('MODReporte');
+        $this->res=$this->objFunc->listarCantidadesClasificacion($this->objParam);
+        $titulo_archivo = 'Reporte Ministerio Existencias';
+        $this->datos=$this->res->getDatos();
+
+        $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+        $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
+        $this->objParam->addParametro('datos',$this->datos);
+        $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_fin'));
+
+        $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
+        $this->objReporte->generarReporte();
+
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->res = $this->mensajeExito;
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
 }
 ?>

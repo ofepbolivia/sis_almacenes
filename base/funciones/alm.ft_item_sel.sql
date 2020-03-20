@@ -578,6 +578,70 @@ BEGIN
             return v_consulta;
 
         end;
+    /*********************************
+     #TRANSACCION:  'SAL_FISICO_ITEM_SEL'
+     #DESCRIPCION:    Consulta de datos
+     #AUTOR:        franklin.espinoza
+     #FECHA:        07-01-2020
+    ***********************************/
+
+    elsif(p_transaccion='SAL_FISICO_ITEM_SEL')then
+
+        begin
+            --Sentencia de la consulta
+            v_consulta:='
+            	select
+                	sal.id_item,
+                    item.codigo as codigo_item,
+                    item.nombre as nombre_item,
+                    alm.id_almacen,
+                    alm.codigo as codigo_alm,
+                    alm.nombre as nombre_alm,
+                    ges.id_gestion,
+                    ges.gestion,
+                    sal.fecha_hasta as fecha,
+                    sal.fisico as saldo
+
+                from alm.tsaldo_fisico_item sal
+                inner join alm.titem item on item.id_item = sal.id_item
+                inner join alm.talmacen alm on alm.id_almacen = sal.id_almacen
+                inner join param.tgestion ges on ges.id_gestion = sal.id_gestion
+                where ';
+
+            --Definicion de la respuesta
+            v_consulta:=v_consulta||v_parametros.filtro;
+            v_consulta:=v_consulta||' order by ' ||v_parametros.ordenacion|| ' ' || v_parametros.dir_ordenacion || ' limit ' || v_parametros.cantidad || ' offset ' || v_parametros.puntero;
+
+            --Devuelve la respuesta
+            return v_consulta;
+
+        end;
+    /*********************************
+     #TRANSACCION:  'SAL_FISICO_ITEM_CONT'
+     #DESCRIPCION:  Conteo de registros
+     #AUTOR:        franklin.espinoza
+     #FECHA:        07-01-2020
+    ***********************************/
+
+    elsif(p_transaccion='SAL_FISICO_ITEM_CONT')then
+
+        begin
+            --Sentencia de la consulta de conteo de registros
+            v_consulta:='
+            	select
+                	count(sal.id_item)
+                from alm.tsaldo_fisico_item sal
+                inner join alm.titem item on item.id_item = sal.id_item
+                inner join alm.talmacen alm on alm.id_almacen = sal.id_almacen
+                inner join param.tgestion ges on ges.id_gestion = sal.id_gestion
+                where ';
+
+            --Definicion de la respuesta
+            v_consulta:=v_consulta||v_parametros.filtro;
+
+            --Devuelve la respuesta
+            return v_consulta;
+        end;
     else
 
         raise exception 'Transaccion inexistente';

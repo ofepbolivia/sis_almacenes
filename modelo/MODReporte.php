@@ -213,5 +213,46 @@ class MODReporte extends MODbase {
         return $this->respuesta;
     }
 
+    //{'develop':'franklin.espinoza', 'date':'26/2/2020'}
+    function listarCantidadesClasificacion(){
+        $this->procedimiento = 'alm.ft_reporte_sel';
+        $this->transaccion = 'SAL_MIN_EXIST_SEL';
+        $this->tipo_procedimiento = 'SEL';
+        //$this->tipo_retorno='record';
+        $this->count=false;
+
+        /*$this->setParametro('fecha_ini', 'fecha_ini', 'date');
+        $this->setParametro('fecha_fin', 'fecha_fin', 'date');
+        $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
+        $this->setParametro('id_almacen', 'id_almacen', 'varchar');
+        $this->setParametro('all_alm', 'all_alm', 'varchar');*/
+
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        $this->setParametro('fecha_hasta', 'fecha_hasta', 'date');
+        $this->setParametro('all_items', 'all_items', 'varchar');
+        $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
+
+        $this->setParametro('id_items', 'id_items', 'varchar');
+        $this->setParametro('saldo_cero', 'saldo_cero', 'varchar');
+        $this->setParametro('alertas', 'alertas', 'varchar');
+        $this->setParametro('porcentaje', 'porcentaje', 'varchar');
+        $this->setParametro('formato', 'formato', 'varchar');
+
+        $this->captura('codigo', 'varchar');
+        $this->captura('nombre', 'varchar');
+        $this->captura('saldo_ini', 'numeric');
+        $this->captura('ingreso', 'numeric');
+        $this->captura('salida', 'numeric');
+        $this->captura('saldo_fin', 'numeric');
+        $this->captura('descripcion', 'varchar');
+        $this->captura('tamano', 'integer');
+        $this->captura('id_clasificacion_fk', 'integer');
+
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
 }
 ?>

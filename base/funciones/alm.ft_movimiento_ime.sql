@@ -120,7 +120,7 @@ DECLARE
 
     v_records						integer[];
 	v_control_salida_id   		text;
-
+  v_gestion 						integer;
 BEGIN
 
 	v_nombre_funcion='alm.ft_movimiento_ime';
@@ -1554,59 +1554,108 @@ BEGIN
 
 		begin
 
-        	for v_registros in (SELECT mm.id_movimiento,
-                                       mm.id_almacen
+      for v_registros in SELECT mm.id_movimiento,
+                                       mm.id_almacen, mm.id_estado_wf, mm.id_proceso_wf, mm.estado_mov
                                 FROM   alm.tmovimiento mm
-                                WHERE  mm.codigo_tran = v_parametros.codigo_tran)loop
+                                WHERE  mm.codigo_tran = any(string_to_array(v_parametros.codigo_tran,',')) loop
 
-        		select
-                v_registros.id_movimiento as id_movimiento,
-                v_registros.id_almacen as id_almacen,
-                'verificar'::varchar as operacion,
-                NULL as id_funcionario_wf,
-                NULL as fecha_mov,
-                NULL as id_tipo_estado,
-                NULL as obs
-                into g_registros;
+        if  v_registros.estado_mov = 'aprobado' then
+          --Siguiente estado correspondiente al proceso del WF
+          SELECT ps_id_tipo_estado, ps_codigo_estado, ps_disparador, ps_regla, ps_prioridad
+          into va_id_tipo_estado, va_codigo_estado, va_disparador, va_regla, va_prioridad
 
-                 --Llama a la función de registro del movimiento
-        		v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
+          FROM wf.f_obtener_estado_wf(v_registros.id_proceso_wf, v_registros.id_estado_wf,NULL,'siguiente');
 
-                --Generación de Alertas
-                  v_mostrar_alerts = alm.f_generar_alertas_mov(p_id_usuario, v_registros.id_movimiento);
+          v_id_estado_actual =  wf.f_registra_estado_wf(va_id_tipo_estado[1]::integer,
+                                                        null,
+                                                        v_registros.id_estado_wf,
+                                                        v_registros.id_proceso_wf,
+                                                        p_id_usuario,
+                                                        null,
+                                                        null,
+                                                        null);
 
-                  if v_mostrar_alerts then
-                      v_respuesta=pxp.f_agrega_clave(v_respuesta,'alerts',v_mostrar_alerts::varchar);
-                  end if;
+          --Actualiza estado de WF
+          update alm.tmovimiento set
+          id_estado_wf = v_id_estado_actual,
+          estado_mov = va_codigo_estado[1],
+          fecha_mod = now(),
+          id_usuario_mod = p_id_usuario
+          where id_movimiento = v_registros.id_movimiento::integer;
+        end if;
+      end loop;
 
-                v_id_tipo_estado_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_tipo_estado_wf','','nada','valor')::integer;
+      v_respuesta =pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento almacenado correctamente');
+      v_respuesta =pxp.f_agrega_clave(v_respuesta,'respuesta','ok');
 
-                v_id_funcionario_wf = pxp.f_obtiene_clave_valor(v_respuesta,'id_funcionario_wf','','nada','valor')::varchar;
-
-                select
-                v_registros.id_movimiento as id_movimiento,
-                v_registros.id_almacen  as id_almacen,
-                'siguiente'::varchar as operacion,
-                v_id_funcionario_wf as id_funcionario_wf,
-                NULL as fecha_mov,
-                v_id_tipo_estado_wf as id_tipo_estado,
-                NULL as obs
-                into g_registros;
-                --Llama a la función de registro del movimiento
-                v_respuesta = alm.f_movimiento_workflow_principal(p_id_usuario,hstore(g_registros));
-
-                v_id_movs = v_id_movs || v_registros.id_movimiento;
-
-            end loop;
-
-            v_respuesta =pxp.f_agrega_clave(v_respuesta,'mensaje','Movimiento almacenado correctamente');
-        	v_respuesta =pxp.f_agrega_clave(v_respuesta,'respuesta','ok');
-
-            --Devuelve la respuesta
-            return v_respuesta;
-
+      --Devuelve la respuesta
+      return v_respuesta;
 		end;
+	/*********************************
+     #TRANSACCION:  'SAL_MOV_ANULAR_GROUP'
+     #DESCRIPCION:  Anular movimientos en estado borrador
+     #AUTOR:        franklin.espinoza
+     #FECHA:        03-01-2020
+    ***********************************/
+	elseif (p_transaccion='SAL_MOV_ANULAR_GROUP') then
+    	begin
 
+            select tg.gestion
+            into v_gestion
+			      from param.tgestion tg
+            where tg.id_gestion = v_parametros.id_gestion;
+
+            for v_movimientos in select mov.id_movimiento, mov.id_proceso_wf, mov.id_usuario_ai, mov.usuario_ai
+             					           from alm.tmovimiento mov
+                                 inner join alm.tmovimiento_tipo mtip on mtip.id_movimiento_tipo = mov.id_movimiento_tipo
+                                 where mov.id_almacen = v_parametros.id_almacen
+                                 and mov.estado_mov not in ('finalizado','cancelado', 'anulado')
+                                 and mtip.tipo = 'salida'
+                                 and date_part('year',mov.fecha_mov) = v_gestion loop
+
+              --Obtiene el Proceso WF
+              SELECT
+              mov.id_estado_wf, pw.id_tipo_proceso, pw.id_proceso_wf
+              into
+              v_id_estado_wf, v_id_tipo_proceso, v_id_proceso_wf
+              FROM alm.tmovimiento mov
+              inner join wf.tproceso_wf pw on pw.id_proceso_wf = mov.id_proceso_wf
+              WHERE mov.id_movimiento = v_movimientos.id_movimiento;
+
+              --Obtiene el estado anulado del WF
+              select
+              te.id_tipo_estado
+              into
+              v_id_tipo_estado
+              from wf.tproceso_wf pw
+              inner join wf.ttipo_proceso tp on pw.id_tipo_proceso = tp.id_tipo_proceso
+              inner join wf.ttipo_estado te on te.id_tipo_proceso = tp.id_tipo_proceso and te.codigo = 'anulado'
+              where pw.id_proceso_wf = v_movimientos.id_proceso_wf;
+
+              --Se anula el WF
+              v_id_estado_actual =  wf.f_registra_estado_wf(v_id_tipo_estado,
+                                                             NULL,
+                                                             v_id_estado_wf,
+                                                             v_id_proceso_wf,
+                                                             p_id_usuario,
+                                                             v_movimientos.id_usuario_ai,
+                                                             v_movimientos.usuario_ai,
+                                                             null);
+
+              --Anula el movimiento
+              update alm.tmovimiento set
+              id_estado_wf =  v_id_estado_actual,
+              estado_mov = 'anulado',
+              id_usuario_mod=p_id_usuario,
+              fecha_mod=now(),
+              id_usuario_ai = v_movimientos.id_usuario_ai,
+              usuario_ai = v_movimientos.usuario_ai
+              where id_movimiento = v_movimientos.id_movimiento;
+            end loop;
+            v_respuesta=pxp.f_agrega_clave(v_respuesta,'mensaje','Movimientos Anulados');
+            v_respuesta=pxp.f_agrega_clave(v_respuesta,'id_movimiento','1'::varchar);
+            return v_respuesta;
+    	end;
   else
      raise exception 'Transaccion inexistente: %',p_transaccion;
   end if;

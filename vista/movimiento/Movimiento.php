@@ -1056,14 +1056,14 @@ header("content-type: text/javascript; charset=UTF-8");
 		}, {
 			name : 'fecha_reg',
 			type : 'date',
-			dateFormat : 'Y-m-d H:i:s'
+			dateFormat : 'Y-m-d H:i:s.u'
 		}, {
 			name : 'usr_mod',
 			type : 'string'
 		}, {
 			name : 'fecha_mod',
 			type : 'date',
-			dateFormat : 'Y-m-d H:i:s'
+			dateFormat : 'Y-m-d H:i:s.u'
 		},{
 			name : 'fecha_salida',
 			type : 'date',

@@ -56,6 +56,7 @@ class MODMovimiento extends MODbase {
         $this->captura('id_plantilla', 'integer');
         $this->captura('desc_plantilla', 'varchar');
         $this->armarConsulta();
+        //echo($this->consulta);exit;
         $this->ejecutarConsulta();
         return $this->respuesta;
     }
@@ -385,6 +386,19 @@ class MODMovimiento extends MODbase {
         $this->setParametro('id_movimiento', 'id_movimiento', 'integer');
         $this->setParametro('id_almacen', 'id_almacen', 'integer');
         $this->setParametro('obs', 'obs', 'varchar');
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function anularMovimientoBloque() {
+        $this->procedimiento = 'alm.ft_movimiento_ime';
+        $this->transaccion = 'SAL_MOV_ANULAR_GROUP';
+        $this->tipo_procedimiento = 'IME';
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        $this->setParametro('id_gestion', 'id_gestion', 'integer');
+
         $this->armarConsulta();
         $this->ejecutarConsulta();
 

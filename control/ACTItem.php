@@ -148,5 +148,25 @@ class ACTItem extends ACTbase {
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+    //franklin.espinoza 07/01/2020 saldo item para cierre de gestion
+    function listarSaldoFisicoItem() {
+
+        $this->objParam->defecto('ordenacion', 'sal.id_item');
+        $this->objParam->defecto('dir_ordenacion', 'asc');
+
+        if($this->objParam->getParametro('id_gestion') != '') {
+            $this->objParam->addFiltro(" sal.id_gestion = ".$this->objParam->getParametro('id_gestion'));
+        }
+
+        $this->objFunc = $this->create('MODItem');
+        $this->res = $this->objFunc->listarSaldoFisicoItem();
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+    //franklin.espinoza 07/01/2020 alimentar la tabla tsaldo_fisico_item para cierre de gestion
+    function actualizarSaldoFisicoItem() {
+        $this->objFunc = $this->create('MODItem');
+        $this->res = $this->objFunc->actualizarSaldoFisicoItem();
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 }
 ?>

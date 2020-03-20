@@ -198,7 +198,7 @@ Phx.vista.MovimientoTipoUo=Ext.extend(Phx.gridInterfaz,{
 		}
 	],
 	tam_pag:50,	
-	title:'Tipo Movimiento/Organigrama',
+	title:'Tipo Movimiento Organigrama',
 	ActSave:'../../sis_almacenes/control/MovimientoTipoUo/insertarMovimientoTipoUo',
 	ActDel:'../../sis_almacenes/control/MovimientoTipoUo/eliminarMovimientoTipoUo',
 	ActList:'../../sis_almacenes/control/MovimientoTipoUo/listarMovimientoTipoUo',

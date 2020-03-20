@@ -430,5 +430,12 @@ class ACTMovimiento extends ACTbase {
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+    //(franklin.espinoza) Anular movimientos en bloque en estado borrador
+    function anularMovimientoBloque() {
+        $this->objFunc = $this->create('MODMovimiento');
+        $this->res = $this->objFunc->anularMovimientoBloque();
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
 }
 ?>

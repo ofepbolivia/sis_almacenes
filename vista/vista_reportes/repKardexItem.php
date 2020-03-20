@@ -8,8 +8,39 @@
  */
 header("content-type:text/javascript; charset=UTF-8");
 ?>
+<style type="text/css" rel="stylesheet">
+    .x-selectable,
+    .x-selectable * {
+        -moz-user-select: text !important;
+        -khtml-user-select: text !important;
+        -webkit-user-select: text !important;
+    }
+
+    .x-grid-row td,
+    .x-grid-summary-row td,
+    .x-grid-cell-text,
+    .x-grid-hd-text,
+    .x-grid-hd,
+    .x-grid-row,
+
+    .x-grid-row,
+    .x-grid-cell,
+    .x-unselectable
+    {
+        -moz-user-select: text !important;
+        -khtml-user-select: text !important;
+        -webkit-user-select: text !important;
+    }
+</style>
 <script>
 	Phx.vista.repKardexItem = Ext.extend(Phx.gridInterfaz, {
+
+        viewConfig: {
+            stripeRows: false,
+            getRowClass: function(record) {
+                return "x-selectable";
+            }
+        },
 		constructor : function(config) {
 			this.maestro = config;
 			this.description = this.maestro.item;

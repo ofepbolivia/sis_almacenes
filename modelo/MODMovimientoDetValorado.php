@@ -28,6 +28,7 @@ class MODMovimientoDetValorado extends MODbase {
         $this->captura('fecha_reg', 'timestamp');
         $this->captura('usr_mod', 'varchar');
         $this->captura('fecha_mod', 'timestamp');
+        $this->captura('aux_saldo_fisico', 'numeric');
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -59,6 +60,7 @@ class MODMovimientoDetValorado extends MODbase {
         $this->setParametro('id_movimiento_det', 'id_movimiento_det', 'integer');
         $this->setParametro('cantidad_item', 'cantidad_item', 'numeric');
         $this->setParametro('costo_unitario', 'costo_unitario', 'numeric');
+        //$this->setParametro('aux_saldo_fisico', 'aux_saldo_fisico', 'numeric');
 
         $this->armarConsulta();
         $this->ejecutarConsulta();

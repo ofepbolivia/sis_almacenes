@@ -84,7 +84,7 @@ BEGIN
     else
     	v_saldo_valorado = v_ingresos - v_salidas;
     end if;
-    --raise exception 'v_saldo_valorado: %',v_saldo_valorado;
+    raise notice 'v_saldo_valorado: %, %', p_id_item,v_saldo_valorado;
     return coalesce(v_saldo_valorado,0);
 EXCEPTION
 	WHEN OTHERS THEN

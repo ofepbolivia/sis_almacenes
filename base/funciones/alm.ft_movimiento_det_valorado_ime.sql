@@ -94,7 +94,7 @@ BEGIN
     ***********************************/
     elseif (p_transaccion='SAL_DETVAL_MOD') then
     begin
-    	
+
     	select mov.estado_mov into v_estado_mov
         from alm.tmovimiento mov
         inner join alm.tmovimiento_det movdet on movdet.id_movimiento = mov.id_movimiento
@@ -109,7 +109,8 @@ BEGIN
             fecha_mod = now(),
             id_movimiento_det = v_parametros.id_movimiento_det,
             cantidad = v_parametros.cantidad_item,
-            costo_unitario = v_parametros.costo_unitario
+            costo_unitario = v_parametros.costo_unitario/*,
+            aux_saldo_fisico = v_parametros.aux_saldo_fisico*/
         where id_movimiento_det_valorado = v_parametros.id_movimiento_det_valorado;
         
         -- Se debe actualizar la cantidad total del detalle movimiento

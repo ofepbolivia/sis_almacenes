@@ -815,3 +815,8 @@ ALTER TABLE alm.tmovimiento_det
   ADD COLUMN estado_dotacion VARCHAR;
 
 /***********************************F-SCP-ALAN-ALM-0-02/10/2019*****************************************/
+
+/***********************************I-SCP-FEA-ALM-0-07/01/2020*****************************************/
+ALTER TABLE alm.tsaldo_fisico_item
+  ADD COLUMN id_gestion INTEGER;
+/***********************************F-SCP-FEA-ALM-0-07/01/2020*****************************************/
