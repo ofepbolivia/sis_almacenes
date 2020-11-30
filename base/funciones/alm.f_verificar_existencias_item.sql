@@ -73,7 +73,9 @@ BEGIN
 
             --Alertas
             if v_saldo_cantidad = 0 then
-                po_alertas = po_alertas || '\n- Existencias agotadas para el item: ' || g_registros.nombre_item;
+            	if g_registros.cantidad_item != 0 then --franklin.espinoza 15/09/2020
+                	po_alertas = po_alertas || '\n- Existencias agotadas para el item: ' || g_registros.nombre_item;
+                end if;
             end if;
             if v_cantidad > v_saldo_cantidad then
                 po_alertas = po_alertas || '\n- En la validación del total pedido para el item: ' || g_registros.nombre_item || ', no hay Existencias suficientes (Disponible: '||v_saldo_cantidad||'; Total solicitado:'||v_cantidad||')';
@@ -121,7 +123,9 @@ BEGIN
 
             --Alertas
             if v_saldo_cantidad = 0 then
-                po_alertas = po_alertas || '\n- Existencias agotadas para el item: ' || g_registros.nombre_item;
+                if g_registros.cantidad_item != 0 then --franklin.espinoza 15/09/2020
+                	po_alertas = po_alertas || '\n- Existencias agotadas para el item: ' || g_registros.nombre_item;
+                end if;
             end if;
             if v_cantidad > v_saldo_cantidad then
                 po_alertas = po_alertas || '\n- Existencias insuficientes para el item: ' || g_registros.nombre_item || ' (Disponible: '||v_saldo_cantidad||'; Solicitado:'||v_cantidad||')';

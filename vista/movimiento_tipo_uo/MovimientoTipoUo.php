@@ -91,6 +91,28 @@ Phx.vista.MovimientoTipoUo=Ext.extend(Phx.gridInterfaz,{
 			grid: true,
 			form: true
 		},
+        {
+            config:{
+                name: 'funcionario',
+                fieldLabel: "Funcionario",
+                gwidth: 200,
+                allowBlank:true,
+                maxLength:100,
+                minLength:1,
+                anchor:'100%',
+                disabled: true,
+                style: 'color: blue; background-color: orange;',
+                renderer: function (value, p, record){
+                    return String.format('<div style="color: green; font-weight: bold;">{0}</div>', value);
+                }
+            },
+            type:'TextField',
+            filters:{pfiltro:'vf.desc_funcionario1',type:'string'},
+            //bottom_filter : true,
+            id_grupo:0,
+            grid:true,
+            form:true
+        },
 		{
 			config: {
 				name: 'uo',
@@ -215,7 +237,8 @@ Phx.vista.MovimientoTipoUo=Ext.extend(Phx.gridInterfaz,{
 		{name:'usr_reg', type: 'string'},
 		{name:'usr_mod', type: 'string'},
 		'codigo',
-		'desc_uo'
+		'desc_uo',
+        'funcionario'
 	],
 	sortInfo:{
 		field: 'id_movimiento_tipo_uo',

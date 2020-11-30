@@ -32,7 +32,8 @@ class MODMovimientoTipoUo extends MODbase{
 		$this->captura('usr_mod','varchar');
 		$this->captura('codigo','varchar');
 		$this->captura('desc_uo','varchar');
-		
+		$this->captura('funcionario','varchar');
+
 		//Ejecuta la instruccion
 		$this->armarConsulta();
 		$this->ejecutarConsulta();

@@ -100,7 +100,7 @@ header("content-type:text/javascript; charset=UTF-8");
 		ActSave : '../../sis_almacenes/control/Clasificacion/insertarClasificacion',
 		ActDel : '../../sis_almacenes/control/Clasificacion/eliminarClasificacion',
 		ActList : '../../sis_almacenes/control/Clasificacion/listarClasificacionArb',
-		ActDragDrop:'../../sis_almacenes/control/Clasificacion/guardarDragDrop',
+		//ActDragDrop:'../../sis_almacenes/control/Clasificacion/guardarDragDrop',
 		id_store : 'id_clasificacion',
 		textRoot : 'Clasificaciones',
 		id_nodo : 'id_clasificacion',
