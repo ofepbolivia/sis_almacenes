@@ -1320,3 +1320,11 @@ IS 'identificador de la tabla alm.tclasificacion';
 ALTER TABLE alm.titem_partida
   OWNER TO postgres;
 /***********************************F-SCP-MAY-ALM-0-14/12/2020*****************************************/
+
+/***********************************I-SCP-MAY-ALM-1-14/12/2020*****************************************/
+ALTER TABLE alm.titem
+  ADD COLUMN id_partida INTEGER;
+
+  COMMENT ON COLUMN alm.titem.id_partida
+IS 'identificador id_partida pre.tpartida';
+/***********************************F-SCP-MAY-ALM-1-14/12/2020*****************************************/
