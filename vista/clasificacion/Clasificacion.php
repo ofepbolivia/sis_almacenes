@@ -234,12 +234,20 @@ header("content-type:text/javascript; charset=UTF-8");
 			var selectedNode = this.sm.getSelectedNode();
 			selectedNode.attributes.estado = 'restringido';
 		},
-		south : {
-			url : '../../../sis_almacenes/vista/item/Item.php',
-			title : 'Materiales',
-			height : 300,
-			cls : 'Item'
-		},
+
+        tabsouth : [{
+            url : '../../../sis_almacenes/vista/item/Item.php',
+            title : 'Materiales',
+            height : 300,
+            cls : 'Item'
+        },
+        {
+            url : '../../../sis_almacenes/vista/clasificacion_partida/ClasificacionPartida.php',
+            title : 'Partidas',
+            height : 300,
+            cls : 'ClasificacionPartida'
+        }],
+
 		onBtnBlockUnblock : function() {
 			var node = this.sm.getSelectedNode();
 			var data = node.attributes;

@@ -210,33 +210,50 @@ BEGIN
 
 	    	v_consulta:='
 	        	select
-                distinct mval.id_movimiento_det_valorado ,mov.fecha_mov::date, item.codigo, item.nombre, mval.cantidad,
-                mval.costo_unitario, mval.cantidad*mval.costo_unitario as costo_total,fun.desc_funcionario1,
-                prov.desc_proveedor,mov.codigo as mov_codigo, mtipo.nombre as tipo_nombre, mtipo.tipo,
-                alm.nombre as desc_almacen
+                distinct mval.id_movimiento_det_valorado ,
+                		mov.fecha_mov::date,
+                        item.codigo,
+                        item.nombre,
+                        mval.cantidad,
+                		mval.costo_unitario,
+                        mval.cantidad*mval.costo_unitario as costo_total,
+                        fun.desc_funcionario1,
+                		prov.desc_proveedor,
+                        mov.codigo as mov_codigo,
+                        mtipo.nombre as tipo_nombre,
+                        mtipo.tipo,
+                		alm.nombre as desc_almacen,
+
+                        cc.codigo_cc::varchar as desc_centro_costo,
+                        (par.codigo ||''-''|| par.nombre_partida)::varchar as desc_partida
+
                 from alm.tmovimiento_det mdet
-                inner join alm.tmovimiento_det_valorado mval
-                on mval.id_movimiento_det = mdet.id_movimiento_det
-                inner join alm.tmovimiento mov
-                on mov.id_movimiento = mdet.id_movimiento
-                inner join alm.tmovimiento_tipo mtipo
-                on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
-                inner join alm.titem item
-                on item.id_item = mdet.id_item
-                left join orga.vfuncionario fun
-                on fun.id_funcionario = mov.id_funcionario
-                left join param.vproveedor prov
-                on prov.id_proveedor = mov.id_proveedor
-                inner join alm.talmacen alm
-                on alm.id_almacen = mov.id_almacen
-                left join orga.tuo_funcionario uofun
-                on uofun.id_funcionario = fun.id_funcionario
+                inner join alm.tmovimiento_det_valorado mval on mval.id_movimiento_det = mdet.id_movimiento_det
+                inner join alm.tmovimiento mov on mov.id_movimiento = mdet.id_movimiento
+                inner join alm.tmovimiento_tipo mtipo on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
+                inner join alm.titem item on item.id_item = mdet.id_item
+                left join orga.vfuncionario fun on fun.id_funcionario = mov.id_funcionario
+                left join param.vproveedor prov on prov.id_proveedor = mov.id_proveedor
+                inner join alm.talmacen alm on alm.id_almacen = mov.id_almacen
+
+                left join orga.tuo_funcionario uofun on uofun.id_funcionario = fun.id_funcionario
                 and uofun.fecha_asignacion <= '''||v_parametros.fecha_fin || '''
-                left join orga.tuo_funcionario uofun1
-                on uofun1.id_funcionario = fun.id_funcionario
+                left join orga.tuo_funcionario uofun1 on uofun1.id_funcionario = fun.id_funcionario
                 and '''||v_parametros.fecha_fin || ''' BETWEEN uofun1.fecha_asignacion and uofun1.fecha_finalizacion
+
+                left join orga.tcargo_presupuesto cp on cp.id_cargo = uofun1.id_cargo
+				left join param.vcentro_costo cc on cc.id_centro_costo = cp.id_centro_costo
+                --left join alm.titem_partida ipar on ipar.id_item = item.id_item
+                left join pre.tpartida par on par.id_partida = item.id_partida
+
                 where mval.cantidad > 0
-                and mov.estado_mov = ''finalizado'' and ';
+                and mov.estado_mov = ''finalizado''
+                and uofun1.estado_funcional = ''activo''
+                and uofun.estado_funcional = ''activo''
+                and uofun1.estado_reg = ''activo''
+                and uofun.estado_reg = ''activo''
+                and mdet.fecha_reg::date BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+                and ';
 
 				v_consulta:=v_consulta||v_parametros.filtro;
                 v_consulta = v_consulta || v_where;
@@ -299,31 +316,35 @@ BEGIN
             end if;
 
 	    	v_consulta:='
-	        	select
-               	count(distinct mval.id_movimiento_det_valorado)
+	        	select count(distinct mval.id_movimiento_det_valorado)
+
                 from alm.tmovimiento_det mdet
-                inner join alm.tmovimiento_det_valorado mval
-                on mval.id_movimiento_det = mdet.id_movimiento_det
-                inner join alm.tmovimiento mov
-                on mov.id_movimiento = mdet.id_movimiento
-                inner join alm.tmovimiento_tipo mtipo
-                on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
-                inner join alm.titem item
-                on item.id_item = mdet.id_item
-                left join orga.vfuncionario fun
-                on fun.id_funcionario = mov.id_funcionario
-                left join param.vproveedor prov
-                on prov.id_proveedor = mov.id_proveedor
-                inner join alm.talmacen alm
-                on alm.id_almacen = mov.id_almacen
-                left join orga.tuo_funcionario uofun
-                on uofun.id_funcionario = fun.id_funcionario
+                inner join alm.tmovimiento_det_valorado mval on mval.id_movimiento_det = mdet.id_movimiento_det
+                inner join alm.tmovimiento mov on mov.id_movimiento = mdet.id_movimiento
+                inner join alm.tmovimiento_tipo mtipo on mtipo.id_movimiento_tipo = mov.id_movimiento_tipo
+                inner join alm.titem item on item.id_item = mdet.id_item
+                left join orga.vfuncionario fun on fun.id_funcionario = mov.id_funcionario
+                left join param.vproveedor prov on prov.id_proveedor = mov.id_proveedor
+                inner join alm.talmacen alm on alm.id_almacen = mov.id_almacen
+
+                left join orga.tuo_funcionario uofun on uofun.id_funcionario = fun.id_funcionario
                 and uofun.fecha_asignacion <= '''||v_parametros.fecha_fin || '''
-                left join orga.tuo_funcionario uofun1
-                on uofun1.id_funcionario = fun.id_funcionario
+                left join orga.tuo_funcionario uofun1 on uofun1.id_funcionario = fun.id_funcionario
                 and '''||v_parametros.fecha_fin || ''' BETWEEN uofun1.fecha_asignacion and uofun1.fecha_finalizacion
+
+                left join orga.tcargo_presupuesto cp on cp.id_cargo = uofun1.id_cargo
+				left join param.vcentro_costo cc on cc.id_centro_costo = cp.id_centro_costo
+                --left join alm.titem_partida ipar on ipar.id_item = item.id_item
+                left join pre.tpartida par on par.id_partida = item.id_partida
+
                 where mval.cantidad > 0
-                and mov.estado_mov = ''finalizado'' and ';
+                and mov.estado_mov = ''finalizado''
+                and uofun1.estado_funcional = ''activo''
+                and uofun.estado_funcional = ''activo''
+                and uofun1.estado_reg = ''activo''
+                and uofun.estado_reg = ''activo''
+                and mdet.fecha_reg::date BETWEEN '''||v_parametros.fecha_ini||''' and '''||v_parametros.fecha_fin ||'''
+                and ';
 
 			v_consulta:=v_consulta||v_parametros.filtro;
             v_consulta = v_consulta || v_where;

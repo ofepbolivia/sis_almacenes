@@ -1280,3 +1280,43 @@ IS 'Funcion que gestiona las operaciones basicas (inserciones, modificaciones, e
 
 /***********************************F-SCP-ALAN-ALM-0-29/11/2019*****************************************/
 
+/***********************************I-SCP-MAY-ALM-0-14/12/2020*****************************************/
+CREATE TABLE alm.titem_partida (
+  id_item_partida SERIAL,
+  id_item INTEGER,
+  id_partida INTEGER NOT NULL,
+  tipo VARCHAR(500) NOT NULL,
+  id_gestion INTEGER NOT NULL,
+  id_clasificacion INTEGER,
+  CONSTRAINT tclasificacion_partida_pkey PRIMARY KEY(id_item_partida),
+  CONSTRAINT titem_partida_fk1 FOREIGN KEY (id_partida)
+    REFERENCES pre.tpartida(id_partida)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE,
+  CONSTRAINT titem_partida_fk2 FOREIGN KEY (id_gestion)
+    REFERENCES param.tgestion(id_gestion)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION
+    NOT DEFERRABLE
+) INHERITS (pxp.tbase)
+WITH (oids = false);
+
+COMMENT ON TABLE alm.titem_partida
+IS 'almacena la relacion entre un item y su partida por gestion';
+
+COMMENT ON COLUMN alm.titem_partida.id_item
+IS 'identificador con el id_item';
+
+COMMENT ON COLUMN alm.titem_partida.tipo
+IS 'estado directo/indirecto';
+
+COMMENT ON COLUMN alm.titem_partida.id_gestion
+IS 'identificador de la tabla param.tgestion';
+
+COMMENT ON COLUMN alm.titem_partida.id_clasificacion
+IS 'identificador de la tabla alm.tclasificacion';
+
+ALTER TABLE alm.titem_partida
+  OWNER TO postgres;
+/***********************************F-SCP-MAY-ALM-0-14/12/2020*****************************************/

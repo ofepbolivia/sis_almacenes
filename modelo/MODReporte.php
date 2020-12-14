@@ -92,6 +92,7 @@ class MODReporte extends MODbase {
 
 		$this->setParametro('fecha_ini', 'fecha_ini', 'date');
 		$this->setParametro('fecha_fin', 'fecha_fin', 'date');
+
 		$this->setParametro('tipo_mov', 'tipo_mov', 'varchar');
 		$this->setParametro('tipo_sol', 'tipo_sol', 'varchar');
         $this->setParametro('id_funcionario', 'id_funcionario', 'varchar');
@@ -117,6 +118,9 @@ class MODReporte extends MODbase {
         $this->captura('tipo_nombre', 'varchar');
         $this->captura('tipo', 'varchar');
 		$this->captura('desc_almacen', 'varchar');
+
+		$this->captura('desc_centro_costo', 'varchar');
+		$this->captura('desc_partida', 'varchar');
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;
