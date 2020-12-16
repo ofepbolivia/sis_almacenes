@@ -97,7 +97,9 @@ BEGIN
 
                  FOR v_parametros_item  IN(SELECT itm.id_item
                                           FROM alm.titem itm
+                                          join alm.tclasificacion cla on cla.id_clasificacion = itm.id_clasificacion
                                           WHERE itm.id_clasificacion = v_parametros.id_clasificacion
+                                          or cla.id_clasificacion_fk = v_parametros.id_clasificacion
                 						) LOOP
 
                               UPDATE alm.titem SET
@@ -225,13 +227,27 @@ BEGIN
             	update alm.titem_partida set
             	id_usuario_mod = p_id_usuario,
                 fecha_mod = now(),
-                id_item_partida = v_parametros.id_item_partida,
+                --id_item_partida = v_parametros.id_item_partida,
                 id_clasificacion = v_parametros.id_clasificacion,
                 id_partida = v_parametros.id_partida,
                 id_gestion = v_parametros.id_gestion
                 --tipo= v_parametros.tipo
 
             	where id_item_partida=v_parametros.id_item_partida;
+
+                 FOR v_parametros_item  IN(SELECT itm.id_item
+                                          FROM alm.titem itm
+                                          join alm.tclasificacion cla on cla.id_clasificacion = itm.id_clasificacion
+                                          WHERE itm.id_clasificacion = v_parametros.id_clasificacion
+                                          or cla.id_clasificacion_fk = v_parametros.id_clasificacion
+                						) LOOP
+
+                              UPDATE alm.titem SET
+                              id_partida = v_parametros.id_partida
+                              WHERE id_item = v_parametros_item.id_item;
+
+                 END LOOP;
+
 
             END IF;
 
@@ -269,7 +285,9 @@ BEGIN
 
                 FOR v_id_item  IN(SELECT itm.id_item
                                           FROM alm.titem itm
+                                          join alm.tclasificacion cla on cla.id_clasificacion = itm.id_clasificacion
                                           WHERE itm.id_clasificacion = v_parametros_item_partida.id_clasificacion
+                                          or cla.id_clasificacion_fk = v_parametros_item_partida.id_clasificacion
                 						) LOOP
 
                               update alm.titem set
