@@ -40,6 +40,12 @@ DECLARE
     v_partida_clasificacion		integer;
     v_id_item					record;
 
+    v_item_partida				record;
+
+    v_gestion_nom				integer;
+    v_gestion_actual			integer;
+    v_id_gestion				integer;
+
 
 BEGIN
 
@@ -344,6 +350,86 @@ BEGIN
 
         end;
 
+        /*********************************
+         #TRANSACCION:  'SAL_CLOCLAPA_IME'
+         #DESCRIPCION:  clonar registros
+         #AUTOR:        maylee.perez
+         #FECHA:        30-12-2020
+        ***********************************/
+
+        elsif(p_transaccion='SAL_CLOCLAPA_IME')then
+
+         begin
+
+
+                 select ip.*
+                 into v_item_partida
+                 from alm.titem_partida ip
+                 where ip.id_item_partida = v_parametros.id_item_partida;
+
+
+                SELECT ges.gestion
+                INTO v_gestion_nom
+                FROM param.tgestion ges
+                WHERE ges.id_gestion = v_item_partida.id_gestion;
+
+                v_gestion_actual = v_gestion_nom + 1 ;
+
+                SELECT ges.id_gestion
+                INTO v_id_gestion
+                FROM param.tgestion ges
+                WHERE ges.gestion = v_gestion_actual;
+
+
+
+                --inserta
+
+                FOR v_parametros_item_partida  IN(select ip.*
+                                       from alm.titem_partida ip
+                                       where ip.id_gestion = v_item_partida.id_gestion
+                                       and ip.estado_reg ='activo'
+                						) LOOP
+
+
+
+
+                              --Sentencia de la insercion
+                              insert into alm.titem_partida(
+                                  id_usuario_reg,
+                                  fecha_reg,
+                                  estado_reg,
+
+                                  id_clasificacion,
+                                  id_partida,
+                                  tipo,
+                                  id_item,
+                                  id_gestion
+
+                              ) values (
+                                  p_id_usuario,
+                                  now(),
+                                  v_parametros_item_partida.estado_reg,
+
+                                  v_parametros_item_partida.id_clasificacion,
+                                  v_parametros_item_partida.id_partida,
+                                  'directo',
+                                  v_parametros_item_partida.id_item,
+                                  v_id_gestion
+
+                              ) RETURNING id_item_partida into v_id_item_partida;
+
+
+                 END LOOP;
+
+
+              --Definicion de la respuesta
+              v_resp = pxp.f_agrega_clave(v_resp,'mensaje','Partidas Replicado');
+              v_resp = pxp.f_agrega_clave(v_resp,'id_item_partida',v_id_item_partida::varchar);
+
+              --Devuelve la respuesta
+              return v_resp;
+
+         end;
 
 
     else

@@ -47,6 +47,11 @@ class ACTClasificacionPartida extends ACTbase {
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
+    function clonarCLasificacionPartida(){
+        $this->objFunc=$this->create('MODClasificacionPartida');
+        $this->res=$this->objFunc->clonarCLasificacionPartida($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 
 }
 ?>

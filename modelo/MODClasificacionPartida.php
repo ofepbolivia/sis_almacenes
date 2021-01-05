@@ -94,5 +94,22 @@ class MODClasificacionPartida extends MODbase {
         return $this->respuesta;
     }
 
+    function clonarCLasificacionPartida(){
+        //Definicion de variables para ejecucion del procedimiento
+        $this->procedimiento='alm.ft_clasificacion_partida_ime';
+        $this->transaccion='SAL_CLOCLAPA_IME';
+        $this->tipo_procedimiento='IME';
+
+        //Define los parametros para la funcion
+        $this->setParametro('id_item_partida','id_item_partida','int4');
+
+        //Ejecuta la instruccion
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+
+        //Devuelve la respuesta
+        return $this->respuesta;
+    }
+
 }
 ?>

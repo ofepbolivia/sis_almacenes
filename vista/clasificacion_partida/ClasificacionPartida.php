@@ -38,6 +38,15 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
                 this.cmbGestion.on('select', this.capturarEventos, this);
+
+                this.addButton('clonarPar', {
+                    text: 'Clonar Partidas',
+                    iconCls: 'blist',
+                    disabled: true,
+                    handler: this.clonarPar,
+                    tooltip: 'Clonar todas las Partidas para la siguiente gestión'
+                });
+
             },
 
             capturarEventos: function () {
@@ -373,6 +382,8 @@ header("content-type: text/javascript; charset=UTF-8");
                     this.getBoton('del').disable();
                     //this.getBoton('del').disable();
                 }
+
+                this.getBoton('clonarPar').enable();
             },
 
             onButtonEdit: function () {
@@ -394,8 +405,45 @@ header("content-type: text/javascript; charset=UTF-8");
 
 
             liberaMenu: function (n) {
-                Phx.vista.ClasificacionPartida.superclass.liberaMenu.call(this, n);
+                var tb = Phx.vista.ClasificacionPartida.superclass.liberaMenu.call(this, n);
+                if (tb) {
+                    this.getBoton('clonarPar').disable();
+                }
+            },
 
+            clonarPar:function(){
+                if(confirm('¿Está seguro de clonar? ')){
+                    var rec = this.sm.getSelected();
+                    //console.log('id_item_partida',rec);
+                    Phx.CP.loadingShow();
+                    Ext.Ajax.request({
+                        url: '../../sis_almacenes/control/ClasificacionPartida/clonarCLasificacionPartida',
+                        params: {
+                            id_item_partida: rec.data.id_item_partida
+                        },
+                        success: this.successSinc,
+                        failure: this.conexionFailure,
+                        timeout: this.timeout,
+                        scope: this
+                    });
+                }
+            },
+
+            successSinc: function (resp) {
+                Phx.CP.loadingHide();
+                var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                if (!reg.ROOT.error) {
+                    if (this.wEstado) {
+                        this.wEstado.hide();
+                    }
+
+                    if (resp.argument && resp.argument.paneldoc) {
+                        resp.argument.paneldoc.panel.destroy();
+                    }
+                    this.reload();
+                } else {
+                    alert('ocurrio un error durante el proceso')
+                }
             },
 
 
