@@ -397,6 +397,8 @@ BEGIN
                               insert into alm.titem_partida(
                                   id_usuario_reg,
                                   fecha_reg,
+                                  id_usuario_mod,
+                                  fecha_mod,
                                   estado_reg,
 
                                   id_clasificacion,
@@ -406,8 +408,10 @@ BEGIN
                                   id_gestion
 
                               ) values (
-                                  p_id_usuario,
-                                  now(),
+                                  v_parametros_item_partida.id_usuario_reg,
+                                  v_parametros_item_partida.fecha_reg,
+                                  v_parametros_item_partida.id_usuario_mod,
+                                  v_parametros_item_partida.fecha_mod,
                                   v_parametros_item_partida.estado_reg,
 
                                   v_parametros_item_partida.id_clasificacion,
