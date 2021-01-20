@@ -69,7 +69,8 @@ BEGIN
                   IF EXISTS (SELECT 1
                       FROM alm.titem_partida ip
                       WHERE ip.id_clasificacion= v_parametros.id_clasificacion
-                      AND ip.estado_reg = 'activo' ) THEN
+                      AND ip.estado_reg = 'activo' )
+                      AND ip.id_gestion = v_parametros.id_gestion) THEN
 
                       RAISE EXCEPTION 'SOLO SE PERMITE REGISTRAR UNA PARTIDA.';
 
@@ -120,7 +121,8 @@ BEGIN
                 IF EXISTS (SELECT 1
                     FROM alm.titem_partida ip
                     WHERE ip.id_item= v_parametros.id_item
-                    AND ip.estado_reg = 'activo' ) THEN
+                    AND ip.estado_reg = 'activo'
+                    AND ip.id_gestion = v_parametros.id_gestion ) THEN
 
                     RAISE EXCEPTION 'SOLO SE PERMITE REGISTRAR UNA PARTIDA PARA EL ITEM.';
 
@@ -213,7 +215,8 @@ BEGIN
                 IF EXISTS (SELECT 1
             			FROM alm.titem_partida ip
                         WHERE ip.id_item= v_parametros.id_item
-                        AND ip.estado_reg = 'activo' ) THEN
+                        AND ip.estado_reg = 'activo'
+                        AND ip.id_gestion = v_parametros.id_gestion) THEN
 
                         RAISE EXCEPTION 'SOLO SE PERMITE REGISTRAR UNA PARTIDA PARA EL ITEM.';
 
