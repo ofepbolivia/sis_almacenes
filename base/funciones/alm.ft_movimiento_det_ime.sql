@@ -12,7 +12,7 @@ $body$
  DESCRIPCION:   Funcion que gestiona las operaciones basicas (inserciones, modificaciones, eliminaciones de la tabla 'alm.tmovimiento_det'
  AUTOR: 		Gonzalo Sarmiento
  FECHA:	        02-10-2012
- COMENTARIOS:	
+ COMENTARIOS:
 ***************************************************************************/
 
 DECLARE
@@ -180,13 +180,13 @@ BEGIN
             END IF;
 
             v_existencias = alm.f_get_saldo_fisico_item(v_parametros.id_item, v_id_almacen, v_fecha_mov);
-
-            if (v_existencias < v_total_cantidad_sol) then
+--raise 'v_existencias: %, %, %, %, %',v_existencias, v_total_cantidad_sol, v_cantidad_anterior,  v_parametros.cantidad_solicitada, v_parametros.cantidad_item;
+            if (v_existencias < v_total_cantidad_sol and v_parametros.cantidad_item > 0) then
             	raise exception '%', 'No existen suficientes unidades de este item en el almacen seleccionado (Disponible: '||v_existencias::integer||'; Total solicitado:'||v_total_cantidad_sol||')';
             end if;
 
         end if;
-        
+
     	update alm.tmovimiento_det set
             id_usuario_mod = p_id_usuario,
             fecha_mod = now(),
@@ -199,7 +199,7 @@ BEGIN
             observaciones = v_parametros.observaciones,
             id_concepto_ingas = v_parametros.id_concepto_ingas
         where id_movimiento_det = v_parametros.id_movimiento_det;
-        
+
         update alm.tmovimiento_det_valorado set
         	id_usuario_mod = p_id_usuario,
             fecha_mod = now(),
@@ -207,13 +207,13 @@ BEGIN
             aux_saldo_fisico = v_parametros.cantidad_item,
             costo_unitario = v_parametros.costo_unitario
         where id_movimiento_det = v_parametros.id_movimiento_det;
-        
+
         v_respuesta = pxp.f_agrega_clave(v_respuesta,'mensaje','Detalle de movimiento modificado con exito');
         v_respuesta = pxp.f_agrega_clave(v_respuesta,'id_movimiento_det',v_parametros.id_movimiento_det::varchar);
-            
+
         return v_respuesta;
     end;
-    /*********************************    
+    /*********************************
      #TRANSACCION:  'SAL_MOVDET_ELI'
      #DESCRIPCION:  Eliminacion de registros
      #AUTOR:        Ariel Ayaviri Omonte
@@ -221,28 +221,28 @@ BEGIN
     ***********************************/
     elseif(p_transaccion='SAL_MOVDET_ELI')then
     begin
-    	
+
     	select mov.estado_mov into v_estado_mov
         from alm.tmovimiento mov
         inner join alm.tmovimiento_det movdet on movdet.id_movimiento = mov.id_movimiento
         where movdet.id_movimiento_det = v_parametros.id_movimiento_det;
-        
+
         if (v_estado_mov = 'cancelado' or v_estado_mov = 'finalizado') then
         	raise exception '%', 'El detalle de movimiento actual no puede ser eliminado';
         end if;
-        
+
         delete from alm.tmovimiento_det_valorado detval
         where detval.id_movimiento_det = v_parametros.id_movimiento_det;
-        
+
     	delete from alm.tmovimiento_det
         where id_movimiento_det = v_parametros.id_movimiento_det;
-            
+
         v_respuesta=pxp.f_agrega_clave(v_respuesta,'mensaje','Detalle de movimiento eliminado correctamente');
         v_respuesta=pxp.f_agrega_clave(v_respuesta,'id_movimiento_det',v_parametros.id_movimiento_det::varchar);
-           
+
     	return v_respuesta;
     end;
-    else 
+    else
     	raise exception 'Transaccion inexistente';
     end if;
 EXCEPTION

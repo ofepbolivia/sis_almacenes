@@ -984,6 +984,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		ActDel : '../../sis_almacenes/control/Movimiento/eliminarMovimiento',
 		ActList : '../../sis_almacenes/control/Movimiento/listarMovimiento',
 		id_store : 'id_movimiento',
+        timeout: 1000000,
 		fields : [{
 			name : 'id_movimiento',
 			type : 'numeric'

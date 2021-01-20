@@ -367,7 +367,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		botones : false,
 		labelSubmit : 'Imprimir',
 		tooltipSubmit : '<b>Generar Reporte de Existencias</b>',
-
+        timeout: 1000000,
 		constructor : function(config) {
 			Phx.vista.GenerarReporteExistencias.superclass.constructor.call(this, config);
 			this.init();
