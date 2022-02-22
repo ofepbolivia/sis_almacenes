@@ -45,14 +45,14 @@ BEGIN
     and tp.estado_reg = 'activo'
     and tp.inicio = 'si';
 	/*IF(/*p_id_usuario != 78 AND*/ p_id_usuario != 589  AND (p_parametros->'id_almacen')::integer = 1 /*AND v_codigo_movimiento != 'SALTRNSF'*/) THEN
-      --IF pxp.f_get_variable_global('alm_habilitar_fecha_tope') = 'si' THEN
-        --IF (p_parametros->'fecha_mov')::date < pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
-            IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALTRNSF' /*AND v_codigo_movimiento != 'SALNORSERB' AND v_codigo_movimiento != 'SALNORTRA'*/ THEN
+      --IF pxp.f_get_variable_global('alm_habilitar_fecha_tope') = 'si' THEN*/
+        IF (p_parametros->'fecha_mov')::date < pxp.f_get_variable_global('alm_fecha_tope_solicitudes')::date THEN
+            --IF v_tipo_movimiento = 'salida' AND v_codigo_movimiento != 'SALTRNSF' /*AND v_codigo_movimiento != 'SALNORSERB' AND v_codigo_movimiento != 'SALNORTRA'*/ THEN
                 raise exception 'Estimado Usuario: No se permite realizar Movimientos de almacenes, debido a que se realiza cierre de gestion comunicarse con Franklin Espinoza(71721380)';
-            END IF;
-        --END IF;
+            --END IF;
+        END IF;
       --END IF;
-  END IF;*/
+  /*END IF;*/
 
     if v_codigo_tipo_proceso is null then
        raise exception 'No existe un proceso inicial para el proceso macro indicado (Revise la configuración)';
@@ -133,3 +133,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION alm.f_insercion_movimiento (p_id_usuario integer, p_parametros public.hstore)
+  OWNER TO postgres;

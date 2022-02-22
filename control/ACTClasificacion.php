@@ -44,7 +44,7 @@ class ACTClasificacion extends ACTbase {
             //$this->objParam->addFiltro(" (it.codigo) similar to ''%(" . str_replace(',', '|', strtolower($this->objParam->getParametro('filtro')))  .")%''");
             $codigos =  explode(',',strtolower($this->objParam->getParametro('filtro')));
             foreach($codigos as &$valor){
-                $valor = $valor . '.%';
+                $valor = $valor . '%';//$valor . '.%';
             }
             $this->objParam->addParametro('filtro', $codigos);
             $this->objParam->addFiltro(" it.codigo similar to ''(" . implode('|',  $this->objParam->getParametro('filtro'))  .")''");

@@ -510,7 +510,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			 form:true
 			 },*/
 
-			{
+			/*Cambiado a Solicitud de las Regionales 07/06/2021{
 				config:{
 					name:'id_funcionario',
 					hiddenName: 'id_funcionario',
@@ -539,7 +539,99 @@ header("content-type: text/javascript; charset=UTF-8");
 				filters:{pfiltro:'fun.desc_funcionario1',type:'string'},
 				grid:true,
 				form:true
-			},
+			},*/
+
+            /*{
+                config: {
+                    name: 'id_funcionario',
+                    hiddenName: 'id_funcionario',
+                    origen: 'FUNCIONARIOCAR',
+                    fieldLabel: 'Funcionario Solicitante',
+                    allowBlank: false,
+                    gwidth: 320,
+                    valueField: 'id_funcionario',
+                    gdisplayField: 'desc_funcionario',
+                    baseParams: {es_combo_solicitud: 'si'},
+                    renderer: function(value, p, record){
+                        var aux;
+                        if(record.data.tipo=='salida'){
+                            aux='<b><font color="red">';
+                        }
+                        else {
+                            aux='<b><font color="green">';
+                        }
+                        aux = aux +record.data['nombre_funcionario']+'</font></b>';
+                        return String.format('{0}', aux);
+                    },
+                    anchor: '95%'
+
+                },
+                type: 'ComboRec',//ComboRec
+                id_grupo: 0,
+                filters: {pfiltro: 'fun.desc_funcionario1', type: 'string'},
+                grid: true,
+                form: true
+            },*/
+
+            {
+                config: {
+                    name: 'id_funcionario',
+                    fieldLabel: 'Funcionario Solicitante',
+                    allowBlank: false,
+                    emptyText: 'Elija una opción...',
+                    store: new Ext.data.JsonStore({
+                        url: '../../sis_organigrama/control/Funcionario/listarFuncionarioCargo',
+                        id: 'id_funcionario',
+                        root: 'datos',
+                        sortInfo: {
+                            field: 'desc_funcionario1',
+                            direction: 'ASC'
+                        },
+                        totalProperty: 'total',
+                        fields: ['id_funcionario', 'id_uo', 'codigo', 'nombre_cargo', 'desc_funcionario1', 'email_empresa', 'id_lugar', 'id_oficina', 'lugar_nombre', 'oficina_nombre'],
+                        // turn on remote sorting
+                        remoteSort: true,
+                        baseParams: {par_filtro: 'desc_funcionario1#email_empresa#codigo#nombre_cargo', es_combo_solicitud: 'si'}
+
+                    }),
+                    valueField: 'id_funcionario',
+                    displayField: 'desc_funcionario1',
+                    gdisplayField: 'desc_funcionario',
+                    hiddenName: 'id_funcionario',
+                    forceSelection: true,
+                    typeAhead: false,
+                    editable: false,
+                    triggerAction: 'all',
+                    lazyRender: true,
+                    mode: 'remote',
+                    pageSize: 15,
+                    queryDelay: 1000,
+                    anchor: '100%',
+                    /*width: 200,*/
+                    gwidth: 150,
+                    minChars: 2,
+                    resizable:true,
+                    listWidth:'240',
+                    tpl: '<tpl for="."><div class="x-combo-list-item"><p><b>{desc_funcionario1}</b></p><p>{codigo}</p><p>{nombre_cargo}</p><p>{email_empresa}</p><p>{oficina_nombre} - {lugar_nombre}</p> </div></tpl>',
+                    renderer: function(value, p, record){
+                        var aux;
+                        if(record.data.tipo=='salida'){
+                            aux='<b><font color="red">';
+                        }
+                        else {
+                            aux='<b><font color="green">';
+                        }
+                        aux = aux +record.data['nombre_funcionario']+'</font></b>';
+                        return String.format('{0}', aux);
+                    }
+                },
+                type: 'ComboBox',
+                bottom_filter:true,
+                id_grupo: 0,
+                filters: {pfiltro: 'fun.desc_funcionario1', type: 'string'},
+                grid: true,
+                form: true
+            },
 
 			{
 				config:{

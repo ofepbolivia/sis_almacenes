@@ -61,7 +61,7 @@ class MODClasificacion extends MODbase {
         $this->captura('nombre', 'varchar');
 
         $this->armarConsulta();
-
+        //var_dump($this->consulta);exit;;
         $this->ejecutarConsulta();
 
         return $this->respuesta;

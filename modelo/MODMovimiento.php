@@ -280,7 +280,7 @@ class MODMovimiento extends MODbase {
         $this->captura('cantidad_solicitada', 'numeric');
         $this->captura('fecha_salida', 'varchar');
         $this->captura('codigo_tran', 'varchar');
-        $this->armarConsulta();
+        $this->armarConsulta(); //echo $this->consulta;exit;
         $this->ejecutarConsulta();
         return $this->respuesta;
     }

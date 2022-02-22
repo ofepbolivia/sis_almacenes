@@ -76,6 +76,7 @@ class MODReporte extends MODbase {
 		$this->captura('id_movimiento_det_valorado', 'integer');
 		$this->captura('id_mov_det_val_origen', 'integer');
 		$this->captura('nro_tramite', 'varchar');
+		$this->captura('fecha_salida', 'date');
 
         $this->armarConsulta();
 	    //echo $this->consulta;exit;

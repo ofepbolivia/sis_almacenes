@@ -330,6 +330,7 @@ header("content-type: text/javascript; charset=UTF-8");
             var data = this.getSelectedData();
             var tb =this.tbar;
             Phx.vista.MovimientoAlm.superclass.preparaMenu.call(this,n);
+
             if(data.estado =='aprobado' ){
                 this.getBoton('sig_estado').disable();
                 this.getBoton('fin_grupo').disable();
@@ -341,8 +342,10 @@ header("content-type: text/javascript; charset=UTF-8");
             if(data.estado !='aprobado' && data.estado !='proceso' ){
                 this.getBoton('ini_estado').enable();
                 this.getBoton('ant_estado').enable();
-                this.getBoton('sig_estado').enable();
-                this.getBoton('fin_grupo').enable();
+                if ( data.estado_mov != 'autorizacion' && data.estado_mov != 'vbarea' ) {
+                    this.getBoton('sig_estado').enable();
+                    this.getBoton('fin_grupo').enable();
+                }
                 this.getBoton('comail').enable();
             }
             if(data.codigo_tran.length != 0){

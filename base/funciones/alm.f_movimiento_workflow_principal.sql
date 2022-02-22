@@ -181,14 +181,14 @@ BEGIN
             and mov.id_almacen = (p_parametros->'id_almacen')::integer;
 
     	IF v_tipo_mov = 'salida' THEN
-
+			--where id_movimiento=(p_parametros->'id_movimiento')::integer;
         	IF v_codigo_mov_tipo = 'SALTRNSF' OR v_codigo_mov_tipo= 'INVFIN' THEN
 
 
             	select fecha_salida, codigo into v_fecha_salida, v_codigo_mov
                 from alm.tmovimiento
                 where id_movimiento_origen=(p_parametros->'id_movimiento')::integer;
-                --where id_movimiento=(p_parametros->'id_movimiento')::integer;
+
 
             	IF v_fecha_salida is NULL and va_codigo_estado[1] = 'finalizado' THEN
                 	raise exception 'Debe ingresar fecha de salida al movimiento %', v_codigo_mov;
@@ -789,3 +789,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION alm.f_movimiento_workflow_principal (p_id_usuario integer, p_parametros public.hstore)
+  OWNER TO postgres;

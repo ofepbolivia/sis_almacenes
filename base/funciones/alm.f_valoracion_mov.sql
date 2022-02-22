@@ -38,7 +38,7 @@ BEGIN
     if v_rec.id_movimiento is null then
     	raise exception 'Alertas no generadas: movimiento inexistente';
     end if;
-
+	--raise 'a: %, b: %,c :%, d: %, e: %', v_rec.tipo_mov,p_id_movimiento, v_rec.id_almacen, v_rec.fecha_mov, v_codigo_valoracion;
 	--Valora solo cuando es salida
 	if (v_rec.tipo_mov = 'salida') then
         v_cod_documento = 'MOVSAL';
@@ -63,7 +63,7 @@ BEGIN
             where alstock.id_almacen = v_rec.id_almacen
             and alstock.id_item = g_registros.id_item
             and alstock.estado_reg = 'activo';
-
+			--raise 'a: %', v_codigo_valoracion;
             v_cant_aux = alm.f_get_saldo_fisico_item(g_registros.id_item, v_rec.id_almacen, date(v_rec.fecha_mov));
 
 			raise notice 'g_registros.cantidad %, v_cant_aux %', g_registros.cantidad, v_cant_aux;
@@ -210,3 +210,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION alm.f_valoracion_mov (p_id_usuario integer, p_id_movimiento integer)
+  OWNER TO postgres;

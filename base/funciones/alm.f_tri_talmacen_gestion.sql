@@ -24,10 +24,10 @@ BEGIN
         where ages.id_almacen_gestion = OLD.id_almacen_gestion;
 
     	if exists(select 1 from alm.tmovimiento
-        		where to_char(fecha_mov,'yyyy')=v_gestion::varchar ) then
+        		where to_char(fecha_mov,'yyyy')=v_gestion::varchar /*and estado_mov != 'anulado'*/ ) then
 			raise exception 'No se puede eliminar la Gestión porque existen movimientos registrados';
         end if;
-    
+
     end if;
 
     return NULL;
@@ -37,4 +37,8 @@ $body$
 LANGUAGE 'plpgsql'
 VOLATILE
 CALLED ON NULL INPUT
-SECURITY INVOKER;
+SECURITY INVOKER
+COST 100;
+
+ALTER FUNCTION alm.f_tri_talmacen_gestion ()
+  OWNER TO postgres;

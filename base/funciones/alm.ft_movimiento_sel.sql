@@ -262,7 +262,10 @@ BEGIN
                 cla.nombre as nombre_clasificacion,
                 sum(detval.cantidad) as cantidad,
                 detval.costo_unitario,
+                --case when item.codigo != ''2.5.6.91'' then round(sum(detval.cantidad * detval.costo_unitario)*0.87,2)/detval.cantidad else round(sum(detval.cantidad  * detval.costo_unitario),2)/detval.cantidad end as costo_unitario,
                 sum(detval.cantidad) * detval.costo_unitario as costo_total,
+                --case when item.codigo != ''2.5.6.91'' then round(sum(detval.cantidad * detval.costo_unitario)*0.87,2) else round(sum(detval.cantidad  * detval.costo_unitario),2) end as costo_total,
+                --case when item.codigo != ''2.5.6.91'' then round(sum(detval.cantidad * detval.costo_unitario)*0.87,2) else round(sum(detval.cantidad  * detval.costo_unitario),2) end as costo_total,
                 mov.codigo as codigo_mov,
                 mov.comail,
                 almac.nombre as nombre_almacen,
@@ -309,7 +312,7 @@ BEGIN
                 prov.desc_proveedor,
                 mov.fecha_mod,
                 mov.fecha_salida,
-                mov.codigo_tran ';
+                mov.codigo_tran, detval.cantidad ';
         v_consulta:=v_consulta||' order by '||v_parametros.ordenacion||' '||v_parametros.dir_ordenacion||' limit '||v_parametros.cantidad||' offset '||v_parametros.puntero;
         raise notice 'v_consulta %', v_consulta;
         return v_consulta;
@@ -638,3 +641,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION alm.ft_movimiento_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

@@ -69,7 +69,7 @@ BEGIN
                   IF EXISTS (SELECT 1
                       FROM alm.titem_partida ip
                       WHERE ip.id_clasificacion= v_parametros.id_clasificacion
-                      AND ip.estado_reg = 'activo' )
+                      AND ip.estado_reg = 'activo'
                       AND ip.id_gestion = v_parametros.id_gestion) THEN
 
                       RAISE EXCEPTION 'SOLO SE PERMITE REGISTRAR UNA PARTIDA.';
@@ -459,3 +459,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION alm.ft_clasificacion_partida_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

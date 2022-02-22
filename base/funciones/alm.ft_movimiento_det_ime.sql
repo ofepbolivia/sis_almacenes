@@ -181,7 +181,7 @@ BEGIN
 
             v_existencias = alm.f_get_saldo_fisico_item(v_parametros.id_item, v_id_almacen, v_fecha_mov);
 --raise 'v_existencias: %, %, %, %, %',v_existencias, v_total_cantidad_sol, v_cantidad_anterior,  v_parametros.cantidad_solicitada, v_parametros.cantidad_item;
-            if (v_existencias < v_total_cantidad_sol and v_parametros.cantidad_item > 0) then
+            if (v_existencias < v_total_cantidad_sol and v_parametros.cantidad_item > v_existencias) then
             	raise exception '%', 'No existen suficientes unidades de este item en el almacen seleccionado (Disponible: '||v_existencias::integer||'; Total solicitado:'||v_total_cantidad_sol||')';
             end if;
 
@@ -260,3 +260,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100;
+
+ALTER FUNCTION alm.ft_movimiento_det_ime (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

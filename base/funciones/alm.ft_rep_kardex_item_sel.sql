@@ -62,7 +62,8 @@ BEGIN
               id_movimiento_det_valorado integer,
               id_mov_det_val_origen integer,
               nro_tramite varchar,
-              codigo_item varchar
+              codigo_item varchar,
+              fecha_salida date
             ) on commit drop;
 
             --2. Carga el saldo anterior
@@ -91,7 +92,8 @@ BEGIN
             insert into tt_rep_kardex_item(
             fecha,nro_mov,almacen,motivo,ingreso,salida,
             ingreso_val,salida_val,costo_unitario,id_movimiento,
-            id_movimiento_det_valorado, id_mov_det_val_origen, nro_tramite, codigo_item
+            id_movimiento_det_valorado, id_mov_det_val_origen, nro_tramite, codigo_item,
+            fecha_salida
             )
             select
             mov.fecha_mov as fecha,
@@ -123,7 +125,8 @@ BEGIN
             mdval.id_movimiento_det_valorado,
             mdval.id_mov_det_val_origen,
             tpw.nro_tramite,
-            item.codigo as codigo_item
+            item.codigo as codigo_item,
+            coalesce(mov.fecha_salida, mov.fecha_mov) fecha_salida
             from alm.tmovimiento mov
             inner join wf.tproceso_wf tpw on tpw.id_proceso_wf = mov.id_proceso_wf
             inner join alm.tmovimiento_det mdet
@@ -182,9 +185,10 @@ BEGIN
                         id_movimiento,
                         id_movimiento_det_valorado,
                         id_mov_det_val_origen,
-                        nro_tramite
+                        nro_tramite,
+                        fecha_salida
                         from tt_rep_kardex_item
-                        order by fecha, nro_mov) loop
+                        order by fecha,fecha_salida, nro_mov) loop
                 return next v_rec;
             end loop;
 
@@ -214,3 +218,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100 ROWS 1000;
+
+ALTER FUNCTION alm.ft_rep_kardex_item_sel (p_administrador integer, p_id_usuario integer, p_tabla varchar, p_transaccion varchar)
+  OWNER TO postgres;

@@ -169,7 +169,7 @@ header("content-type:text/javascript; charset=UTF-8");
 		{
 			config : {
 				name : 'fecha',
-				fieldLabel : 'Fecha',
+				fieldLabel : 'Fecha Solicitud',
 				allowBlank : false,
 				anchor : '100%',
 				gwidth : 90,
@@ -187,6 +187,27 @@ header("content-type:text/javascript; charset=UTF-8");
 			grid : true,
 			form : true
 		},
+        {
+            config : {
+                name : 'fecha_salida',
+                fieldLabel : 'Fecha Salida',
+                allowBlank : false,
+                anchor : '100%',
+                gwidth : 90,
+                maxLength : 20,
+                renderer : function(value, p, record) {
+                    return value ? value.dateFormat('d/m/Y') : ''
+                }
+            },
+            type : 'Field',
+            filters : {
+                pfiltro : 'fecha_salida',
+                type : 'date'
+            },
+            id_grupo : 1,
+            grid : true,
+            form : true
+        },
 		{
 			config : {
 				name : 'nro_mov',
@@ -370,7 +391,11 @@ header("content-type:text/javascript; charset=UTF-8");
 		},{
 			name:'motivo',
 			type:'string'
-		}],
+		},{
+            name : 'fecha_salida',
+            type : 'date',
+            dateFormat : 'Y-m-d'
+        }],
 		sortInfo : {
 			field : 'id',
 			direction : 'ASC'
