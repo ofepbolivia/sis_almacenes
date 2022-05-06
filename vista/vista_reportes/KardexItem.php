@@ -67,7 +67,7 @@ header("content-type: text/javascript; charset=UTF-8");
 									direction : 'ASC'
 								},
 								totalProperty : 'total',
-								fields : ['id_item', 'nombre', 'codigo', 'desc_clasificacion', 'codigo_unidad'],
+								fields : ['id_item', 'nombre', 'codigo', 'desc_clasificacion', 'codigo_unidad','nombre_completo'],
 								remoteSort : true,
 								baseParams : {
 									par_filtro : 'item.nombre#item.codigo#cla.nombre'
@@ -75,7 +75,7 @@ header("content-type: text/javascript; charset=UTF-8");
 							}),
 							//hidden: true,
 							valueField: 'id_item',
-							displayField: 'nombre',
+							displayField: 'nombre_completo',
 							gdisplayField: 'nombre_item',
 							forceSelection: false,
 							typeAhead: false,

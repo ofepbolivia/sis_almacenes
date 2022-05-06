@@ -10,7 +10,35 @@ header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
 	Phx.vista.GenerarReporteExistencias = Ext.extend(Phx.frmInterfaz, {
-		Atributos : [{
+		Atributos : [
+            {
+                config : {
+                    name : 'formato',
+                    fieldLabel : 'Formato',
+                    allowBlank : false,
+                    triggerAction : 'all',
+                    lazyRender : true,
+                    mode : 'local',
+                    store : new Ext.data.ArrayStore({
+                        fields : ['tipo', 'valor'],
+                        data : [
+                            ['antiguo', 'Existencias Prec. Unit. Promedio'],
+                            ['ingresos', 'Existencias Prec. Unit. Desglosado (Nuevo)'],
+                            ['nuevo', 'Existencias Detalle Ingreso/Salida (Nuevo)'],
+                            ['ministerio', 'Existencias Ministerio (Nuevo)']
+                        ]
+                    }),
+                    anchor : '100%',
+                    valueField : 'tipo',
+                    displayField : 'valor',
+                    //listWidth:183,
+                    resizable: true
+                },
+                type : 'ComboBox',
+                id_grupo : 0,
+                form : true
+            },
+		    {
 			config : {
 				name : 'id_almacen',
 				fieldLabel : 'Almacen',
@@ -53,10 +81,30 @@ header("content-type: text/javascript; charset=UTF-8");
 			id_grupo : 0,
 			grid : true,
 			form : true
-		}, {
+		},
+        /*{
+            config : {
+                name : 'fecha_ini',
+                //id:'fecha_ini'+this.idContenedor,
+                fieldLabel : 'Fecha Desde',
+                allowBlank : false,
+                gwidth : 100,
+                format : 'd/m/Y',
+                renderer : function(value, p, record) {
+                    return value ? value.dateFormat('d/m/Y h:i:s') : ''
+                }/!*,
+                vtype: 'daterange',
+                endDateField: 'fecha_fin'+this.idContenedor*!/
+            },
+            type : 'DateField',
+            id_grupo : 0,
+            grid : true,
+            form : true
+        },*/
+        {
 			config : {
 				name : 'fecha_hasta',
-				fieldLabel : 'Fecha',
+				fieldLabel : 'Fecha Hasta',
 				allowBlank : false,
 				gwidth : 100,
 				format : 'd/m/Y',
@@ -106,7 +154,7 @@ header("content-type: text/javascript; charset=UTF-8");
 						direction : 'ASC'
 					},
 					totalProperty : 'total',
-					fields : ['id_item', 'nombre', 'codigo', 'desc_clasificacion', 'codigo_unidad'],
+					fields : ['id_item', 'nombre', 'codigo', 'desc_clasificacion', 'codigo_unidad', 'nombre_completo'],
 					remoteSort : true,
 					baseParams : {
 						par_filtro : 'item.nombre#item.codigo#cla.nombre'
@@ -114,9 +162,18 @@ header("content-type: text/javascript; charset=UTF-8");
 				}),
 				valueField : 'id_item',
 				//hiddenValue: 'id_item',
-				displayField : 'nombre',
+				displayField : 'nombre_completo',
 				gdisplayField : 'nombre_item',
 				//tpl : '<tpl for="."><div class="x-combo-list-item"><p>Nombre: {nombre}</p><p>Código: {codigo}</p><p>Clasif.: {desc_clasificacion}</p></div></tpl>',
+                tpl: new Ext.XTemplate([
+                    '<tpl for=".">',
+                    '<div class="x-combo-list-item">',
+                    '<div class="awesomecombo-item {checked}">',
+                    '<p><b>Nombre: {nombre}</b></p>',
+                    '</div><p><b>Código: </b> <span style="color: green;">{codigo}</span></p>' +
+                    '<p><b>Clasif.:</b> <span style="color: green;">{desc_clasificacion}</span></p>',
+                    '</div></tpl>'
+                ]),
 				hiddenName : 'id_items',
 				forceSelection : true,
 				typeAhead : false,
@@ -131,7 +188,7 @@ header("content-type: text/javascript; charset=UTF-8");
 				renderer : function(value, p, record) {
 					return String.format('{0}', record.data['nombre_item']);
 				},
-				enableMultiSelect : true
+				enableMultiSelect : false
 			},
 			type : 'AwesomeCombo',
 			id_grupo : 0,
@@ -249,6 +306,26 @@ header("content-type: text/javascript; charset=UTF-8");
 			id_grupo : 0,
 			form : true
 		},
+			{
+				config : {
+					name : 'porcentaje',
+					fieldLabel : 'Porcentaje Existencia',
+					allowBlank : false,
+					triggerAction : 'all',
+					lazyRender : true,
+					mode : 'local',
+					store : new Ext.data.ArrayStore({
+						fields : ['codigo', 'valor'],
+						data : [['ochenta', '87 %'], ['cien', '100 %']]
+					}),
+					anchor : '50%',
+					valueField : 'codigo',
+					displayField : 'valor'
+				},
+				type : 'ComboBox',
+				id_grupo : 0,
+				form : true
+			},
 		{
 			config : {
 				name : 'id_clasificacion',
@@ -257,31 +334,67 @@ header("content-type: text/javascript; charset=UTF-8");
 			},
 			type:'Field',
 			form:true
-		}],
+		},
+            {
+                config:{
+                    name:'formato_reporte',
+                    fieldLabel:'Formato del Reporte',
+                    typeAhead: true,
+                    allowBlank:false,
+                    triggerAction: 'all',
+                    emptyText:'Formato...',
+                    selectOnFocus:true,
+                    mode:'local',
+                    store:new Ext.data.ArrayStore({
+                        fields: ['ID', 'valor'],
+                        data :	[['pdf','PDF'],
+                            ['xls','XLS']]
+                    }),
+                    valueField:'ID',
+                    displayField:'valor',
+                    width:250
+
+                },
+                type:'ComboBox',
+                id_grupo:1,
+                form:true
+            }
+
+        ],
 		title : 'Generar Reporte Anual',
 		ActSave : '../../sis_almacenes/control/Reportes/reporteExistencias',
 		topBar : true,
 		botones : false,
 		labelSubmit : 'Imprimir',
 		tooltipSubmit : '<b>Generar Reporte de Existencias</b>',
-
+        timeout: 1000000,
 		constructor : function(config) {
 			Phx.vista.GenerarReporteExistencias.superclass.constructor.call(this, config);
 			this.init();
 			
 			this.getComponente('catalogo').on('select', function(e, component, index) {
+                
+
 			    if (e.value == 'Todos los Items') {
+                    this.getComponente('id_items').reset();
                     this.getComponente('id_items').disable();
+                    this.getComponente('clasificacion').reset();
                     this.getComponente('clasificacion').disable();
+                    this.getComponente('id_items').c = true;
+                    this.getComponente('clasificacion').modificado = true;
                     this.getComponente('id_items').allowBlank=true;
                     this.getComponente('clasificacion').allowBlank=true;
                     
                 } else if(e.value == 'Seleccionar Items') {
                     this.getComponente('id_items').enable();
+                    this.getComponente('clasificacion').reset();
                     this.getComponente('clasificacion').disable();
+                    this.getComponente('clasificacion').modificado = true;
                     this.getComponente('id_items').allowBlank=false;
                     this.getComponente('clasificacion').allowBlank=true;
                 } else if(e.value == 'Por Clasificacion') {
+                    this.getComponente('id_items').reset();
+                    this.getComponente('id_items').modificado = true;
                 	this.getComponente('id_items').disable();
                     this.getComponente('clasificacion').enable();
                     this.getComponente('id_items').allowBlank=true;
@@ -300,7 +413,8 @@ header("content-type: text/javascript; charset=UTF-8");
 			this.Cmp.clasificacion.on('focus',this.bntClasificacion,this);
 			this.Cmp.clasificacion.setReadOnly(true);
 			this.clasificacion = this.Cmp.clasificacion;
-			this.Cmp.alertas.setValue('no');    		},
+			this.Cmp.alertas.setValue('no');    
+		},
 		tipo : 'reporte',
 		clsSubmit : 'bprint',
 		Grupos : [{
@@ -345,7 +459,28 @@ header("content-type: text/javascript; charset=UTF-8");
 				//Añade los parámetros extra para mandar por submit
 			this.argumentExtraSubmit.id_clasificacion=this.id_clasificacion;
 			this.argumentExtraSubmit.almacen=this.Cmp.id_almacen.getRawValue();
-		}
+		},
+        successSave :function(resp){
+            Phx.CP.loadingHide();
+            var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+            if (reg.ROOT.error) {
+                alert('error al procesar');
+                return
+            }
+
+            var nomRep = reg.ROOT.detalle.archivo_generado;
+            if(Phx.CP.config_ini.x==1){
+                nomRep = Phx.CP.CRIPT.Encriptar(nomRep);
+            }
+
+            if(this.Cmp.formato_reporte.getValue()=='pdf'){
+                window.open('../../../lib/lib_control/Intermediario.php?r='+nomRep+'&t='+new Date().toLocaleTimeString())
+            }
+            else{
+                window.open('../../../reportes_generados/'+nomRep+'?t='+new Date().toLocaleTimeString())
+            }
+
+        }
 
 })
 </script>

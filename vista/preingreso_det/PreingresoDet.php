@@ -507,16 +507,7 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 		{name:'desc_ingas', type: 'string'},
 		{name:'descripcion', type: 'string'},
 		{name:'estado', type: 'string'},
-		{name:'tipo', type: 'string'},
-		{name:'id_centro_costo', type: 'numeric'},
-		{name:'id_ubicacion', type: 'numeric'},
-		{name:'id_grupo', type: 'numeric'},
-		{name:'id_grupo_clasif', type: 'numeric'},
-		{name:'codigo_tcc', type: 'string'},
-		{name:'desc_ubicacion', type: 'string'},
-		{name:'desc_grupo', type: 'string'},
-		{name:'desc_grupo_clasif', type: 'string'},
-		{name:'vida_util', type: 'numeric'}
+		{name:'tipo', type: 'string'}
 	],
 	sortInfo:{
 		field: 'id_preingreso_det',
@@ -547,7 +538,6 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=m;
 		Ext.apply(this.store.baseParams,{id_preingreso:this.maestro.id_preingreso,estado: this.estado});
 		this.load({params:{start:0, limit:this.tam_pag}});
-		console.log('onreload');
 	},
 	onButtonEdit: function (){
 		//Prepara los componentes en función de si el preingreso es para Almacén o para Activos Fijos
@@ -612,7 +602,7 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
            this.getBoton('btnAgTodos').disable();
        	}
 	},
-    east: {
+   east: {
 		url : '../../../sis_almacenes/vista/preingreso_det/PreingresoDetMod.php',
 		title : 'Preingreso',
 		width : '50%',
@@ -630,7 +620,6 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 	        fieldName = grid.getColumnModel().getDataIndex(columnIndex); // Get field name
 
 	    if (fieldName == 'agregar') {
-
 			var myPanelEast = Phx.CP.getPagina(this.idContenedor+'-east');
 
 			if(this.maestro.estado == 'finalizado'){
@@ -641,6 +630,9 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 						url : '../../sis_almacenes/control/PreingresoDet/preparaPreingreso',
 						params : {
 							id_preingreso_det:	record.data.id_preingreso_det,
+							id_preingreso: this.maestro.id_preingreso,
+							desc_funcionario1 : this.maestro.desc_funcionario1,
+							desc_proveedor:this.maestro.desc_proveedor,
 							data: record
 						},
 						success : function(a,b,c){
@@ -662,7 +654,7 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 
 	agregarTodos: function(){
 		//Verifica si el grid tiene registros cargados
-		if(this.store.getTotalCount()>0){
+		if(this.store.getTotalCount()>0){			
 			Ext.Msg.show({
 			   title:'Confirmación',
 			   msg: '¿Está seguro de agregar todos los items al Preingreso?',
@@ -674,8 +666,11 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 						Ext.Ajax.request({
 							url: '../../sis_almacenes/control/PreingresoDet/preparaPreingresoAll',
 							params: {
-								id_preingreso: this.maestro.id_preingreso
+								id_preingreso: this.maestro.id_preingreso,
+								desc_funcionario1 : this.maestro.desc_funcionario1,
+								desc_proveedor: this.maestro.desc_proveedor
 							},
+
 							success: function(a,b,c){
 								Phx.CP.loadingHide();
 								this.reload();
@@ -694,6 +689,9 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 			});
 		}
 
+
+
+
 	},
 
 	DisableSelect: function(n) {
@@ -706,6 +704,6 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
        	this.preparaMenu(n);
     }
 
+
 })
 </script>
-

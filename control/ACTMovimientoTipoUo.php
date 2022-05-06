@@ -17,7 +17,7 @@ class ACTMovimientoTipoUo extends ACTbase{
 			$this->objParam->addFiltro("timvuo.id_movimiento_tipo = ".$this->objParam->getParametro('id_movimiento_tipo'));	
 		}
 		
-		
+
 		if($this->objParam->getParametro('tipoReporte')=='excel_grid' || $this->objParam->getParametro('tipoReporte')=='pdf_grid'){
 			$this->objReporte = new Reporte($this->objParam,$this);
 			$this->res = $this->objReporte->generarReporteListado('MODMovimientoTipoUo','listarMovimientoTipoUo');

@@ -43,7 +43,8 @@ BEGIN
                 usu1.cuenta as usr_reg,
                 detval.fecha_reg,
                 usu2.cuenta as usr_mod,
-                detval.fecha_mod
+                detval.fecha_mod,
+                detval.aux_saldo_fisico
             from alm.tmovimiento_det_valorado detval
             inner join alm.tmovimiento_det movdet on movdet.id_movimiento_det = detval.id_movimiento_det
             inner join segu.tusuario usu1 on usu1.id_usuario = detval.id_usuario_reg

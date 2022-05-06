@@ -19,13 +19,16 @@ class MODReporte extends MODbase {
         $this->tipo_procedimiento = 'SEL';
 
         $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        //$this->setParametro('fecha_ini', 'fecha_ini', 'date');
         $this->setParametro('fecha_hasta', 'fecha_hasta', 'date');
         $this->setParametro('all_items', 'all_items', 'varchar');
         $this->setParametro('id_items', 'id_items', 'varchar');
 		$this->setParametro('saldo_cero', 'saldo_cero', 'varchar');
 		$this->setParametro('alertas', 'alertas', 'varchar');
 		$this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
-		
+		$this->setParametro('porcentaje', 'porcentaje', 'varchar');
+		$this->setParametro('formato', 'formato', 'varchar');
+
         $this->captura('id_item', 'integer');
         $this->captura('codigo', 'varchar');
         $this->captura('nombre', 'varchar');
@@ -70,9 +73,13 @@ class MODReporte extends MODbase {
         $this->captura('salida_val', 'numeric');
         $this->captura('saldo_val', 'numeric');
 		$this->captura('id_movimiento', 'integer');
+		$this->captura('id_movimiento_det_valorado', 'integer');
+		$this->captura('id_mov_det_val_origen', 'integer');
+		$this->captura('nro_tramite', 'varchar');
+		$this->captura('fecha_salida', 'date');
 
         $this->armarConsulta();
-	//echo $this->consulta;exit;
+	    //echo $this->consulta;exit;
         $this->ejecutarConsulta();
 
         return $this->respuesta;
@@ -86,6 +93,7 @@ class MODReporte extends MODbase {
 
 		$this->setParametro('fecha_ini', 'fecha_ini', 'date');
 		$this->setParametro('fecha_fin', 'fecha_fin', 'date');
+
 		$this->setParametro('tipo_mov', 'tipo_mov', 'varchar');
 		$this->setParametro('tipo_sol', 'tipo_sol', 'varchar');
         $this->setParametro('id_funcionario', 'id_funcionario', 'varchar');
@@ -112,6 +120,9 @@ class MODReporte extends MODbase {
         $this->captura('tipo', 'varchar');
 		$this->captura('desc_almacen', 'varchar');
 
+		$this->captura('desc_centro_costo', 'varchar');
+		$this->captura('desc_partida', 'varchar');
+
         $this->armarConsulta();
 		//echo $this->consulta;exit;
         $this->ejecutarConsulta();
@@ -119,5 +130,134 @@ class MODReporte extends MODbase {
         return $this->respuesta;
     }
 
+    function listarKardexItemIngSal() {
+        $this->procedimiento = 'alm.ft_reporte_sel';
+        $this->transaccion = 'SAL_ITEM_CU_SEL';
+        $this->tipo_procedimiento = 'SEL';
+        //$this->tipo_retorno='record';
+        $this->count=false;
+
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        $this->setParametro('fecha_ini', 'fecha_ini', 'date');
+        $this->setParametro('fecha_hasta', 'fecha_hasta', 'date');
+        $this->setParametro('all_items', 'all_items', 'varchar');
+        $this->setParametro('id_items', 'id_items', 'varchar');
+        $this->setParametro('saldo_cero', 'saldo_cero', 'varchar');
+        $this->setParametro('alertas', 'alertas', 'varchar');
+        $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
+        $this->setParametro('porcentaje', 'porcentaje', 'varchar');
+
+        //$this->captura('id', 'integer');
+        $this->captura('fecha', 'timestamp');
+        $this->captura('nro_mov', 'varchar');
+        $this->captura('almacen', 'varchar');
+        $this->captura('motivo', 'varchar');
+        $this->captura('ingreso', 'numeric');
+        $this->captura('salida', 'numeric');
+        $this->captura('saldo', 'numeric');
+        $this->captura('costo_unitario', 'numeric');
+        $this->captura('ingreso_val', 'numeric');
+        $this->captura('salida_val', 'numeric');
+        $this->captura('saldo_val', 'numeric');
+        $this->captura('id_movimiento', 'integer');
+        $this->captura('id_movimiento_det_valorado', 'integer');
+        $this->captura('id_mov_det_val_origen', 'integer');
+        $this->captura('nro_tramite', 'varchar');
+        $this->captura('id_item', 'integer');
+        $this->captura('codigo', 'varchar');
+        $this->captura('nombre', 'varchar');
+        $this->captura('unidad_medida', 'varchar');
+        $this->captura('clasificacion', 'varchar');
+        $this->captura('nombre_almacen', 'varchar');
+        $this->captura('tipo_movimiento', 'varchar');
+
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    function listarKardexItemDesglosado() {
+        $this->procedimiento = 'alm.ft_reporte_sel';
+        $this->transaccion = 'SAL_ITEMS_DESG_SEL';
+        $this->tipo_procedimiento = 'SEL';
+        //$this->tipo_retorno='record';
+        $this->count=false;
+
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        //$this->setParametro('fecha_ini', 'fecha_ini', 'date');
+        $this->setParametro('fecha_hasta', 'fecha_hasta', 'date');
+        $this->setParametro('all_items', 'all_items', 'varchar');
+        $this->setParametro('id_items', 'id_items', 'varchar');
+        $this->setParametro('saldo_cero', 'saldo_cero', 'varchar');
+        $this->setParametro('alertas', 'alertas', 'varchar');
+        $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
+        $this->setParametro('porcentaje', 'porcentaje', 'varchar');
+
+        //$this->captura('id', 'integer');
+        //$this->captura('fecha', 'timestamp');
+        $this->captura('nro_tramite', 'varchar');
+        $this->captura('tipo_movimiento', 'varchar');
+        $this->captura('cantidad', 'numeric');
+        $this->captura('costo_unitario', 'numeric');
+        $this->captura('fecha_mov', 'date');
+        $this->captura('fecha_salida', 'date');
+        $this->captura('saldo_actual', 'numeric');
+        $this->captura('id_item', 'integer');
+        $this->captura('codigo', 'varchar');
+        $this->captura('nombre', 'varchar');
+        $this->captura('unidad_medida', 'varchar');
+        $this->captura('clasificacion', 'varchar');
+        $this->captura('nombre_almacen', 'varchar');
+
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
+
+    //{'develop':'franklin.espinoza', 'date':'26/2/2020'}
+    function listarCantidadesClasificacion(){
+        $this->procedimiento = 'alm.ft_reporte_sel';
+        $this->transaccion = 'SAL_MIN_EXIST_SEL';
+        $this->tipo_procedimiento = 'SEL';
+        //$this->tipo_retorno='record';
+        $this->count=false;
+
+        /*$this->setParametro('fecha_ini', 'fecha_ini', 'date');
+        $this->setParametro('fecha_fin', 'fecha_fin', 'date');
+        $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
+        $this->setParametro('id_almacen', 'id_almacen', 'varchar');
+        $this->setParametro('all_alm', 'all_alm', 'varchar');*/
+
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        $this->setParametro('fecha_hasta', 'fecha_hasta', 'date');
+        $this->setParametro('all_items', 'all_items', 'varchar');
+        $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
+
+        $this->setParametro('id_items', 'id_items', 'varchar');
+        $this->setParametro('saldo_cero', 'saldo_cero', 'varchar');
+        $this->setParametro('alertas', 'alertas', 'varchar');
+        $this->setParametro('porcentaje', 'porcentaje', 'varchar');
+        $this->setParametro('formato', 'formato', 'varchar');
+
+        $this->captura('codigo', 'varchar');
+        $this->captura('nombre', 'varchar');
+        $this->captura('saldo_ini', 'numeric');
+        $this->captura('ingreso', 'numeric');
+        $this->captura('salida', 'numeric');
+        $this->captura('saldo_fin', 'numeric');
+        $this->captura('descripcion', 'varchar');
+        $this->captura('tamano', 'integer');
+        $this->captura('id_clasificacion_fk', 'integer');
+
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
 }
 ?>

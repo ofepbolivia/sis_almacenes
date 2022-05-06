@@ -33,7 +33,7 @@ header("content-type: text/javascript; charset=UTF-8");
 				inputType : 'hidden',
 			},
 			type : 'Field',
-			form : false
+			form : true
 		}, {
 			config : {
 				name : 'cantidad_item',
@@ -108,7 +108,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			},
 			grid : true,
 			form : false
-		}, {
+		},{
 			config : {
 				name : 'fecha_mod',
 				fieldLabel : 'Fecha de modif.',
@@ -124,9 +124,26 @@ header("content-type: text/javascript; charset=UTF-8");
 			},
 			grid : true,
 			form : false
-		}],
+		},{
+            config : {
+                name : 'aux_saldo_fisico',
+                fieldLabel : 'Saldo',
+                allowBlank : false,
+                anchor : '100%',
+                gwidth : 100,
+                maxLength : 10
+            },
+            type : 'NumberField',
+            filters : {
+                pfiltro : 'movdet.aux_saldo_fisico',
+                type : 'numeric'
+            },
+            grid : true,
+            form : true
+        }],
 		title : 'Detalle de Movimiento',
 		ActList : '../../sis_almacenes/control/MovimientoDetValorado/listarMovimientoDetValorado',
+        //ActSave : '../../sis_almacenes/control/MovimientoDetValorado/insertarMovimientoDetValorado',
 		id_store : 'id_movimiento_det_valorado',
 		fields : [{
 			name : 'id_movimiento_det_valorado',
@@ -154,7 +171,10 @@ header("content-type: text/javascript; charset=UTF-8");
 			name : 'fecha_mod',
 			type : 'date',
 			dateFormat : 'Y-m-d H:i:s.u'
-		}],
+		}, {
+            name : 'aux_saldo_fisico',
+            type : 'numeric'
+        }],
 		sortInfo : {
 			field : 'id_movimiento_det_valorado',
 			direction : 'ASC'

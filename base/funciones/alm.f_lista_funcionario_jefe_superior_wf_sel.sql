@@ -67,28 +67,29 @@ BEGIN
       v_id_funcionario
     from alm.tmovimiento
     where id_estado_wf = p_id_estado_wf;
-
+    --RAISE EXCEPTION 'DATOS_: %, %, %, %, %', v_id_funcionario, p_filtro, p_limit, p_start, p_count;
     IF not p_count then
-
+            raise notice 'llega1';
              v_consulta:='SELECT
                             fun.id_funcionario,
                             fun.desc_funcionario1 as desc_funcionario,
                             ''''::text  as desc_funcionario_cargo,
                             1 as prioridad
                          FROM orga.vfuncionario fun WHERE fun.id_funcionario in (
-                         select * from orga.f_get_aprobadores_x_funcionario(CURRENT_DATE,'|| v_id_funcionario ||',''todos'',''todos'',''2,3,4,5'') as
+                         select * from orga.f_get_aprobadores_x_funcionario(CURRENT_DATE,'|| v_id_funcionario ||',''todos'',''todos'',''1,2,3,4,5,6,7,8'') as
 						 (id_funcionario integer)) and '||p_filtro||'
                          limit '|| p_limit::varchar||' offset '||p_start::varchar;
-
+                     raise notice 'v_consulta %', v_consulta;
              FOR g_registros in execute (v_consulta)LOOP
                      RETURN NEXT g_registros;
              END LOOP;
 
       ELSE
+              raise notice 'llega2';
                   v_consulta='select
                                   COUNT(fun.id_funcionario) as total
                                  FROM orga.vfuncionario fun WHERE fun.id_funcionario in (
-                                 select * from orga.f_get_aprobadores_x_funcionario(CURRENT_DATE,'|| v_id_funcionario ||',''todos'',''todos'',''2,3,4,5'') as
+                                 select * from orga.f_get_aprobadores_x_funcionario(CURRENT_DATE,'|| v_id_funcionario ||',''todos'',''todos'',''1,2,3,4,5,6,7,8'') as
 						 (id_funcionario integer)) and '||p_filtro;
 
                    FOR g_registros in execute (v_consulta)LOOP
@@ -117,3 +118,6 @@ VOLATILE
 CALLED ON NULL INPUT
 SECURITY INVOKER
 COST 100 ROWS 1000;
+
+ALTER FUNCTION alm.f_lista_funcionario_jefe_superior_wf_sel (p_id_usuario integer, p_id_tipo_estado integer, p_fecha date, p_id_estado_wf integer, p_count boolean, p_limit integer, p_start integer, p_filtro varchar)
+  OWNER TO postgres;

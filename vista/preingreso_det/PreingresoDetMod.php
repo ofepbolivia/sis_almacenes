@@ -645,7 +645,7 @@ Phx.vista.PreingresoDetMod=Ext.extend(Phx.gridInterfaz,{
 		this.maestro=m;	
 		
 		Ext.apply(this.store.baseParams,{id_preingreso:this.maestro.id_preingreso,estado: this.estado});
-		//this.preparaComponentes(this.maestro);
+		this.preparaComponentes(this.maestro);
 		this.load({params:{start:0, limit:this.tam_pag}});
 	},
 	onButtonEdit: function (){

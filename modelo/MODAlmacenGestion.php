@@ -109,7 +109,7 @@ class MODAlmacenGestion extends MODbase{
 		$this->setParametro('id_almacen_gestion','id_almacen_gestion','int4');
 
 		//Ejecuta la instruccion
-		$this->armarConsulta();
+		$this->armarConsulta();//echo $this->consulta; exit;
 		$this->ejecutarConsulta();
 
 		//Devuelve la respuesta

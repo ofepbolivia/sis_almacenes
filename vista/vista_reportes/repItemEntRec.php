@@ -170,6 +170,63 @@ header("content-type:text/javascript; charset=UTF-8");
 			grid : true,
 			form : true
 		},
+
+        {
+            config: {
+                name: 'id_centro_costo',
+                origen: 'CENTROCOSTO',
+                fieldLabel: 'Centro de Costos',
+                emptyText: 'Centro Costo...',
+                allowBlank: false,
+                anchor: '63.5%',
+                listWidth: '345',
+                gwidth: 300,
+                baseParams: {filtrar: 'grupo_ep'},
+                tpl: '<tpl for="."><div class="x-combo-list-item"><p><b style="color: green;">{codigo_cc}</b></p><p>Gestion: {gestion}</p><p>Reg: {nombre_regional}</p><p>Fin.: {nombre_financiador}</p><p>Proy.: {nombre_programa}</p><p>Act.: {nombre_actividad}</p><p>UO: {nombre_uo}</p></div></tpl>',
+                renderer: function (value, p, record) {
+                    return String.format('{0}', record.data['desc_centro_costo']);
+                }
+
+            },
+            type: 'ComboRec',
+            id_grupo: 0,
+            form: true,
+            grid: true
+        },
+
+        {
+            config: {
+                sysorigen: 'sis_presupuestos',
+                name: 'id_partida',
+                origen: 'PARTIDA',
+                allowBlank: false,
+                fieldLabel: 'Partida',
+                gdisplayField: 'desc_partida',//mapea al store del grid
+                baseParams: {sw_transaccional: 'movimiento', partida_tipo: 'presupuestaria'},
+                renderer: function (value, p, record) {
+
+                    if (record.data.tipo_reg != 'summary') {
+                        return String.format('{0}', record.data['desc_partida']);
+                    } else {
+                        ''
+                    }
+                },
+                gwidth: 250,
+                width: 280,
+                listWidth: 350
+            },
+            type: 'ComboRec',
+            bottom_filter: true,
+            id_grupo: 0,
+            filters: {
+                pfiltro: 'par.codigo#par.nombre_partida',
+                type: 'string'
+            },
+
+            grid: true,
+            form: false
+        },
+
 		{
 			config : {
 				name : 'desc_proveedor',
@@ -303,7 +360,16 @@ header("content-type:text/javascript; charset=UTF-8");
 		{
 			name:'desc_almacen',
 			type:'string'
-		}],
+		},
+        {
+            name: 'desc_centro_costo',
+            type: 'string'
+        },
+        {
+            name: 'desc_partida',
+            type: 'string'
+        }
+		],
 		sortInfo : {
 			field : 'fecha_mov',
 			direction : 'ASC'

@@ -26,7 +26,7 @@ Phx.vista.MovimientoDetalleAlm = {
      Phx.vista.MovimientoDetalleAlm.superclass.constructor.call(this,config);
         
     },
-	onReloadPage:function(m){
+	onReloadPage:function(m){ //console.log('hijo');
        this.maestro=m;
        this.store.baseParams={id_movimiento:this.maestro.id_movimiento};
        this.load({params:{start:0, limit:this.tam_pag}});        

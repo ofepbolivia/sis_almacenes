@@ -91,6 +91,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 pfiltro : 'item.nombre',
                 type : 'string'
             },
+            bottom_filter: true,
             grid : true,
             form : true
         }, {

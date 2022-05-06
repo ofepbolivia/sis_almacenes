@@ -8,8 +8,39 @@
  */
 header("content-type:text/javascript; charset=UTF-8");
 ?>
+<style type="text/css" rel="stylesheet">
+    .x-selectable,
+    .x-selectable * {
+        -moz-user-select: text !important;
+        -khtml-user-select: text !important;
+        -webkit-user-select: text !important;
+    }
+
+    .x-grid-row td,
+    .x-grid-summary-row td,
+    .x-grid-cell-text,
+    .x-grid-hd-text,
+    .x-grid-hd,
+    .x-grid-row,
+
+    .x-grid-row,
+    .x-grid-cell,
+    .x-unselectable
+    {
+        -moz-user-select: text !important;
+        -khtml-user-select: text !important;
+        -webkit-user-select: text !important;
+    }
+</style>
 <script>
 	Phx.vista.repKardexItem = Ext.extend(Phx.gridInterfaz, {
+
+        viewConfig: {
+            stripeRows: false,
+            getRowClass: function(record) {
+                return "x-selectable";
+            }
+        },
 		constructor : function(config) {
 			this.maestro = config;
 			this.description = this.maestro.item;
@@ -138,7 +169,7 @@ header("content-type:text/javascript; charset=UTF-8");
 		{
 			config : {
 				name : 'fecha',
-				fieldLabel : 'Fecha',
+				fieldLabel : 'Fecha Solicitud',
 				allowBlank : false,
 				anchor : '100%',
 				gwidth : 90,
@@ -156,6 +187,27 @@ header("content-type:text/javascript; charset=UTF-8");
 			grid : true,
 			form : true
 		},
+        {
+            config : {
+                name : 'fecha_salida',
+                fieldLabel : 'Fecha Salida',
+                allowBlank : false,
+                anchor : '100%',
+                gwidth : 90,
+                maxLength : 20,
+                renderer : function(value, p, record) {
+                    return value ? value.dateFormat('d/m/Y') : ''
+                }
+            },
+            type : 'Field',
+            filters : {
+                pfiltro : 'fecha_salida',
+                type : 'date'
+            },
+            id_grupo : 1,
+            grid : true,
+            form : true
+        },
 		{
 			config : {
 				name : 'nro_mov',
@@ -339,7 +391,11 @@ header("content-type:text/javascript; charset=UTF-8");
 		},{
 			name:'motivo',
 			type:'string'
-		}],
+		},{
+            name : 'fecha_salida',
+            type : 'date',
+            dateFormat : 'Y-m-d'
+        }],
 		sortInfo : {
 			field : 'id',
 			direction : 'ASC'

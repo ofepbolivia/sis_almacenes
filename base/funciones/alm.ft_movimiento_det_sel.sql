@@ -1,5 +1,3 @@
---------------- SQL ---------------
-
 CREATE OR REPLACE FUNCTION alm.ft_movimiento_det_sel (
   p_administrador integer,
   p_id_usuario integer,
@@ -48,6 +46,7 @@ BEGIN
                 movdet.id_movimiento,
                 movdet.id_item,
                 item.nombre as nombre_item,
+                item.descripcion,
                 umed.codigo as codigo_unidad,'
                 ||v_cant_sol||
                 'movdet.costo_unitario,

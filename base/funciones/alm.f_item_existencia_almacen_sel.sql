@@ -13,13 +13,13 @@ $body$
  			y la cantidad donde hayan existencia del item solicitado
 
  AUTOR:     RCM
- FECHA:     01/08/2013	
+ FECHA:     01/08/2013
 ***************************************************************************
  HISTORIAL DE MODIFICACIONES:
 
- DESCRIPCION:	
- AUTOR:			
- FECHA:		
+ DESCRIPCION:
+ AUTOR:
+ FECHA:
 ***************************************************************************/
 
 DECLARE
@@ -29,27 +29,27 @@ DECLARE
 	v_nombre_funcion   	text;
 	v_resp				varchar;
 	v_fecha				date;
-			    
+
 BEGIN
 
 	v_nombre_funcion = 'alm.f_item_existencia_almacen_sel';
     v_parametros = pxp.f_get_record(p_tabla);
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_ITMALM_SEL'
  	#DESCRIPCION:	Consulta de datos
- 	#AUTOR:			rcm
+ 	#AUTOR:			rcm mod Alan
  	#FECHA:			01/08/2013
 	***********************************/
 
 	if(p_transaccion='SAL_ITMALM_SEL')then
-     				
+
     	begin
     		if not exists(select 1 from alm.titem
     					where id_item = v_parametros.id_item) then
     			raise exception 'Material/Producto inexistente';
             end if;
-            
+
             if pxp.f_existe_parametro(p_tabla,'fecha') then
             	if v_parametros.fecha is null then
             		v_fecha = now();
@@ -84,7 +84,14 @@ BEGIN
             where mov.estado_mov = ''finalizado''
             and mtipo.tipo = ''salida''
             and date_trunc(''day'',mov.fecha_mov) <=  ''' || v_fecha || '''
-            and mdet.id_item = ' || v_parametros.id_item || ')
+            and mdet.id_item = ' || v_parametros.id_item || '
+            union all
+            SELECT mov.id_almacen, md.id_item, coalesce(-Sum(md.cantidad_solicitada), 0)
+			FROM   alm.tmovimiento_det md
+					inner join alm.tmovimiento mov on mov.id_movimiento=md.id_movimiento
+			WHERE  md.id_item = '|| v_parametros.id_item ||'
+					AND md.estado_dotacion = ''comprometido''
+					group by mov.id_almacen, md.id_item)
             select
             s.id_almacen, s.id_item, sum(s.cantidad),
             a.codigo,a.nombre as almacen
@@ -94,13 +101,13 @@ BEGIN
             group by s.id_almacen, s.id_item,a.codigo,a.nombre
             having sum(s.cantidad)>0
             order by id_item';
-
+			raise notice 'consulta: %', v_consulta;
 			--Devuelve la respuesta
 			return v_consulta;
-						
+
 		end;
 
-	/*********************************    
+	/*********************************
  	#TRANSACCION:  'SAL_ITMALM_CONT'
  	#DESCRIPCION:	Conteo de registros
  	#AUTOR:			rcm
@@ -114,7 +121,7 @@ BEGIN
     					where id_item = v_parametros.id_item) then
     			raise exception 'Material/Producto inexistente';
             end if;
-            
+
             if pxp.f_existe_parametro(p_tabla,'fecha') then
             	if v_parametros.fecha is null then
             		v_fecha = now();
@@ -160,15 +167,15 @@ BEGIN
 			return v_consulta;
 
 		end;
-					
+
 	else
-					     
+
 		raise exception 'Transaccion inexistente';
-					         
+
 	end if;
-					
+
 EXCEPTION
-					
+
 	WHEN OTHERS THEN
 			v_resp='';
 			v_resp = pxp.f_agrega_clave(v_resp,'mensaje',SQLERRM);

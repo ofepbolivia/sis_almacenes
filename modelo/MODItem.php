@@ -30,13 +30,11 @@ class MODItem extends MODbase {
         $this->captura('id_unidad_medida', 'integer');
         $this->captura('codigo_unidad', 'varchar');
 		$this->captura('precio_ref', 'numeric');
-        $this->captura('cantidad_max_sol', 'INTEGER');
+        $this->captura('cantidad_max_sol', 'numeric');
 		$this->captura('id_moneda', 'integer');
 		$this->captura('desc_moneda', 'varchar');
 		$this->captura('id_almacen', 'text');
 		$this->captura('almacenes_habilitados', 'text');
-		
-		
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -64,12 +62,27 @@ class MODItem extends MODbase {
         $this->captura('numero_serie', 'varchar');
         $this->captura('codigo_unidad', 'varchar');
         $this->captura('precio_ref', 'numeric');
-		
+        $this->captura('nombre_completo', 'varchar');
+
 
         $this->armarConsulta();
 		//echo $this->consulta;exit;
         $this->ejecutarConsulta();
 
+        return $this->respuesta;
+    }
+
+    function nombreClasificacionItems() {
+        $this->procedimiento = 'alm.ft_item_sel';
+        $this->transaccion = 'SAL_NOMCLAITEMS_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        $this->setParametro('codigos', 'codigos', 'varchar');
+
+        $this->captura('nombre', 'text');
+        $this->captura('codigo', 'varchar');
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
         return $this->respuesta;
     }
 
@@ -198,9 +211,7 @@ class MODItem extends MODbase {
 		$this->captura('saldo', 'numeric');
 
         $this->armarConsulta();
-		
         $this->ejecutarConsulta();
-
         return $this->respuesta;
     }
 	
@@ -222,6 +233,41 @@ class MODItem extends MODbase {
 		
         $this->ejecutarConsulta();
 		
+        return $this->respuesta;
+    }
+
+    function listarSaldoFisicoItem() {
+        $this->procedimiento = 'alm.ft_item_sel';
+        $this->transaccion = 'SAL_FISICO_ITEM_SEL';
+        $this->tipo_procedimiento = 'SEL';
+
+        //$this->setCount(false);
+
+        $this->captura('id_item', 'integer');
+        $this->captura('codigo_item', 'varchar');
+        $this->captura('nombre_item', 'varchar');
+        $this->captura('id_almacen', 'integer');
+        $this->captura('codigo_alm', 'varchar');
+        $this->captura('nombre_alm', 'varchar');
+        $this->captura('id_gestion', 'integer');
+        $this->captura('gestion', 'integer');
+        $this->captura('fecha', 'date');
+        $this->captura('saldo', 'numeric');
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
+        return $this->respuesta;
+    }
+
+    function actualizarSaldoFisicoItem() {
+        $this->procedimiento = 'alm.ft_item_ime';
+        $this->transaccion = 'SAL_FISICO_ITEM_IME';
+        $this->tipo_procedimiento = 'IME';
+
+        $this->setParametro('fecha_cierre', 'fecha_cierre', 'date');
+
+        $this->armarConsulta();
+        $this->ejecutarConsulta();
         return $this->respuesta;
     }
 

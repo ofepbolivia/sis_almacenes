@@ -45,8 +45,60 @@ Phx.vista.AlmacenGestion=Ext.extend(Phx.gridInterfaz,{
 			handler : this.onBtnInvFin,
 			tooltip : '<b>Inventario FInal</b><br>Impresión del Inventario Final de la gestión'
 		});
-		
+
+        this.addButton('btnAnular',{
+            grupo:[0],
+            text: 'Anular Movimientos',
+            iconCls: 'bdel',
+            disabled: false,
+            handler: this.anularBloque,
+            tooltip: '<b>Anular Movimientos</b><br/>Anulación de Movimientos en estado borrador en bloque'
+        });
+
+        this.addButton('btn_upd',{
+            grupo:[0],
+            text: 'Saldo Fisico',
+            iconCls: 'bactfil',
+            disabled: false,
+            handler: this.saldoFisico,
+            tooltip: '<b>Saldo Fisico</b><br/>Ventana para consultar Saldo Fisico'
+        });
 	},
+
+    saldoFisico: function () {
+        var rec = this.getSelectedData();
+        Phx.CP.loadWindows('../../../sis_almacenes/vista/saldo_item/SaldoFisicoItem.php',
+            'Saldo Fisico Gestión',
+            {
+                width: '80%',
+                height: '100%'
+            }, rec, this.idContenedor, 'SaldoFisicoItem');
+
+    },
+
+    anularBloque: function(){
+        var rec = this.getSelectedData(); console.log('rec',rec);
+        Phx.CP.loadingShow();
+        Ext.Ajax.request({
+            url: '../../sis_almacenes/control/Movimiento/anularMovimientoBloque',
+            params:{
+                id_almacen: rec.id_almacen,
+                id_gestion: rec.id_gestion
+            },
+            success:function(resp){
+                Phx.CP.loadingHide();
+                var reg = Ext.util.JSON.decode(Ext.util.Format.trim(resp.responseText));
+                if(!reg.ROOT.error){
+                    this.reload();
+                }else{
+                    alert('Ocurrió un error durante el proceso')
+                }
+            },
+            failure: this.conexionFailure,
+            timeout:this.timeout,
+            scope:this
+        });
+    },
 			
 	Atributos:[
 		{

@@ -419,7 +419,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		fwidth : 420,
 		fheight : 300,
 
-		onReloadPage : function(m) {
+		onReloadPage : function(m) { console.log('padre');
 			this.maestro = m;
 			this.Atributos[1].valorInicial = this.maestro.id_movimiento;
 			if (this.maestro.estado_mov == 'finalizado' || this.maestro.estado_mov == 'cancelado') {

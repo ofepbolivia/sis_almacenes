@@ -41,7 +41,13 @@ class ACTClasificacion extends ACTbase {
 
         $this->objParam->defecto('dir_ordenacion', 'asc');
         if ($this->objParam->getParametro('filtro') != '') {
-            $this->objParam->addFiltro(" (it.codigo) similar to ''%(" . str_replace(',', '|', strtolower($this->objParam->getParametro('filtro')))  .")%''");
+            //$this->objParam->addFiltro(" (it.codigo) similar to ''%(" . str_replace(',', '|', strtolower($this->objParam->getParametro('filtro')))  .")%''");
+            $codigos =  explode(',',strtolower($this->objParam->getParametro('filtro')));
+            foreach($codigos as &$valor){
+                $valor = $valor . '%';//$valor . '.%';
+            }
+            $this->objParam->addParametro('filtro', $codigos);
+            $this->objParam->addFiltro(" it.codigo similar to ''(" . implode('|',  $this->objParam->getParametro('filtro'))  .")''");
         }
 
         $this->objFunc = $this->create('MODClasificacion');
@@ -121,6 +127,31 @@ class ACTClasificacion extends ACTbase {
             $this->res = $this->objFunc->insertarClasificacion();
         } else {
             $this->res = $this->objFunc->modificarClasificacion();
+            $datos = $this->res->getDatos();
+
+            $nombre = $this->objParam->getParametro('nombre');
+
+            $data = array("usuario"=> $datos['usuario'] , "codigoItem" => $datos['codigo'], "nombreItem" => $nombre);
+            $data_string = json_encode($data);
+            //$request =  'http://wservices.obairlines.bo/Dotacion.AppService/SvcDotacion.svc/RevertirDotacionAlmacenes';
+            $request =  'http://wservices.obairlines.bo/Dotacion.AppService/Api/Dotaciones/UpdateNombreItem';
+
+            $session = curl_init($request);
+            curl_setopt($session, CURLOPT_CUSTOMREQUEST, "POST");
+            curl_setopt($session, CURLOPT_POSTFIELDS, $data_string);
+            curl_setopt($session, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($session, CURLOPT_HTTPHEADER, array(
+                    'Content-Type: application/json',
+                    'Content-Length: ' . strlen($data_string))
+            );
+
+            $result = curl_exec($session);
+            curl_close($session);
+
+            $respuesta = json_decode($result);
+            if($respuesta->state =='false'){
+                throw new Exception(__METHOD__.$respuesta->mensaje);
+            }
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
@@ -140,6 +171,12 @@ class ACTClasificacion extends ACTbase {
     function guardarDragDrop() {
         $this->objFunSeguridad = $this->create('MODClasificacion');
         $this->res = $this->objFunSeguridad->guardarDragDrop($this->objParam);
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function getArbolClasificacion(){
+        $this->objFunSeguridad = $this->create('MODClasificacion');
+        $this->res = $this->objFunSeguridad->getArbolClasificacion($this->objParam);
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
