@@ -318,7 +318,7 @@ Class RMovimientoConsolidado extends Report {
         $pdf->Ln();
     }
 
-    function writeSolicitantes($pdf, $dataSource, TCPDF $pdf) {
+    function writeSolicitantes($pdf, $dataSource) { //fRnk: se eliminó el doble parámetro pdf, TCPDF $pdf
         $hGlobal = 5;
         $wNro = 10;
         $wCodigo = 15;
@@ -352,7 +352,7 @@ Class RMovimientoConsolidado extends Report {
         $pdf->tablealigns=array('L','L','L','L','L');
         $pdf->tablenumbers=array(0,0,0,0,0);
 
-        $RowArray;
+        $RowArray=array();
         foreach ($solicitantes as $solicitante) {
             $datosSolicitante = explode('~',$solicitante);
 
