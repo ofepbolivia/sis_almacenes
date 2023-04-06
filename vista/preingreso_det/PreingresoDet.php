@@ -279,7 +279,7 @@ Phx.vista.PreingresoDet=Ext.extend(Phx.gridInterfaz,{
 				allowBlank: true,
 				emptyText: 'Elija una opción...',
 				store: new Ext.data.JsonStore({
-					url: '../../sis_activos_fijos/control/Clasificacion/listarClasificacion',
+					url: '../../sis_kactivos_fijos/control/Clasificacion/listarClasificacion', //fRnk: original sis_activos_fijos
 					id: 'id_clasificacion',
 					root: 'datos',
 					sortInfo: {
