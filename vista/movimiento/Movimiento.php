@@ -600,7 +600,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     hiddenName: 'id_funcionario',
                     forceSelection: true,
                     typeAhead: false,
-                    editable: false,
+                    editable: true, //fRnk: habilita buscador
                     triggerAction: 'all',
                     lazyRender: true,
                     mode: 'remote',
