@@ -44,7 +44,7 @@ class MODItem extends MODbase {
 
     function listarItemNotBase() {
         $this->procedimiento = 'alm.ft_item_sel';
-        $this->transaccion = 'SAL_ITEMNOTBASE_SEL';
+        $this->transaccion = 'SAL_ITEMNOTXALM_SEL'; //fRnk: modificado transacción para obtener sólo items del Almacen
         $this->tipo_procedimiento = 'SEL';
 		
 		$this->setParametro('id_movimiento', 'id_movimiento', 'integer');

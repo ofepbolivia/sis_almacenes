@@ -372,6 +372,8 @@ header("content-type:text/javascript; charset=UTF-8");
 			name : 'estado',
 			type : 'string'
 		}, {
+            name : 'id_metodo_val' //fRnk: añadido porque no mostraba al editar
+        }, {
 			name : 'id_departamento'
 		}, {
 			name : 'nombre_depto',
