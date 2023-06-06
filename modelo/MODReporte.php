@@ -170,6 +170,9 @@ class MODReporte extends MODbase {
         $this->captura('clasificacion', 'varchar');
         $this->captura('nombre_almacen', 'varchar');
         $this->captura('tipo_movimiento', 'varchar');
+        $this->captura('fecha_ini', 'varchar');
+        $this->captura('fecha_hasta', 'varchar');
+        $this->captura('grupo_clasif', 'varchar'); //fRnk: añadido para cabecera padre de reporte
 
         $this->armarConsulta();
         //echo $this->consulta;exit;
@@ -221,13 +224,14 @@ class MODReporte extends MODbase {
     //{'develop':'franklin.espinoza', 'date':'26/2/2020'}
     function listarCantidadesClasificacion(){
         $this->procedimiento = 'alm.ft_reporte_sel';
-        $this->transaccion = 'SAL_MIN_EXIST_SEL';
+        //$this->transaccion = 'SAL_MIN_EXIST_SEL';
+        $this->transaccion = 'SAL_EXISCANTVAL_SEL';
         $this->tipo_procedimiento = 'SEL';
         //$this->tipo_retorno='record';
         $this->count=false;
 
-        /*$this->setParametro('fecha_ini', 'fecha_ini', 'date');
-        $this->setParametro('fecha_fin', 'fecha_fin', 'date');
+        $this->setParametro('fecha_ini', 'fecha_ini', 'date');
+        /*$this->setParametro('fecha_fin', 'fecha_fin', 'date');
         $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
         $this->setParametro('id_almacen', 'id_almacen', 'varchar');
         $this->setParametro('all_alm', 'all_alm', 'varchar');*/
@@ -243,7 +247,7 @@ class MODReporte extends MODbase {
         $this->setParametro('porcentaje', 'porcentaje', 'varchar');
         $this->setParametro('formato', 'formato', 'varchar');
 
-        $this->captura('codigo', 'varchar');
+       /* $this->captura('codigo', 'varchar');
         $this->captura('nombre', 'varchar');
         $this->captura('saldo_ini', 'numeric');
         $this->captura('ingreso', 'numeric');
@@ -251,12 +255,32 @@ class MODReporte extends MODbase {
         $this->captura('saldo_fin', 'numeric');
         $this->captura('descripcion', 'varchar');
         $this->captura('tamano', 'integer');
-        $this->captura('id_clasificacion_fk', 'integer');
+        $this->captura('id_clasificacion_fk', 'integer');*/
+
+        $this->captura('codigo', 'varchar');
+        $this->captura('detalle', 'varchar');
+        $this->captura('unidad_medida', 'varchar');
+        $this->captura('cantidad_saldo_inicial', 'numeric');
+        $this->captura('valor_saldo_inicial ', 'numeric');
+        $this->captura('cantidad_ingreso', 'numeric');
+        $this->captura('valor_ingreso', 'numeric');
+        $this->captura('cantidad_egreso', 'numeric');
+        $this->captura('valor_egreso', 'numeric');
+        $this->captura('cantidad_saldo_final', 'numeric');
+        $this->captura('valor_saldo_final', 'numeric');
+        $this->captura('fuente', 'varchar');
+        $this->captura('grupo','varchar');
+        $this->captura('nivel','varchar');
+        $this->captura('entidad','varchar');
+        $this->captura('nom_almacen','varchar');
+        $this->captura('fecha_ini','varchar');
+        $this->captura('fecha_hasta','varchar');
+        $this->captura('fuente_gral','varchar');
 
         $this->armarConsulta();
         //echo $this->consulta;exit;
         $this->ejecutarConsulta();
-
+//var_dump($this->respuesta);exit();
         return $this->respuesta;
     }
 }

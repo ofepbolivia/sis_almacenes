@@ -14,7 +14,7 @@ class RExistenciasPUDesglosado extends  ReportePDF{
         $this->Ln(3);
 
         //cabecera del reporte
-        $this->Image(dirname(__FILE__).'/../../lib/imagenes/logos/logo.jpg', 20,10,25,18);
+        $this->Image(dirname(__FILE__).'/../../lib/' . $_SESSION['_DIR_LOGO'], 20,13,30,18);
         $this->ln(5);
         $this->SetFont('','B',12);
         $this->Cell(40, $longHeight, '', 'LRTB', 0, 'C', false, '', 0, false, 'T', 'C');

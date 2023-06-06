@@ -254,9 +254,11 @@ class MODMovimiento extends MODbase {
         return $this->respuesta;
     }
     function listarReporteMovimiento() {
+        //fRnk: adición de parámetros: id_proceso_wf, func_autorizado1, func_autorizado2
         $this->procedimiento = 'alm.ft_movimiento_sel';
         $this->transaccion = 'SAL_MOVREPORT_SEL';
         $this->tipo_procedimiento = 'SEL';
+        $this->setParametro('id_proceso_wf','id_proceso_wf','int4');
         $this->captura('codigo', 'varchar');
         $this->captura('nombre', 'varchar');
         $this->captura('descripcion_item', 'varchar');
@@ -280,7 +282,17 @@ class MODMovimiento extends MODbase {
         $this->captura('cantidad_solicitada', 'numeric');
         $this->captura('fecha_salida', 'varchar');
         $this->captura('codigo_tran', 'varchar');
-        $this->armarConsulta(); //echo $this->consulta;exit;
+        $this->captura('nombre_unidad', 'varchar');
+        $this->captura('descripcion_cargo', 'varchar');
+        $this->captura('fecha_entrega', 'varchar');
+        $this->captura('func_autorizado1', 'varchar');
+        $this->captura('func_autorizado2', 'varchar');
+        $this->captura('func_entrega', 'varchar');
+        $this->captura('entidad', 'varchar');
+        $this->captura('fuente', 'varchar');
+        $this->captura('fecha_vencimiento', 'varchar');
+        $this->captura('estado_mov', 'varchar');
+        $this->armarConsulta(); //echo var_dump($this->consulta);exit;
         $this->ejecutarConsulta();
         return $this->respuesta;
     }

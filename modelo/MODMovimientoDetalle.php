@@ -34,11 +34,12 @@ class MODMovimientoDetalle extends MODbase {
         $this->captura('fecha_reg', 'timestamp');
         $this->captura('usr_mod', 'varchar');
         $this->captura('fecha_mod', 'timestamp');
-		$this->captura('codigo_item', 'varchar');
-		$this->captura('costo_total', 'numeric');
-		$this->captura('observaciones', 'varchar');
-		$this->captura('id_concepto_ingas', 'int4');
+        $this->captura('codigo_item', 'varchar');
+        $this->captura('costo_total', 'numeric');
+        $this->captura('observaciones', 'varchar');
+        $this->captura('id_concepto_ingas', 'int4');
         $this->captura('desc_concepto_ingas', 'varchar');
+        $this->captura('fuente', 'varchar');
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -57,9 +58,10 @@ class MODMovimientoDetalle extends MODbase {
         $this->setParametro('cantidad_solicitada', 'cantidad_solicitada', 'numeric');
         $this->setParametro('costo_unitario', 'costo_unitario', 'numeric');
         $this->setParametro('fecha_caducidad', 'fecha_caducidad', 'date');
-		$this->setParametro('observaciones','observaciones','varchar');
-		$this->setParametro('id_concepto_ingas', 'id_concepto_ingas', 'integer');
-	
+        $this->setParametro('observaciones','observaciones','varchar');
+        $this->setParametro('id_concepto_ingas', 'id_concepto_ingas', 'integer');
+        $this->setParametro('fuente','fuente','varchar'); //fRnk: añadido fuente y fecha de caducidad
+
         $this->armarConsulta();
         $this->ejecutarConsulta();
 
@@ -78,9 +80,10 @@ class MODMovimientoDetalle extends MODbase {
         $this->setParametro('cantidad_solicitada', 'cantidad_solicitada', 'numeric');
         $this->setParametro('costo_unitario', 'costo_unitario', 'numeric');
         $this->setParametro('fecha_caducidad', 'fecha_caducidad', 'date');
-		$this->setParametro('observaciones','observaciones','varchar');
-		$this->setParametro('id_concepto_ingas', 'id_concepto_ingas', 'integer');
-								
+        $this->setParametro('observaciones','observaciones','varchar');
+        $this->setParametro('id_concepto_ingas', 'id_concepto_ingas', 'integer');
+        $this->setParametro('fuente','fuente','varchar'); //fRnk: añadido fuente y fecha de caducidad
+
         $this->armarConsulta();
         $this->ejecutarConsulta();
 

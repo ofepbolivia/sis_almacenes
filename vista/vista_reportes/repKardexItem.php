@@ -33,6 +33,8 @@ header("content-type:text/javascript; charset=UTF-8");
     }
 </style>
 <script>
+    var fechaIni=document.querySelector(".fecha_ini").value;
+    var fechaFin=document.querySelector(".fecha_fin").value;
 	Phx.vista.repKardexItem = Ext.extend(Phx.gridInterfaz, {
 
         viewConfig: {
@@ -43,7 +45,9 @@ header("content-type:text/javascript; charset=UTF-8");
         },
 		constructor : function(config) {
 			this.maestro = config;
-			this.description = this.maestro.item;
+			this.description = this.maestro.item; //fRnk: titulo2 reporte genérico, fecha_ini, fecha_fin
+            fechaIni=this.maestro.fecha_ini;
+            fechaFin=this.maestro.fecha_fin;//console.log(fechaIni);console.log(Date.parse(fechaIni));console.log(new Date());
 			if (this.maestro.mostrar_costos != 'no') {
 				this.Atributos.push({
 					config : {
@@ -81,7 +85,7 @@ header("content-type:text/javascript; charset=UTF-8");
 					grid : true,
 					form : true
 				});
-				
+
 				this.Atributos.push({
 					config : {
 						name : 'ingreso_val',
@@ -140,8 +144,8 @@ header("content-type:text/javascript; charset=UTF-8");
 					grid : true,
 					form : true
 				});
-			}		
-		
+			}
+
 			Phx.vista.repKardexItem.superclass.constructor.call(this, config);
 			this.init();
 			this.load({
@@ -155,7 +159,15 @@ header("content-type:text/javascript; charset=UTF-8");
 					id_almacen:this.maestro.id_almacen
 				}
 			});
-		},
+            this.addButton('btnPdf', {
+                text: 'Reporte',
+                iconCls: 'bpdf32',
+                def: 'pdf',
+                disabled: false,
+                handler: this.imprimirReporte,
+                tooltip: '<b>Imprimir reporte</b><br/>Genera el reporte en el formato para impresión.'
+            });
+        },
 		tam_pag:1000,
 		Atributos : [{
 			config : {
@@ -165,7 +177,7 @@ header("content-type:text/javascript; charset=UTF-8");
 			},
 			type : 'Field',
 			form : true
-		}, 
+		},
 		{
 			config : {
 				name : 'fecha',
@@ -227,7 +239,7 @@ header("content-type:text/javascript; charset=UTF-8");
 					aux = aux +value+'</font></b>';
 					return String.format('{0}', aux);
 				}
-				
+
 			},
 			type : 'Field',
 			filters : {
@@ -349,10 +361,10 @@ header("content-type:text/javascript; charset=UTF-8");
 			id_grupo : 1,
 			grid : true,
 			form : true
-		}	
-		
-		],
-		title : 'Kardex Item',
+		}
+
+		],//fRnk: se añadió el título en formato HTML, además de las fechas inicio y fin
+		title : 'Kardex Item<br/><span style="font-weight: normal;font-size: 10px;">(del '+fechaIni+' al '+fechaFin+')</span>',
 		ActList : '../../sis_almacenes/control/Reportes/listarKardexItem',
 		id_store : 'id',
 		fields : [{
@@ -404,6 +416,25 @@ header("content-type:text/javascript; charset=UTF-8");
 		bnew: false,
 		bedit: false,
 		fwidth : '90%',
-		fheight : '80%'
-	}); 
+		fheight : '80%',
+        imprimirReporte: function(w,resp){
+            Phx.CP.loadingShow();
+            Ext.Ajax.request({
+                url:'../../sis_almacenes/control/Reportes/listarKardexItem',
+                params:{
+                    tipoReporte: 'reporte',
+                    fecha_ini: this.maestro.fecha_ini,
+                    id_item: this.maestro.id_item,
+                    fecha_fin: this.maestro.fecha_fin,
+                    all_alm: this.maestro.all_alm,
+                    id_almacen: this.maestro.id_almacen,
+                    item: this.maestro.item
+                },
+                success: this.successExport,
+                failure: this.conexionFailure,
+                timeout:this.timeout,
+                scope:this
+            });
+        }
+	});
 </script>

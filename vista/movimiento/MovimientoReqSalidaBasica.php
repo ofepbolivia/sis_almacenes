@@ -37,13 +37,15 @@ Phx.vista.MovimientoReqSalidaBasica= {
 	},
 	
 	generaReporte: function(){
+        //fRnk: se añadió id_proceso_wf para la obtención del reporte con nuevos valores
         	var rec = this.sm.getSelected();
 					Phx.CP.loadingShow();
 					Ext.Ajax.request({
 						url : '../../sis_almacenes/control/Movimiento/generarReporteMovimiento',
 						params : {
 							'id_movimiento' : rec.data.id_movimiento,
-							'costos': 'no' 
+							'costos': 'no',
+                            'id_proceso_wf' : rec.data.id_proceso_wf
 						},
 						success : this.successExport,
 						failure : this.conexionFailure,

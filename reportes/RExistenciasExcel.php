@@ -108,8 +108,8 @@ class RExistenciasExcel
         );
 
         //titulos
-
-        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,'BOLIVIANA DE AVIACIÓN - BOA' );
+        //fRnk: modificado título
+        $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,2,$_SESSION['_TITULO_SIS_LARGO'] );
         $this->docexcel->getActiveSheet()->getStyle('A2:H2')->applyFromArray($styleTitulos1);
         $this->docexcel->getActiveSheet()->mergeCells('A2:H2');
         $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,3,'Bienes de Consumo' );

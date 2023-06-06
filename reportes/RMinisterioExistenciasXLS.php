@@ -57,7 +57,7 @@ class RMinisterioExistenciasXLS
 
     function imprimeDatos(){
         $this->docexcel->getActiveSheet()->setTitle('Cantidad Clasificacion');
-        $datos = $this->objParam->getParametro('datos');//var_dump($datos);exit;
+        $datos = $this->objParam->getParametro('datos');
         $columnas = 0;
         $this->docexcel->setActiveSheetIndex(0);
 

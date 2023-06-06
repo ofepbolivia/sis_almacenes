@@ -13,20 +13,21 @@ header("content-type: text/javascript; charset=UTF-8");
 
 		tam_pag:50,
 		generaReporte: function(){
+            //fRnk: se añadió id_proceso_wf para la obtención del reporte con nuevos valores
 			var rec = this.sm.getSelected();
 			Phx.CP.loadingShow();
 			Ext.Ajax.request({
 				url : '../../sis_almacenes/control/Movimiento/generarReporteMovimiento',
 				params : {
 					'id_movimiento' : rec.data.id_movimiento,
-					'costos': 'si'
+					'costos': 'si',
+                    'id_proceso_wf' : this.sm.getSelected().data.id_proceso_wf
 				},
 				success : this.successExport,
 				failure : this.conexionFailure,
 				timeout : this.timeout,
 				scope : this
 			});
-
 		},
 
 		constructor : function(config) {

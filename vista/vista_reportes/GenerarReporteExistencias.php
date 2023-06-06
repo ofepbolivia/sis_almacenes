@@ -25,7 +25,8 @@ header("content-type: text/javascript; charset=UTF-8");
                             ['antiguo', 'Existencias Prec. Unit. Promedio'],
                             ['ingresos', 'Existencias Prec. Unit. Desglosado (Nuevo)'],
                             ['nuevo', 'Existencias Detalle Ingreso/Salida (Nuevo)'],
-                            ['ministerio', 'Existencias Ministerio (Nuevo)']
+                            //['ministerio', 'Existencias Ministerio (Nuevo)']
+                            ['ministerio', 'Movimiento de Almacenes']
                         ]
                     }),
                     anchor : '100%',
@@ -41,9 +42,9 @@ header("content-type: text/javascript; charset=UTF-8");
 		    {
 			config : {
 				name : 'id_almacen',
-				fieldLabel : 'Almacen',
+				fieldLabel : 'Almacén',
 				allowBlank : false,
-				emptyText : 'Almacen...',
+				emptyText : 'Almacén...',
 				store : new Ext.data.JsonStore({
 					url : '../../sis_almacenes/control/Almacen/listarAlmacen',
 					id : 'id_almacen',
@@ -82,35 +83,35 @@ header("content-type: text/javascript; charset=UTF-8");
 			grid : true,
 			form : true
 		},
-        /*{
+        {
             config : {
                 name : 'fecha_ini',
                 //id:'fecha_ini'+this.idContenedor,
-                fieldLabel : 'Fecha Desde',
+                fieldLabel : 'Fecha desde',
                 allowBlank : false,
                 gwidth : 100,
                 format : 'd/m/Y',
                 renderer : function(value, p, record) {
                     return value ? value.dateFormat('d/m/Y h:i:s') : ''
-                }/!*,
-                vtype: 'daterange',
-                endDateField: 'fecha_fin'+this.idContenedor*!/
+                },
+                vtype: 'daterange'
             },
             type : 'DateField',
             id_grupo : 0,
             grid : true,
             form : true
-        },*/
+        },
         {
 			config : {
 				name : 'fecha_hasta',
-				fieldLabel : 'Fecha Hasta',
+				fieldLabel : 'Fecha hasta',
 				allowBlank : false,
 				gwidth : 100,
 				format : 'd/m/Y',
 				renderer : function(value, p, record) {
 					return value ? value.dateFormat('d/m/Y h:i:s') : ''
-				}
+				},
+                vtype: 'daterange'
 			},
 			type : 'DateField',
 			id_grupo : 0,
@@ -280,7 +281,8 @@ header("content-type: text/javascript; charset=UTF-8");
 				}),
 				anchor : '50%',
 				valueField : 'codigo',
-				displayField : 'nombre'
+				displayField : 'nombre',
+                hidden: true,
 			},
 			type : 'ComboBox',
 			id_grupo : 0,

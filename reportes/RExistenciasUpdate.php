@@ -6,9 +6,40 @@ require_once(dirname(__FILE__) . '/../../lib/tcpdf/tcpdf_barcodes_2d.php');
 class RExistenciasUpdate extends  ReportePDF{
     var $datos ;
     var $ancho_hoja;
+    private $criterio;
+    private $clasificacion;
 
     function Header() {
-
+        //fRnk: modificación cabecera reporte
+        $fecha_ini=explode("-", $this->datos[0]['fecha_ini']);
+        $fecha_hasta=explode("-", $this->datos[0]['fecha_hasta']);
+        $gestion=$fecha_ini[0]==$fecha_hasta[0]?$fecha_hasta[0]:$fecha_ini[0].' - '.$fecha_hasta[0];
+        $subtitle=empty($this->datos[0])?'<br/><span style="color:red">No existe movimientos con los criterios seleccionados.</span>':'<b style="font-size: 12px">'. mb_strtoupper($this->datos[0]['nombre_almacen'], 'UTF-8').'</b><br/>
+                   <b style="font-size: 12px">AL '.implode("/",array_reverse($fecha_hasta)) .'</b>';
+        $content = '<table border="1" cellpadding="1" style="font-size: 10px">
+            <tr>
+                <td style="width: 23%; color: #444444;" rowspan="4">
+                    &nbsp;<img  style="width: 120px;" src="./../../../lib/' . $_SESSION['_DIR_LOGO'] . '" alt="Logo">
+                </td>		
+                <td style="width: 52%; color: #444444;text-align: center" rowspan="4">
+                   <b style="font-size: 14px;">REPORTE DE EXISTENCIAS</b><br/>'.$subtitle.'
+                </td>
+                <td style="width: 25%; color: #444444; text-align: left;">&nbsp;<b>Gestión:</b> ' .$gestion. '</td>
+            </tr>
+            <tr>
+                <td style="width: 25%; color: #444444; text-align: left;">&nbsp;<b>Fecha:</b> ' . date('d/m/y h:i:s A') . '</td>
+            </tr>
+            <tr>
+                <td style="width: 25%; color: #444444; text-align: left;">&nbsp;<b>Usuario:</b> ' . $_SESSION['_LOGIN'] . '</td>
+            </tr>
+            <tr>
+                <td style="width: 25%; color: #444444; text-align: left;">&nbsp;<b>Página:</b> ' . $this->getAliasNumPage() . ' de ' . $this->getAliasNbPages() . '</td>            
+            </tr>
+        </table>';
+        //$this->writeHTML($content, false, false, true, false, '');
+        $this->writeHTMLCell(0, 10, 15, 8, $content, 0, 0, 0, true, 'L', true);
+        $this->ln(29);
+        /*
         $height = 6;
         $longHeight = 18;
         $this->Ln(3);
@@ -55,12 +86,14 @@ class RExistenciasUpdate extends  ReportePDF{
         $this->Cell($w = $width2, $h = $height, $txt = $this->getAliasNumPage() . ' de ' . $this->getAliasNbPages(), $border = "B", $ln = 0, $align = 'C', $fill = false, $link = '', $stretch = 0, $ignore_min_height = false, $calign = 'T', $valign = 'M');
 
         //$this->Ln(2);
-
+*/
     }
 
-    function setDatos($datos) {
+    function setDatos($datos, $criterio, $clasificacion) {
 
         $this->datos = $datos;
+        $this->criterio = $criterio;
+        $this->clasificacion = $clasificacion;
         //var_dump( $this->datos);exit;
     }
 
@@ -70,20 +103,25 @@ class RExistenciasUpdate extends  ReportePDF{
         $this->AddPage();
         $this->SetMargins(15, 40, 16);
         $this->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
-
-        $this->Ln(5);
+        $pc=$this->criterio=='Seleccionar Items'?$this->datos[0]['codigo'].' - '.$this->datos[0]['nombre']:$this->clasificacion;
+        $this->writeHTML ('<table border="0"><tr><td style="font-size: 10px"><b>Criterio de selección:</b> '.$this->criterio.'. '.$pc.'</td></tr></table>');
+        $this->Ln(2);
 
         //variables para la tabla
         $id_item = '';
         $id_cp = 0;
         $cod_partida = '';
-        $tbl =  $this->datos[0]['clasificacion'].'<br><table border="1" style="font-size: 6pt;">
+        $apadres = array();
+        $apadres[]=$this->datos[0]['grupo_clasif'];
+        $apadres_total=array();
+        $total_padre=0;
+        $tbl =  '<span style="font-size: 14px">'.$apadres[0].'</span><br><table border="1" style="font-size: 6pt;">
             <tr align="center">
                 <td width="5%"><b>Nro.</b></td>
                 <td width="9%"><b>Fecha</b></td>
-                <td width="17%"><b>Num. Movimiento</b></td>
-                <td width="8%"><b>Codigo</b></td>
-                <td width="17%"><b>Descripcion del Material</b></td>
+                <td width="17%"><b>Núm. Movimiento</b></td>
+                <td width="8%"><b>Código</b></td>
+                <td width="17%"><b>Descripción del Material</b></td>
                 <td width="8%"><b>Tipo Movimiento</b></td>
                 <td width="7%"><b>Unidad</b></td>
                 <td width="7%"><b>Cantidad</b></td>
@@ -119,17 +157,33 @@ class RExistenciasUpdate extends  ReportePDF{
                 $tbl.='<tr>
                            <td colspan="7" align="center" ><b>Total Items ['.$codigo.']</b></td>
                            <td align="center" ><b>'.number_format($total_parcial,0, ',', '.').'</b></td>
-                           <td align="center" ><b>-</b></td>
+                           <td align="right" ><b>-</b></td>
                            <td align="right" ><b>'.number_format($total_costo_parcial,2, ',', '.').'</b></td>
                        </tr>';
                 $total_ingresos = 0;
                 $total_salidas  = 0;
                 $total_costo_ingreso = 0;
                 $total_costo_salida = 0;
+
+                $total_padre+=$total_costo_parcial;
             }
 
             $cantidad = $record["tipo_movimiento"] == 'ingreso' ? $record["ingreso"] : $record["salida"];
             $costo = $record["tipo_movimiento"] == 'ingreso' ? $record["ingreso"] * $record["costo_unitario"] : $record["salida"] * $record["costo_unitario"];
+
+
+            if(end($apadres)!=$record["grupo_clasif"]){ //fRnk: añadido para mostrar los agrupadores (padres) y totales por agrupador
+                $apadres[]=$record["grupo_clasif"];
+                $tbl.='<tr>
+                        <td colspan="10" align="left" style="border-left:1px solid #fff;border-right:1px solid #fff;" height="20" valign="bottom">
+                        <span style="font-size: 14px">'.$record["grupo_clasif"].'</span>
+                        </td>
+                       </tr>';
+                $apadres_total[]=$total_padre;
+                $total_padre=0;
+            }
+
+
             $tbl .= '   <tr>
                             <td  align="center">' . $contador . '</td>
                             <td  align="center">' . date_format(date_create($record["fecha"]),'d/m/Y'). '</td>
@@ -139,7 +193,7 @@ class RExistenciasUpdate extends  ReportePDF{
                             <td  align="center"><br>' . $record["tipo_movimiento"] . '</td>
                             <td  align="center"><br>' . $record["unidad_medida"] . '</td>
                             <td  align="center" >' . number_format($cantidad, 0, ',', '.') . '</td>
-                            <td  align="center" valign="center"><br>' . number_format($record["costo_unitario"], 0, ',', '.')  . '</td>
+                            <td  align="right" valign="center"><br>' . number_format($record["costo_unitario"], 2, ',', '.')  . '</td>
                             <td  align="right"><br>' . number_format($costo, 2, ',', '.') . '</td>
                         </tr>';
 
@@ -156,38 +210,48 @@ class RExistenciasUpdate extends  ReportePDF{
             $codigo = $record["codigo"];
         }
 
+
         $total_parcial = $total_ingresos - $total_salidas;
         $total_general += $total_parcial;
 
         $total_costo_parcial = $total_costo_ingreso - $total_costo_salida;
         $total_costo_general+=$total_costo_parcial;
 
+        $total_padre+=$total_costo_parcial;
+
         $tbl.='<tr>
                    <td colspan="7" align="center" ><b>Total Items ['.$codigo.']</b></td>                   
                    <td align="center" ><b>'.number_format($total_parcial,0, ',', '.').'</b></td>
-                   <td align="center" ><b>-</b></td>
+                   <td align="right" ><b>-</b></td>
                    <td align="right" ><b>'.number_format($total_costo_parcial,2, ',', '.').'</b></td>
                </tr>
-               <tr>
-                   <td colspan="7" align="center" ><b> Total General '.$this->datos[0]['clasificacion'].'</b></td>
+               ';
+        /*<tr>
+                   <td colspan="7" align="center" ><b> Total General </b></td>
                    <td align="center" ><b>'.number_format($total_general,0, ',', '.').'</b></td>
-                   <td align="center" ><b>-</b></td>
+                   <td align="right" ><b>-</b></td>
                    <td align="right" ><b>'.number_format($total_costo_general,2, ',', '.').'</b></td>
-               </tr>';
-
+               </tr>
+         */
         $tbl.='</table>';
         $this->writeHTML ($tbl);
 
-        $contador = 1;
+        /*$contador = 1;
         $tbl = '<table border="1" style="font-size: 8pt;"> 
                 <tr align="center"><td width="5%"><b>Nro.</b></td> <td width="80%"><b>Detalle</b></td> <td width="15%"><b>Costo</b></td></tr>
                 <tr><td align="center">'.$contador.'</td><td> '.$this->datos[0]['clasificacion'].'</td><td align="center">'.number_format($total_costo_general, 2, ',', '.').'</td></tr>
                 </table>
-                ';
+                ';*/
+        $apadres_total[]=$total_padre;
+        $tbl = '<table border="1" style="font-size: 8pt;"> 
+                <tr align="center"><td width="5%"><b>Nro.</b></td> <td width="80%"><b>Detalle</b></td> <td width="15%"><b>Costo</b></td></tr>';
+        for($i=0;$i<count($apadres);$i++){
+            $tbl .= '<tr><td align="center">'.($i+1).'</td><td> '.$apadres[$i].'</td><td align="right">'.number_format($apadres_total[$i], 2, ',', '.').'</td></tr>';
+        }
+        $tbl .= '<tr><td align="right" colspan="2"><b>Total General</b></td><td align="right"><b>'.number_format($total_costo_general, 2, ',', '.').'</b></td></tr>';
+        $tbl .= '</table>';
         $this->Ln(5);
         $this->writeHTML ($tbl);
-
-
     }
 
     function basico($numero) {

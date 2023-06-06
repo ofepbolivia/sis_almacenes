@@ -8,11 +8,14 @@
  */
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/ReportWriter.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistencias.php');
+require_once (dirname(__FILE__) . '/../reportes/RMovimientoAlmacenes.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistenciasUpdate.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistenciasPUDesglosado.php');
 require_once (dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
 require_once (dirname(__FILE__) . '/../reportes/RExistenciasExcel.php');
 require_once (dirname(__FILE__) . '/../reportes/RMinisterioExistenciasXLS.php');
+require_once (dirname(__FILE__) . '/../reportes/RMovimientoAlmacenesXLS.php');
+require_once (dirname(__FILE__) . '/../reportes/RKardexItem.php');
 
 class ACTReportes extends ACTbase {
     function reporteExistencias() {
@@ -20,6 +23,8 @@ class ACTReportes extends ACTbase {
         //TODO: pasos para el reporte:
         //iterar sobre el array de ids de almacenes
         //Obtener el listado de los items ordenados por clasificacion y por fecha de un determinado almacen:
+        //fRnk: add fecha_ini
+        $this->objParam->addParametro('fecha_ini',$this->objParam->getParametro('fecha_ini'));
         $fechaHasta = $this->objParam->getParametro('fecha_hasta');
 
         if ($this->objParam->getParametro('formato_reporte') == 'pdf') {
@@ -30,7 +35,6 @@ class ACTReportes extends ACTbase {
             $this->objParam->addParametroConsulta('puntero', 0);
 
             $nombreArchivo = 'Existencias.pdf';
-//var_dump($this->objParam->getParametro('formato'));exit;
             if($this->objParam->getParametro('formato') == 'antiguo') {
                 $this->objFunc = $this->create('MODReporte');
                 $resultRepExistencias = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
@@ -90,9 +94,41 @@ class ACTReportes extends ACTbase {
                 $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
 
                 $reporte = new RExistenciasUpdate($this->objParam);
+                $reporte->setDatos($resultData, $this->objParam->getParametro('all_items'), $this->objParam->getParametro('clasificacion'));
+                $reporte->generarReporte();
+                $reporte->output($reporte->url_archivo,'F');
+            }else if($this->objParam->getParametro('formato') == 'ministerio'){
+
+                $this->objFunc = $this->create('MODReporte');
+                $resultRepExistencias = $this->objFunc->listarCantidadesClasificacion($this->objParam);
+                $resultData = $resultRepExistencias->getDatos();
+
+                $this->objParam->addParametro('orientacion','P');
+                $this->objParam->addParametro('tamano','LETTER');
+                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+                $reporte = new RMovimientoAlmacenes($this->objParam);//var_dump($resultData);exit();
                 $reporte->setDatos($resultData);
                 $reporte->generarReporte();
                 $reporte->output($reporte->url_archivo,'F');
+
+
+                /*
+                 * $this->objFunc = $this->create('MODReporte');
+                $this->res=$this->objFunc->listarCantidadesClasificacion($this->objParam);
+                $titulo_archivo = 'Reporte Ministerio Existencias';
+                $this->datos=$this->res->getDatos();
+
+                $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
+                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+                $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
+                $this->objParam->addParametro('datos',$this->datos);
+                $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_hasta'));
+
+                $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
+                $this->objReporte->generarReporte();*/
+
+
             }else if($this->objParam->getParametro('formato')=='ingresos'){
 
                 $this->objFunc = $this->create('MODReporte');
@@ -154,10 +190,10 @@ class ACTReportes extends ACTbase {
                 $this->objParam->addParametro('datos',$this->datos);
                 $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_hasta'));
 
-                $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
+                $this->objReporte = new RMovimientoAlmacenesXLS($this->objParam);
                 $this->objReporte->generarReporte();
             }
-            
+
             $this->mensajeExito = new Mensaje();
             $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
             $this->mensajeExito->setArchivoGenerado($nombreArchivo);
@@ -167,15 +203,43 @@ class ACTReportes extends ACTbase {
     function listarKardexItem() {
         $this->objParam->defecto('ordenacion', 'codigo');
         $this->objParam->defecto('dir_ordenacion', 'asc');
-
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
             $this->objReporte = new Reporte($this->objParam, $this);
             $this->res = $this->objReporte->generarReporteListado('MODReporte', 'listarKardexItem');
-        } else {
+        } elseif ($this->objParam->getParametro('tipoReporte') == 'reporte') {
+            //fRnk: añadido para el nuevo reporte de Kardex almacen
+            $this->reporteKardexItem($this->objParam->getParametro('item'), $this->objParam->getParametro('fecha_ini'), $this->objParam->getParametro('fecha_fin'));
+        }
+        else {
             $this->objFunc = $this->create('MODReporte');
             $this->res = $this->objFunc->listarKardexItem();
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
+    }
+
+    function reporteKardexItem($item, $fecha_ini, $fecha_fin) {
+        $nombreArchivo = uniqid(md5(session_id()).'KardexAlm').'.pdf';
+        $this->objFunc = $this->create('MODReporte');
+        $repDatos = $this->objFunc->listarKardexItem();
+        $dataSource = $repDatos;
+        $tamano = 'LETTER';
+        $orientacion = 'P';
+        $titulo = 'Kardex Almacenes';
+
+        $this->objParam->addParametro('orientacion',$orientacion);
+        $this->objParam->addParametro('tamano',$tamano);
+        $this->objParam->addParametro('titulo_archivo',$titulo);
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+
+        $reporte=new RKardexItem($this->objParam);
+        $reporte->setDatos($dataSource->getDatos(), $item, $fecha_ini, $fecha_fin);
+        $reporte->generarReporte();
+        $reporte->output($reporte->url_archivo,'F');
+
+        $mensajeExito=new Mensaje();
+        $mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->res = $mensajeExito;
     }
 
     function listarItemEntRec() {

@@ -9,8 +9,9 @@
 header("content-type: text/javascript; charset=UTF-8");
 ?>
 <script>
+    var codItem='';
 	Phx.vista.KardexItem = Ext.extend(Phx.frmInterfaz, {
-		
+
 		constructor: function(config) {
 			Ext.apply(this,config);
 			this.Atributos = [
@@ -18,6 +19,7 @@ header("content-type: text/javascript; charset=UTF-8");
 						config : {
 							name : 'fecha_ini',
 							id:'fecha_ini'+this.idContenedor,
+                            cls: 'fecha_ini',
 							fieldLabel : 'Fecha Desde',
 							allowBlank : false,
 							gwidth : 100,
@@ -37,6 +39,7 @@ header("content-type: text/javascript; charset=UTF-8");
 						config : {
 							name : 'fecha_fin',
 							id:'fecha_fin'+this.idContenedor,
+                            cls: 'fecha_fin',
 							fieldLabel: 'Fecha Hasta',
 							allowBlank: false,
 							gwidth: 100,
@@ -187,6 +190,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			//Eventos
 			this.getComponente('id_item').on('select',function(a,b,c){
 				this.desc_item = b.data.codigo+' - '+b.data.nombre;
+                codItem=b.data.codigo==null?'':b.data.codigo+' - ';
 			},this);
 		},
 		title : 'Kardex x Item',
@@ -216,12 +220,12 @@ header("content-type: text/javascript; charset=UTF-8");
 			if (this.form.getForm().isValid()) {
 				var data={};
 				data.fecha_ini=this.getComponente('fecha_ini').getValue();
-				data.item=this.getComponente('id_item').getRawValue();
+				data.item=codItem+this.getComponente('id_item').getRawValue(); //fRnk: añadido el código (codItem) para título 2 del reporte genérico
 				data.fecha_fin=this.getComponente('fecha_fin').getValue();
 				data.id_item=this.getComponente('id_item').getValue();
 				data.all_alm=this.getComponente('all_alm').getValue();
 				data.id_almacen=this.getComponente('id_almacen').getValue();
-				
+
 				Phx.CP.loadWindows('../../../sis_almacenes/vista/vista_reportes/repKardexItem.php', 'Kardex por Item: '+this.desc_item, {
 						width : '90%',
 						height : '80%'
