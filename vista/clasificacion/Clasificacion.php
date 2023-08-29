@@ -95,7 +95,25 @@ header("content-type:text/javascript; charset=UTF-8");
 			id_grupo : 1,
 			grid : true,
 			form : true
-		}],
+		},{
+            config: {
+                name: 'sw_transaccional',
+                fieldLabel: 'Operación',
+                allowBlank: false,
+                emptyText: 'Tipo...',
+                typeAhead: true,
+                triggerAction: 'all',
+                lazyRender: true,
+                mode: 'local',
+                gwidth: 100,
+                store: ['movimiento', 'titular']
+            },
+            type: 'ComboBox',
+            filters: {pfiltro: 'tco.sw_trans', type: 'string'},
+            id_grupo: 0,
+            grid: true,
+            form: true
+        }],
 		title : 'Clasificacion',
 		ActSave : '../../sis_almacenes/control/Clasificacion/insertarClasificacion',
 		ActDel : '../../sis_almacenes/control/Clasificacion/eliminarClasificacion',
@@ -151,7 +169,10 @@ header("content-type:text/javascript; charset=UTF-8");
 		}, {
 			name : 'descripcion',
 			type : 'string'
-		}],
+		}, {
+            name : 'sw_transaccional',
+            type : 'string'
+        }],
 		sortInfo : {
 			field : 'id_clasificacion',
 			direction : 'ASC'

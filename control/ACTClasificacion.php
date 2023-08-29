@@ -127,6 +127,7 @@ class ACTClasificacion extends ACTbase {
             $this->res = $this->objFunc->insertarClasificacion();
         } else {
             $this->res = $this->objFunc->modificarClasificacion();
+            /* fRnk: modificado, dado que consulta servicio web propio de BOA
             $datos = $this->res->getDatos();
 
             $nombre = $this->objParam->getParametro('nombre');
@@ -152,6 +153,7 @@ class ACTClasificacion extends ACTbase {
             if($respuesta->state =='false'){
                 throw new Exception(__METHOD__.$respuesta->mensaje);
             }
+        */
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }

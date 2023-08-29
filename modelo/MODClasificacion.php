@@ -85,6 +85,7 @@ class MODClasificacion extends MODbase {
         $this->captura('codigo_largo', 'varchar');
         $this->captura('estado', 'varchar');
 		$this->captura('checked', 'varchar');
+		$this->captura('sw_transaccional', 'varchar'); //fRnk: adicionado para identificar el tipo de nodo: titular o movimiento
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -132,6 +133,7 @@ class MODClasificacion extends MODbase {
         $this->setParametro('codigo', 'codigo', 'varchar');
         $this->setParametro('nombre', 'nombre', 'varchar');
         $this->setParametro('descripcion', 'descripcion', 'varchar');
+        $this->setParametro('sw_transaccional', 'sw_transaccional', 'varchar'); //fRnk: adicionado para identificar el tipo de nodo: titular o movimiento
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
@@ -149,6 +151,7 @@ class MODClasificacion extends MODbase {
         $this->setParametro('codigo', 'codigo', 'varchar');
         $this->setParametro('nombre', 'nombre', 'varchar');
         $this->setParametro('descripcion', 'descripcion', 'varchar');
+        $this->setParametro('sw_transaccional', 'sw_transaccional', 'varchar'); //fRnk: adicionado para identificar el tipo de nodo: titular o movimiento
 
         $this->armarConsulta();
         $this->ejecutarConsulta();
