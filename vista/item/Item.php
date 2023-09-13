@@ -388,7 +388,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		onReloadPage : function(m) {
 			this.getBoton('btnGenerarCodigo').disable();
 			this.maestro = m;
-			
+
 			if (this.maestro.tipo_nodo == 'raiz' || this.maestro.tipo_nodo == 'hijo') {
 				this.store.baseParams.id_clasificacion = this.maestro.id_clasificacion;
 				this.tbar.items.get('b-new-' + this.idContenedor).show();
@@ -397,8 +397,12 @@ header("content-type: text/javascript; charset=UTF-8");
 				this.tbar.items.get('b-new-' + this.idContenedor).hide();
 			} else {
 				this.tbar.items.get('b-new-' + this.idContenedor).show();
-				myParams.id_clasificacion = 'null';
+				//myParams.id_clasificacion = 'null';
 			}
+            //fRnk: adicionado clasificación de material
+            if (this.maestro == undefined || this.maestro.sw_transaccional == 'titular') {
+                this.tbar.items.get('b-new-' + this.idContenedor).hide();
+            }
 			
 			this.load({
 				start : 0,

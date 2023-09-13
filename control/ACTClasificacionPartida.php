@@ -16,6 +16,14 @@ class ACTClasificacionPartida extends ACTbase {
             $this->objParam->addFiltro("cpa.id_clasificacion = " . $this->objParam->getParametro('id_clasificacion'));
         }*/
 
+        //fRnk: adicionado para evitar error en la primera carga
+        if (empty($this->objParam->getParametro('id_item'))) {
+            $this->objParam->addParametro('id_item', 0);
+        }
+        if (empty($this->objParam->getParametro('id_clasificacion'))) {
+            $this->objParam->addParametro('id_clasificacion', 0);
+        }
+
         if ($this->objParam->getParametro('id_gestion') != '') {
             $this->objParam->addFiltro("cpa.id_gestion=" . $this->objParam->getParametro('id_gestion'));
         }
