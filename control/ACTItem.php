@@ -168,5 +168,13 @@ class ACTItem extends ACTbase {
         $this->res = $this->objFunc->actualizarSaldoFisicoItem();
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
+
+    //Nestor
+    function switchEstadoItem() {    
+        $this->objFunc = $this->create('MODItem');
+        $this->res = $this->objFunc->switchEstadoItem();
+        $this->res->imprimirRespuesta($this->res->generarJson());
+    }
 }
+
 ?>

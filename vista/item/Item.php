@@ -24,28 +24,39 @@ header("content-type: text/javascript; charset=UTF-8");
 				iconCls : 'bok',
 				disabled : true,
 				handler : this.btnGenerarCodigoHandler,
-				tooltip : '<b>Actividades</b><br/>Generar Código del item'
+				tooltip : '<b>Actividades</b><br/>Generar Código del ítem'
 			});
 			this.addButton('btnVerReemplazos', {
 				text : 'Ver Reemplazos',
 				iconCls : 'bengineadd',
 				disabled : true,
 				handler : this.onBtnVerReemplazos,
-				tooltip : '<b>Actividades</b><br/>Ver los Items de Reemplazo del item seleccionado'
+				tooltip : '<b>Actividades</b><br/>Ver los Ítems de Reemplazo del ítem seleccionado'
 			});
 			this.addButton('btnVerArchivos', {
 				text : 'Ver Archivos',
 				iconCls : 'bdocuments',
 				disabled : true,
 				handler : this.onBtnVerArchivos,
-				tooltip : '<b>Actividades</b><br/>Ver los archivos asociados al item seleccionado'
+				tooltip : '<b>Actividades</b><br/>Ver los archivos asociados al ítem seleccionado'
 			});
+            /////////////////////Nestor
+            
+            this.addButton('btnSwitchEstadoReg', {
+				text : 'Act/Inact',
+				iconCls : 'btag_accept',
+				disabled : true,
+				handler : this.onBtnSwitchEstadoReg,
+				tooltip : '<b>Activar o Inactivar Ítem</b>'
+			});
+
+            ////////////////////Nestor
 			this.addButton('btnRelConceptoIngas', {
 				text : 'Relacionar Concepto Ingas',
 				iconCls : 'bengineadd',
 				disabled : true,
 				handler : this.onBtnRelConceptoIngas,
-				tooltip : '<b>Concepto de Gasto</b><br/>Ver el concepto de gasto asociados al item seleccionado'
+				tooltip : '<b>Concepto de Gasto</b><br/>Ver el concepto de gasto asociados al ítem seleccionado'
 			});
 		},
 		Atributos : [{
@@ -168,12 +179,13 @@ header("content-type: text/javascript; charset=UTF-8");
 			grid : true,
 			form : true
 		},
+   
 		{
 			config : {
 				name : 'id_almacen',
 				fieldLabel : 'Almacenes habilitados',
 				allowBlank : true,
-				emptyText : 'Almacen...',
+				emptyText : 'Almacén...',
 				store : new Ext.data.JsonStore({
 					url : '../../sis_almacenes/control/Almacen/listarAlmacen',
 					id : 'id_almacen',
@@ -259,7 +271,30 @@ header("content-type: text/javascript; charset=UTF-8");
 			id_grupo : 1,
 			grid : true,
 			form : true
-		}, {
+		}, 
+          /////////////////////Nestor           
+        {
+			config : {
+				name : 'estado_reg',
+				fieldLabel : 'Estado Registro',
+				allowBlank : true,
+				width : '100%',
+				gwidth : 90,
+				maxLength : 20
+			},
+			type : 'TextField',
+			filters : {
+				pfiltro : 'item.estado_reg',
+				type : 'string'
+			},
+			id_grupo : 1,
+			grid : true,
+			form : true
+		}
+            ///////////////////Nestor
+        ,             
+                     
+        {
 			config : {
 				name : 'observaciones',
 				fieldLabel : 'Observaciones',
@@ -293,7 +328,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		},{
 				config:{
 					name: 'cantidad_max_sol',
-					fieldLabel: 'Cantidad Maxima por Solicitud',
+					fieldLabel: 'Cantidad Máxima por Solicitud',
 					allowBlank: false,
 					anchor: '80%',
 					gwidth: 100,
@@ -316,7 +351,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			grid:true,
 			form:false
 		}],
-		title : 'Item',
+		title : 'Ítem',
 		ActSave : '../../sis_almacenes/control/Item/insertarItem',
 		ActDel : '../../sis_almacenes/control/Item/eliminarItem',
 		ActList : '../../sis_almacenes/control/Item/listarItem',
@@ -343,10 +378,17 @@ header("content-type: text/javascript; charset=UTF-8");
 		}, {
 			name : 'observaciones',
 			type : 'string'
-		}, {
+		},{
 			name : 'numero_serie',
 			type : 'string'
-		}, {
+		}, 
+                  ////////////////////////Nestor
+        {
+			name : 'estado_reg',
+			type : 'string'
+		}
+        ////////////////////////Nestor          
+        , {
             name : 'id_unidad_medida',
             type : 'string'
         }, {
@@ -388,7 +430,7 @@ header("content-type: text/javascript; charset=UTF-8");
 		onReloadPage : function(m) {
 			this.getBoton('btnGenerarCodigo').disable();
 			this.maestro = m;
-
+			
 			if (this.maestro.tipo_nodo == 'raiz' || this.maestro.tipo_nodo == 'hijo') {
 				this.store.baseParams.id_clasificacion = this.maestro.id_clasificacion;
 				this.tbar.items.get('b-new-' + this.idContenedor).show();
@@ -397,12 +439,8 @@ header("content-type: text/javascript; charset=UTF-8");
 				this.tbar.items.get('b-new-' + this.idContenedor).hide();
 			} else {
 				this.tbar.items.get('b-new-' + this.idContenedor).show();
-				//myParams.id_clasificacion = 'null';
+				myParams.id_clasificacion = 'null';
 			}
-            //fRnk: adicionado clasificación de material
-            if (this.maestro == undefined || this.maestro.sw_transaccional == 'titular') {
-                this.tbar.items.get('b-new-' + this.idContenedor).hide();
-            }
 			
 			this.load({
 				start : 0,
@@ -414,7 +452,10 @@ header("content-type: text/javascript; charset=UTF-8");
 			var selectedRow = this.sm.getSelected();
 			this.getBoton('btnVerReemplazos').enable();
 			this.getBoton('btnVerArchivos').enable();
-			this.getBoton('btnRelConceptoIngas').enable();
+            /////////////////////////Nestor
+			this.getBoton('btnSwitchEstadoReg').enable();
+			/////////////////////////Nestor
+            this.getBoton('btnRelConceptoIngas').enable();
 			if (selectedRow.data.id_clasificacion != null && selectedRow.data.codigo == "") {
 				this.getBoton('btnGenerarCodigo').enable();
 			} else {
@@ -425,7 +466,10 @@ header("content-type: text/javascript; charset=UTF-8");
 			Phx.vista.Item.superclass.liberaMenu.call(this, n);
 			this.getBoton('btnGenerarCodigo').disable();
 			this.getBoton('btnVerReemplazos').disable();
-			this.getBoton('btnVerArchivos').disable();
+            this.getBoton('btnVerArchivos').disable();
+            /////////////////////////Nestor
+			this.getBoton('btnSwitchEstadoReg').disable();
+            /////////////////////////Nestor
 			this.getBoton('btnRelConceptoIngas').disable();
 		},
 		successSave : function(resp) {
@@ -450,7 +494,7 @@ header("content-type: text/javascript; charset=UTF-8");
 			var rec = this.sm.getSelected();
 			var data = rec.data;
 			var global = this;
-			Ext.Msg.confirm('Confirmación', '¿Está seguro de generar el código para este item?', function(btn) {
+			Ext.Msg.confirm('Confirmación', '¿Está seguro de generar el código para este ítem?', function(btn) {
 				if (btn == "yes") {
 					Ext.Ajax.request({
 						url : '../../sis_almacenes/control/Item/generarCodigoItem',
@@ -480,7 +524,32 @@ header("content-type: text/javascript; charset=UTF-8");
 				height : 400
 			}, rec.data, this.idContenedor, 'ItemArchivo');
 		},
-
+        
+        
+        ///////////////////////Nestor
+        onBtnSwitchEstadoReg : function() {
+			var rec = this.sm.getSelected();
+			var data = rec.data;
+			var global = this;
+			Ext.Msg.confirm('Confirmación', '¿Está seguro de activar/inactivar este Ítem?', function(btn) {
+				if (btn == "yes") {
+					Ext.Ajax.request({
+						url : '../../sis_almacenes/control/Item/switchEstadoItem',
+						params : {
+							'id_item' : data.id_item
+						},
+						success : global.successSave,
+						failure : global.conexionFailure,
+						timeout : global.timeout,
+						scope : global
+					});
+				}
+			});
+		},
+        
+        ////////////////////////Nestor
+        
+        
 		onBtnRelConceptoIngas : function() {
 			var rec = this.sm.getSelected();
 			Phx.CP.loadWindows('../../../sis_almacenes/vista/itemConceptoIngas/ItemConceptoIngas.php', 'Concepto de Gasto del Item', {

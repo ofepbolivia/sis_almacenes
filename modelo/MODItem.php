@@ -27,6 +27,9 @@ class MODItem extends MODbase {
         $this->captura('codigo_fabrica', 'varchar');
         $this->captura('observaciones', 'varchar');
         $this->captura('numero_serie', 'varchar');
+        //////////////nestor
+        $this->captura('estado_reg', 'varchar');
+        //////////////nestor
         $this->captura('id_unidad_medida', 'integer');
         $this->captura('codigo_unidad', 'varchar');
 		$this->captura('precio_ref', 'numeric');
@@ -60,6 +63,9 @@ class MODItem extends MODbase {
         $this->captura('codigo_fabrica', 'varchar');
         $this->captura('observaciones', 'varchar');
         $this->captura('numero_serie', 'varchar');
+        ///////////////nestor
+        $this->captura('estado_reg', 'varchar');
+        //////////////nestor
         $this->captura('codigo_unidad', 'varchar');
         $this->captura('precio_ref', 'numeric');
         $this->captura('nombre_completo', 'varchar');
@@ -270,6 +276,19 @@ class MODItem extends MODbase {
         $this->ejecutarConsulta();
         return $this->respuesta;
     }
+        /////////////////////////////////Nestor
+        function switchEstadoItem(){
+                $this->procedimiento = 'alm.ft_item_ime';
+                $this->transaccion = 'SIT_SWEST_MOD';
+                $this->tipo_procedimiento = 'IME';
 
+                $this->setParametro('id_item', 'id_item', 'integer');
+
+                $this->armarConsulta();
+                $this->ejecutarConsulta();
+
+                return $this->respuesta;
+            }
+        /////////////////////////////////
 }
 ?>
