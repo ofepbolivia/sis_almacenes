@@ -23,6 +23,7 @@ class MODClasificacion extends MODbase {
         $this->captura('id_clasificacion', 'integer');
         $this->captura('nombre', 'varchar');
         $this->captura('codigo_largo', 'varchar');
+        $this->captura('sw_transaccional', 'varchar');
 
         $this->armarConsulta();
 		

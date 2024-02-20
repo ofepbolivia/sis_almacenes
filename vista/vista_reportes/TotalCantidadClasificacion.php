@@ -14,10 +14,11 @@ header("content-type: text/javascript; charset=UTF-8");
         constructor: function(config) {
             Ext.apply(this,config);
             this.Atributos = [
+                
                 {
                     config : {
                         name : 'fecha_ini',
-                        id:'fecha_ini'+this.idContenedor,
+                        //id:'fecha_ini'+this.idContenedor,
                         fieldLabel : 'Fecha Desde',
                         allowBlank : false,
                         gwidth : 100,
@@ -26,7 +27,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             return value ? value.dateFormat('d/m/Y h:i:s') : ''
                         },
                         vtype: 'daterange',
-                        endDateField: 'fecha_fin'+this.idContenedor
+                        //endDateField: 'fecha_fin'+this.idContenedor
                     },
                     type : 'DateField',
                     id_grupo : 0,
@@ -35,8 +36,8 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config : {
-                        name : 'fecha_fin',
-                        id:'fecha_fin'+this.idContenedor,
+                        name : 'fecha_hasta',
+                        //id:'fecha_fin'+this.idContenedor,
                         fieldLabel: 'Fecha Hasta',
                         allowBlank: false,
                         gwidth: 100,
@@ -45,7 +46,7 @@ header("content-type: text/javascript; charset=UTF-8");
                             return value ? value.dateFormat('d/m/Y h:i:s') : ''
                         },
                         vtype: 'daterange',
-                        startDateField: 'fecha_ini'+this.idContenedor
+                        //startDateField: 'fecha_ini'+this.idContenedor
                     },
                     type : 'DateField',
                     id_grupo : 0,
@@ -110,7 +111,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 },
                 {
                     config : {
-                        name : 'all_alm',
+                        name : 'all_items',
                         fieldLabel : 'Todos los Almacenes',
                         allowBlank : false,
                         triggerAction : 'all',
@@ -179,7 +180,7 @@ header("content-type: text/javascript; charset=UTF-8");
             Phx.vista.TotalCantidadClasificacion.superclass.constructor.call(this, config);
             this.init();
 
-            this.getComponente('all_alm').on('select', function(e, component, index) {
+            this.getComponente('all_items').on('select', function(e, component, index) {
                 var cmbAlm = this.getComponente('id_almacen');
                 if (e.value == 'si') {
                     cmbAlm.disable();
@@ -190,7 +191,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 }
             }, this);
 
-            this.getComponente('all_alm').setValue('si');
+            this.getComponente('all_items').setValue('si');
             this.getComponente('id_almacen').disable();
 
             //Eventos
@@ -199,7 +200,7 @@ header("content-type: text/javascript; charset=UTF-8");
             },this);
         },
         title : 'Cantidades x Clasificación',
-        ActSave : '../../sis_almacenes/control/Reportes/listarCantidadesClasificacion',
+        ActSave : '../../sis_almacenes/control/Reportes/listarTotalCantidadesClasificacion',
         topBar : true,
         botones : false,
         labelSubmit : 'Generar',

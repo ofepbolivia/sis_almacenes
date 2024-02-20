@@ -260,9 +260,12 @@ class ACTReportes extends ACTbase {
     function listarCantidadesClasificacion(){
 
         $this->objFunc = $this->create('MODReporte');
+
+
         $this->res=$this->objFunc->listarCantidadesClasificacion($this->objParam);
         $titulo_archivo = 'Reporte Ministerio Existencias';
         $this->datos=$this->res->getDatos();
+
 
         $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
         $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
@@ -279,5 +282,29 @@ class ACTReportes extends ACTbase {
         $this->res = $this->mensajeExito;
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
+
+    function listarTotalCantidadesClasificacion(){
+        $this->objFunc = $this->create('MODReporte');
+
+        $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_hasta'));
+
+        $this->res=$this->objFunc->listarTotalCantidadesClasificacion($this->objParam);
+        $this->datos=$this->res->getDatos();
+
+        $titulo_archivo = 'Reporte Ministerio Existencias';
+        $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
+        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+        $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
+        $this->objParam->addParametro('datos',$this->datos);
+
+       
+        $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
+        $this->objReporte->generarReporte();
+        $this->mensajeExito=new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito->setArchivoGenerado($nombreArchivo);
+        $this->res = $this->mensajeExito;
+        $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }    
 }
 ?>
