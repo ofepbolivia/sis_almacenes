@@ -371,7 +371,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 form: false
             }
             ],
-        title: 'ÍtemXXXXXXXXX',
+        title: 'Ítem',
         ActSave: '../../sis_almacenes/control/Item/insertarItem',
         ActDel: '../../sis_almacenes/control/Item/eliminarItem',
         ActList: '../../sis_almacenes/control/Item/listarItem',
