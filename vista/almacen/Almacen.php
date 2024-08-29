@@ -396,9 +396,9 @@ header("content-type:text/javascript; charset=UTF-8");
             height: '50%',
             cls : 'AlmacenStock'
         }
-            //boton de cargar archivo desabilitado segun requerimienro 0192/2023
+            //boton de cargar archivo deshabilitado segun requerimienro 0192/2023
             //, {
-            //	url : '../../../sis_parametros/vista/tabla_upload/TablaUpload.php',
+            //	url : '../../../sis_parametros/vista/tipo_archivo/TipoArchivo.php', //fRnk: se reemplazó debido a que daba error al sincronizar, original tabla_upload/TablaUpload.php
             //	title : 'Upload archivos',
             //	height: '50%',
             //	cls : 'TablaUpload',

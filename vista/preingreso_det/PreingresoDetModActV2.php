@@ -146,7 +146,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_/control/Clase/Metodo',
+                        /*url: '../../sis_/control/Clase/Metodo',*/
                         id: 'id_',
                         root: 'datos',
                         sortInfo: {
@@ -600,7 +600,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_/control/Clase/Metodo',
+                        /*url: '../../sis_/control/Clase/Metodo',*/
                         id: 'id_',
                         root: 'datos',
                         sortInfo: {
@@ -648,7 +648,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_/control/Clase/Metodo',
+                        /*url: '../../sis_/control/Clase/Metodo',*/
                         id: 'id_',
                         root: 'datos',
                         sortInfo: {
@@ -711,7 +711,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_/control/Clase/Metodo',
+                        /*url: '../../sis_/control/Clase/Metodo',*/
                         id: 'id_',
                         root: 'datos',
                         sortInfo: {
@@ -842,7 +842,7 @@ header("content-type: text/javascript; charset=UTF-8");
                     allowBlank: true,
                     emptyText: 'Elija una opción...',
                     store: new Ext.data.JsonStore({
-                        url: '../../sis_/control/Clase/Metodo',
+                        /*url: '../../sis_/control/Clase/Metodo',*/ //fRnk: comentado debido a que daba error al sincronizar KAF
                         id: 'id_',
                         root: 'datos',
                         sortInfo: {
