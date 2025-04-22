@@ -265,7 +265,7 @@ Phx.vista.MovimientoTipoItem=Ext.extend(Phx.gridInterfaz,{
 						}
 					}),
 					valueField : 'id_item',
-					displayField : 'descripcion',
+					displayField : 'nombre', //fRnk: original "descripcion", SOP 22-04-2025
 					//tpl : '<tpl for="."><div class="x-combo-list-item"><p>Nombre: {nombre}</p><p>Código: {codigo}</p><p>Clasif.: {desc_clasificacion}</p></div></tpl>',
 					hiddenName : 'id_item_cmb',
 					forceSelection : true,
