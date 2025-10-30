@@ -2,6 +2,7 @@
 //incluimos la libreria
 //echo dirname(__FILE__);
 //include_once(dirname(__FILE__).'/../PHPExcel/Classes/PHPExcel.php');
+//NMQ: Ájustes al reporte por HR 2024-01111
 class RMinisterioExistenciasXLS
 {
     private $docexcel;
@@ -33,7 +34,7 @@ class RMinisterioExistenciasXLS
             ->setLastModifiedBy("PXP")
             ->setTitle($this->objParam->getParametro('titulo_archivo'))
             ->setSubject($this->objParam->getParametro('titulo_archivo'))
-            ->setDescription('Reporte "'.$this->objParam->getParametro('titulo_archivo').'", generado por BoA')
+            ->setDescription('Reporte "'.$this->objParam->getParametro('titulo_archivo').'", generado por ERP')
             ->setKeywords("office 2007 openxml php")
             ->setCategory("Report File");
 
@@ -172,109 +173,251 @@ class RMinisterioExistenciasXLS
         );*/
 
 
-        $this->docexcel->getActiveSheet()->getStyle('A1:G4')->applyFromArray($styleTitulos);
-        $this->docexcel->getActiveSheet()->getStyle('A1:F1')->getAlignment()->setWrapText(true);
+        $reporte = $this->objParam->getParametro('tipo_reporte');
 
-        $this->docexcel->getActiveSheet()->mergeCells('A1:G1');
-        $this->docexcel->getActiveSheet()->mergeCells('A2:G2');
-        $this->docexcel->getActiveSheet()->mergeCells('A3:G3');
+        if ($reporte == 'por_partida') {
+            $this->docexcel->getActiveSheet()->getStyle('A1:E4')->applyFromArray($styleTitulos);
+            $this->docexcel->getActiveSheet()->getStyle('A1:D1')->getAlignment()->setWrapText(true);
 
-        $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(15);
-        $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(35);
-        $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
-        $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-        $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
-        $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
-        $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(20);
+            $this->docexcel->getActiveSheet()->mergeCells('A1:E1');
+            $this->docexcel->getActiveSheet()->mergeCells('A2:E2');
+            $this->docexcel->getActiveSheet()->mergeCells('A3:E3');
+            $this->docexcel->getActiveSheet()->mergeCells('A4:E4');
 
+            $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(35);
+            $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
 
+            //*************************************Cabecera*****************************************
+            $this->docexcel->getActiveSheet()->setCellValue('A1',$this->objParam->getParametro('datos')[0]['vr_entidad']);
+            $this->docexcel->getActiveSheet()->setCellValue('A2','RESUMEN DE ALMACENES');
+            $this->docexcel->getActiveSheet()->setCellValue('A3','Al '.$this->objParam->getParametro('fecha_hasta'));
+            $this->docexcel->getActiveSheet()->setCellValue('A4','(Expresado en Bolivianos)');
 
-        //*************************************Cabecera*****************************************
-        $this->docexcel->getActiveSheet()->setCellValue('A1','Bienes de Consumo');
-        $this->docexcel->getActiveSheet()->setCellValue('A2','Al '.$this->objParam->getParametro('fecha_hasta'));
-        $this->docexcel->getActiveSheet()->setCellValue('A3','(Expresado en Bolivianos)');
+            $this->docexcel->getActiveSheet()->setCellValue('A5','Partida');
+            $this->docexcel->getActiveSheet()->setCellValue('B5',"Cantidad Inicial\nal " . $this->objParam->getParametro('fecha_ini'));
+            $this->docexcel->getActiveSheet()->setCellValue('C5',"Saldo Inicial\nal ". $this->objParam->getParametro('fecha_ini') .' (Bs)');
+            $this->docexcel->getActiveSheet()->setCellValue('D5',"Cantidad Final\nal ". $this->objParam->getParametro('fecha_hasta'));
+            $this->docexcel->getActiveSheet()->setCellValue('E5',"Saldo Final\nal ". $this->objParam->getParametro('fecha_hasta') .' (Bs)');
+            $this->docexcel->getActiveSheet()->getStyle('A5:E5')->getAlignment()->setWrapText(true);
+            $this->docexcel->getActiveSheet()->getStyle('A5:E5')->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER)
+                ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
 
-        $this->docexcel->getActiveSheet()->setCellValue('A4','Codigo');
-        $this->docexcel->getActiveSheet()->setCellValue('B4','Descripción');
-        $this->docexcel->getActiveSheet()->setCellValue('C4','Saldo Inicial');
-        $this->docexcel->getActiveSheet()->setCellValue('D4','Ingresos');
-        $this->docexcel->getActiveSheet()->setCellValue('E4','Salidas');
-        $this->docexcel->getActiveSheet()->setCellValue('F4','Saldo Final');
-        $this->docexcel->getActiveSheet()->setCellValue('G4','Grupo');
+            //*************************************Detalle*****************************************
+            $fila = 6;
 
-        //*************************************Detalle*****************************************
-        $fila = 5;
-
-        $color_pestana = array('FA8072','0095b6','e74c3c','138d75','a93226','229954','884ea0','1f618d','117a65');
-        $index = 0;
-        $relleno = array(
-            'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                'color' => array(
-                    'rgb' => $color_pestana[$index]
-                )
-            )
-        );
-
-        $normal = array(
-            'fill' => array(
-                'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                'color' => array(
-                    'rgb' => 'ffffff'
-                )
-            )
-        );
-
-        $codigo = '';
-
-        foreach($datos as $value) {
-            //$columna = 0;
-
-            if($value['codigo'] != $codigo  && $value['tamano'] == 1 && $codigo != ''){
-                $index++;
-                $relleno = array(
-                    'fill' => array(
-                        'type' => PHPExcel_Style_Fill::FILL_SOLID,
-                        'color' => array(
-                            'rgb' => $color_pestana[$index]
-                        )
+            $color_pestana = array('FA8072','0095b6','e74c3c','138d75','a93226','229954','884ea0','1f618d','117a65');
+            $index = 0;
+            $relleno = array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array(
+                        'rgb' => $color_pestana[$index]
                     )
-                );
+                )
+            );
+
+            $normal = array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array(
+                        'rgb' => 'ffffff'
+                    )
+                )
+            );
+
+            $codigo = '';
+            foreach($datos as $value) {
+                //$columna = 0;
+
+                if($value['codigo'] != $codigo  && $value['tamano'] == 1 && $codigo != ''){
+                    $index++;
+                    $relleno = array(
+                        'fill' => array(
+                            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                            'color' => array(
+                                'rgb' => $color_pestana[$index]
+                            )
+                        )
+                    );
+                }
+
+                if ($value['id_clasificacion_fk'] == null) {
+                    $this->docexcel->getActiveSheet()->getStyle("A$fila:E$fila")->applyFromArray($value['codigo'] == 'total' ? $relleno : $normal);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,$fila,$value['codigo'].' '.$value['nombre']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,$fila,$value['vr_cantidad_saldo_inicial']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,$fila,$value['saldo_ini']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3,$fila,$value['vr_cantidad_saldo_final']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4,$fila,$value['saldo_fin']);//$columna++;
+
+                }
+                if($value['tamano'] == -1){
+                    $this->docexcel->getActiveSheet()->getStyle("A$fila:D$fila")->applyFromArray($normal);
+                }
+
+                if($value['tamano'] > 1){
+                    $this->docexcel->getActiveSheet()->getStyle("A$fila:D$fila")->applyFromArray($relleno);
+                }
+
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,$fila,$value['codigo'].' '.$value['nombre']);
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,$fila,$value['vr_cantidad_saldo_inicial']);
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,$fila,$value['saldo_ini']);
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3,$fila,$value['vr_cantidad_saldo_final']);
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4,$fila,$value['saldo_fin']);
+
+                $fila++;
+                $codigo = $value['codigo'];
             }
 
-            if ($value['id_clasificacion_fk'] == null) {
-                $this->docexcel->getActiveSheet()->getStyle("A$fila:G$fila")->applyFromArray($relleno);
-                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,$fila,$value['codigo']);//$columna++;
-                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,$fila,$value['nombre']);//$columna++;
-                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,$fila,$value['saldo_ini']);//$columna++;
-                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3,$fila,$value['ingreso']);//$columna++;
-                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4,$fila,$value['salida']);//$columna++;
-                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,$fila,$value['saldo_fin']);//$columna++;
-                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6,$fila,'Total Clasificación '.$value['codigo']);
+            //************************************************Fin Detalle***********************************************
+        } else {
+            $this->docexcel->getActiveSheet()->getStyle('A1:K1')->applyFromArray($styleTitulos);
+            $this->docexcel->getActiveSheet()->getStyle('A1:K1')->getAlignment()->setWrapText(true);
+            $this->docexcel->getActiveSheet()->getStyle('A2:K2')->applyFromArray($styleTitulos);
+            $this->docexcel->getActiveSheet()->getStyle('A2:K2')->getAlignment()->setWrapText(true);
+            $this->docexcel->getActiveSheet()->getStyle('A3:K3')->applyFromArray($styleTitulos);
+            $this->docexcel->getActiveSheet()->getStyle('A3:K3')->getAlignment()->setWrapText(true);
+            $this->docexcel->getActiveSheet()->getStyle('A4:K4')->applyFromArray($styleTitulos);
+            $this->docexcel->getActiveSheet()->getStyle('A4:K4')->getAlignment()->setWrapText(true);
 
+            $this->docexcel->getActiveSheet()->mergeCells('A1:K1');
+            $this->docexcel->getActiveSheet()->mergeCells('A2:K2');
+            $this->docexcel->getActiveSheet()->mergeCells('A3:K3');
+            $this->docexcel->getActiveSheet()->mergeCells('A4:K4');
+
+            $this->docexcel->getActiveSheet()->mergeCells('A5:A6');
+            $this->docexcel->getActiveSheet()->mergeCells('B5:B6');
+            $this->docexcel->getActiveSheet()->mergeCells('C5:C6');
+            $this->docexcel->getActiveSheet()->mergeCells('D5:G5');
+            $this->docexcel->getActiveSheet()->mergeCells('H5:K5');
+
+            $this->docexcel->getActiveSheet()->getColumnDimension('A')->setWidth(35);
+            $this->docexcel->getActiveSheet()->getColumnDimension('B')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('G')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('H')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('J')->setWidth(15);
+            $this->docexcel->getActiveSheet()->getColumnDimension('K')->setWidth(15);
+
+            //*************************************Cabecera*****************************************
+            $this->docexcel->getActiveSheet()->setCellValue('A1',$this->objParam->getParametro('datos')[0]['vr_entidad']);
+            $this->docexcel->getActiveSheet()->setCellValue('A2','DETALLE DE ALMACENES');
+            $this->docexcel->getActiveSheet()->setCellValue('A3','Al '.$this->objParam->getParametro('fecha_hasta'));
+            $this->docexcel->getActiveSheet()->setCellValue('A4','(Expresado en Bolivianos)');
+
+            $this->docexcel->getActiveSheet()->setCellValue('A5','Descripción');
+            $this->docexcel->getActiveSheet()->setCellValue('B5','Unidad de medida');
+            $this->docexcel->getActiveSheet()->setCellValue('C5','Precio Unitario');
+            $this->docexcel->getActiveSheet()->setCellValue('D5','Cantidad');
+            $this->docexcel->getActiveSheet()->setCellValue('H5','Valores');
+
+            $this->docexcel->getActiveSheet()->setCellValue('D6','Saldo Inicial');
+            $this->docexcel->getActiveSheet()->setCellValue('E6','Entrada');
+            $this->docexcel->getActiveSheet()->setCellValue('F6','Salida');
+            $this->docexcel->getActiveSheet()->setCellValue('G6','Salido Final');
+            $this->docexcel->getActiveSheet()->setCellValue('H6','Saldo Inicial');
+            $this->docexcel->getActiveSheet()->setCellValue('I6','Entradas');
+            $this->docexcel->getActiveSheet()->setCellValue('J6','Salidas');
+            $this->docexcel->getActiveSheet()->setCellValue('K6','Saldo Final');
+
+            $this->docexcel->getActiveSheet()->getStyle('A5:K5')->getAlignment()->setWrapText(true);
+            $this->docexcel->getActiveSheet()->getStyle('A5:K5')->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER)
+                ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+            $this->docexcel->getActiveSheet()->getStyle('A6:K6')->getAlignment()->setWrapText(true);
+            $this->docexcel->getActiveSheet()->getStyle('A6:K6')->getAlignment()
+                ->setHorizontal(PHPExcel_Style_Alignment::HORIZONTAL_CENTER)
+                ->setVertical(PHPExcel_Style_Alignment::VERTICAL_CENTER);
+
+            //*************************************Detalle*****************************************
+            $fila = 7;
+
+            $color_pestana = array('FA8072','0095b6','e74c3c','138d75','a93226','229954','884ea0','1f618d','117a65');
+            $index = 0;
+            $relleno = array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array(
+                        'rgb' => $color_pestana[$index]
+                    )
+                )
+            );
+
+            $normal = array(
+                'fill' => array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                    'color' => array(
+                        'rgb' => 'ffffff'
+                    )
+                )
+            );
+
+            $codigo = '';
+            // var_dump($datos); exit;
+            foreach($datos as $value) {
+                //$columna = 0;
+
+                if($value['codigo'] != $codigo  && $value['tamano'] == 1 && $codigo != ''){
+                    $index++;
+                    $relleno = array(
+                        'fill' => array(
+                            'type' => PHPExcel_Style_Fill::FILL_SOLID,
+                            'color' => array(
+                                'rgb' => $color_pestana[$index]
+                            )
+                        )
+                    );
+                }
+
+                if ($value['id_clasificacion_fk'] == null) {
+                    $this->docexcel->getActiveSheet()->getStyle("A$fila:K$fila")->applyFromArray($value['codigo'] == 'total' ? $relleno : $normal);
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,$fila,$value['codigo'].' '.$value['nombre']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,$fila,$value['vr_unidad_medida']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,$fila,0);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3,$fila,$value['vr_cantidad_saldo_inicial']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4,$fila,$value['vr_cantidad_ingreso']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,$fila,$value['vr_cantidad_egreso']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6,$fila,$value['vr_cantidad_saldo_final']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7,$fila,$value['saldo_ini']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8,$fila,$value['ingreso']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9,$fila,$value['salida']);//$columna++;
+                    $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10,$fila,$value['saldo_fin']);//$columna++;
+
+                }
+                if($value['tamano'] == -1){
+                    $this->docexcel->getActiveSheet()->getStyle("A$fila:J$fila")->applyFromArray($normal);
+                }
+
+                if($value['tamano'] > 1){
+                    $this->docexcel->getActiveSheet()->getStyle("A$fila:J$fila")->applyFromArray($relleno);
+                }
+
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,$fila,$value['codigo'].' '.$value['nombre']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,$fila,$value['vr_unidad_medida']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,$fila,$value['vr_prec_unitario']);//$columna++; Traer el precio desde la base de datos
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3,$fila,$value['vr_cantidad_saldo_inicial']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4,$fila,$value['vr_cantidad_ingreso']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,$fila,$value['vr_cantidad_egreso']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(6,$fila,$value['vr_cantidad_saldo_final']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(7,$fila,$value['saldo_ini']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(8,$fila,$value['ingreso']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(9,$fila,$value['salida']);//$columna++;
+                $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(10,$fila,$value['saldo_fin']);//$columna++;
+
+                $fila++;
+                $codigo = $value['codigo'];
             }
-            if($value['tamano'] == -1){
-                $this->docexcel->getActiveSheet()->getStyle("A$fila:F$fila")->applyFromArray($normal);
-            }
 
-            if($value['tamano'] > 1){
-                $this->docexcel->getActiveSheet()->getStyle("A$fila:F$fila")->applyFromArray($relleno);
-            }
-
-
-
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(0,$fila,$value['codigo']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(1,$fila,$value['nombre']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(2,$fila,$value['saldo_ini']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(3,$fila,$value['ingreso']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(4,$fila,$value['salida']);
-            $this->docexcel->getActiveSheet()->setCellValueByColumnAndRow(5,$fila,$value['saldo_fin']);
-
-            $fila++;
-            $codigo = $value['codigo'];
+            //************************************************Fin Detalle***********************************************
         }
-
-        //************************************************Fin Detalle***********************************************
 
     }
 

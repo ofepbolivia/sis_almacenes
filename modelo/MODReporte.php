@@ -304,6 +304,7 @@ class MODReporte extends MODbase
         $fechaFin = $this->objParam->getParametro('fecha_hasta');
         $idClasificacionLista = $this->objParam->getParametro('id_clasificacion');
         $idalmacen = $this->objParam->getParametro('id_almacen');
+        $tipoReporte = $this->objParam->getParametro('tipo_reporte'); //NMQ: añadido para el ajuste al reporte por HR 2024-01111
         if ($this->objParam->getParametro('all_items') == 'si') {
             $idalmacen = '';
         }
@@ -313,15 +314,16 @@ class MODReporte extends MODbase
         } else {
             $idUsuario = $this->id_usuario;
         }
-        
+
         $this->consulta = "select * from alm.ft_reporte_existencias(array[" . $idClasificacionLista . "]::integer[], 
         to_date('" . $fechaIni . "','DD/MM/YYYY'), to_date('" . $fechaFin . "','DD/MM/YYYY'),
-        array[" . $idalmacen . "]::integer[]," . $idUsuario . ") 
+        array[" . $idalmacen . "]::integer[]," . $idUsuario . ",'". $tipoReporte ."')
         as (codigo  varchar, nombre varchar, vr_unidad_medida varchar, vr_cantidad_saldo_inicial numeric, saldo_ini numeric,
          vr_cantidad_ingreso numeric, ingreso numeric, vr_cantidad_egreso numeric, salida numeric, vr_cantidad_saldo_final numeric,
          saldo_fin numeric, vr_fuente varchar, vr_grupo varchar, vr_nivel varchar,
-        vr_entidad varchar, vr_nom_almacen varchar, vr_fecha_ini date, vr_fecha_hasta date, vr_fuentes_gral varchar, id_almacen integer)";
+        vr_entidad varchar, vr_nom_almacen varchar, vr_fecha_ini date, vr_fecha_hasta date, vr_fuentes_gral varchar, id_almacen integer, vr_prec_unitario numeric)"; //NMQ: añadido para el ajuste al reporte HR 2024-01111
         $this->ejecutarConsultaSel();
+        // var_dump($this->getConsulta()); exit();
         return $this->respuesta;
     }
 }

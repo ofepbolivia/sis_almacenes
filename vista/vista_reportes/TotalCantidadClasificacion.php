@@ -14,7 +14,7 @@ header("content-type: text/javascript; charset=UTF-8");
         constructor: function(config) {
             Ext.apply(this,config);
             this.Atributos = [
-                
+
                 {
                     config : {
                         name : 'fecha_ini',
@@ -109,6 +109,31 @@ header("content-type: text/javascript; charset=UTF-8");
                     grid: true,
                     form: true
                 },
+                { //NMQ: añadido para el ajuste al reporte por HR 2024-01111
+                    config : {
+                        name : 'tipo_reporte',
+                        fieldLabel : 'Tipo Reporte',
+                        allowBlank: false,
+                        emptyText: 'Elija un tipo de reporte...',
+                        lazyRender : true,
+                        mode : 'local',
+                        store : new Ext.data.ArrayStore({
+                            fields : ['codigo', 'nombre'],
+                            data : [['por_partida', 'Por partida'], ['por_descripcion', 'Por descripción (ítem)']]
+                        }),
+                        anchor : '50%',
+                        valueField : 'codigo',
+                        displayField : 'nombre',
+                        listeners: {
+                            focus: function(combo) {
+                                combo.clearValue();
+                            }
+                        }
+                    },
+                    type : 'ComboBox',
+                    id_grupo : 0,
+                    form : true
+                },
                 {
                     config : {
                         name : 'all_items',
@@ -126,7 +151,8 @@ header("content-type: text/javascript; charset=UTF-8");
                         displayField : 'nombre'
                     },
                     type : 'ComboBox',
-                    id_grupo : 1,
+                    id_grupo : 0,
+                    grid: true,
                     form : true
                 },
                 {

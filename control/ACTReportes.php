@@ -287,6 +287,8 @@ class ACTReportes extends ACTbase {
         $this->objFunc = $this->create('MODReporte');
 
         $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_hasta'));
+        $this->objParam->addParametro('fecha_ini',$this->objParam->getParametro('fecha_ini')); //NMQ: añadido para el ajuste al reporte por HR 2024-01111
+        $this->objParam->addParametro('tipo_reporte',$this->objParam->getParametro('tipo_reporte')); //NMQ: añadido para el ajuste al reporte por HR 2024-01111
 
         $this->res=$this->objFunc->listarTotalCantidadesClasificacion($this->objParam);
         $this->datos=$this->res->getDatos();
@@ -297,7 +299,7 @@ class ACTReportes extends ACTbase {
         $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
         $this->objParam->addParametro('datos',$this->datos);
 
-       
+
         $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
         $this->objReporte->generarReporte();
         $this->mensajeExito=new Mensaje();
@@ -305,6 +307,6 @@ class ACTReportes extends ACTbase {
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->res = $this->mensajeExito;
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
-    }    
+    }
 }
 ?>
