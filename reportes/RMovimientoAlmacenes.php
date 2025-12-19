@@ -63,6 +63,8 @@ class RMovimientoAlmacenes extends ReportePDF
 
     function generarReporte()
     {
+        set_time_limit(0);
+        ini_set('memory_limit', '-1');
         $this->SetMargins(15, 30, 16);
         $this->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
         $this->createPage('T');

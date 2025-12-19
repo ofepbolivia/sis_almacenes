@@ -176,7 +176,7 @@ header("content-type: text/javascript; charset=UTF-8");
                 config: {
                     name: 'descripcion',
                     fieldLabel: 'Descripción',
-                    allowBlank: true,
+                    allowBlank: false,
                     width: '100%',
                     gwidth: 150,
                     maxLength: 1000
