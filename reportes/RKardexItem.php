@@ -57,20 +57,27 @@ class RKardexItem extends ReportePDF
     {
         return '
             <tr>
-                <td style="width: 3%;"><b>N°</b></td>
-                <td style="width: 8%;"><b>Fecha Solicitud</b></td>
-                <td style="width: 8%;"><b>Fecha Salida</b></td>
-                <td style="width: 12%;"><b>Num.Movimiento</b></td>
-                <td style="width: 8%;"><b>Almacén</b></td>
-                <td style="width: 8%;"><b>Motivo</b></td>
-                <td style="width: 7%;"><b>Cantidad ingreso</b></td>
-                <td style="width: 7%;"><b>Cantidad salida</b></td>
-                <td style="width: 7%;"><b>Saldo Físico</b></td>
-                <td style="width: 8%;"><b>Saldo Valorado</b></td>
-                <td style="width: 8%;"><b>Costo Unitario</b></td>
-                <td style="width: 8%;"><b>Valorado Ingreso</b></td>
-                <td style="width: 8%;"><b>Valorado Salida</b></td>
+                <td style="width: 8%;" rowspan="2"><b>Fecha Solicitud</b></td>
+                <td style="width: 8%;" rowspan="2"><b>Fecha Salida</b></td>
+                <td style="width: 12%;" rowspan="2"><b>Num. Movimiento</b></td>
+                <td style="width: 8%;" rowspan="2"><b>Concepto</b></td>
+                <td style="width: 21%;" colspan="3"><b>Ingreso</b></td>
+                <td style="width: 21%;" colspan="3"><b>Salida</b></td>
+                <td style="width: 22%;" colspan="4"><b>Saldo</b></td>
             </tr>
+            <tr>
+                <td style="width: 7%;"><b>Cantidad</b></td>
+                <td style="width: 7%;"><b>Costo Unit.</b></td>
+                <td style="width: 7%;"><b>Total</b></td>
+                <td style="width: 7%;"><b>Cantidad</b></td>
+                <td style="width: 7%;"><b>Costo</b></td>
+                <td style="width: 7%;"><b>Total</b></td>
+                <td style="width: 6%;"><b>Cantidad</b></td>
+                <td style="width: 6%;"><b>Costo</b></td>
+                <td style="width: 6%;"><b>Total</b></td>
+                <td style="width: 4%;"><b>Costo Prom.</b></td>
+            </tr>
+
         ';
     }
 
@@ -83,20 +90,25 @@ class RKardexItem extends ReportePDF
         $html .= $this->getTableHeader();
         $i = 1;
         foreach ($this->datos as $record) {
+            $totalSaldo = $record['ingreso'] - $record['salida'];
+            $costoUnitario = $record['ingreso'] == 0 ? 0 : $record['ingreso_val'] / $record['ingreso'];
+            $totalSaldoValorado = ($record['ingreso_val'] - $record['salida_val']);
+            $costoPromedio = $totalSaldo == 0 ? 0 : ($totalSaldoValorado / $totalSaldo);
             $html .= '<tr>';
-            $html .= '<td>' . $i . '</td>';
-            $html .= '<td>' . $this->convertDate(substr($record['fecha'], 0, 10)) . '</td>';
             $html .= '<td>' . $this->convertDate($record['fecha_salida']) . '</td>';
             $html .= '<td>' . $record['nro_mov'] . '</td>';
-            $html .= '<td>' . $record['almacen'] . '</td>';
             $html .= '<td>' . $record['motivo'] . '</td>';
+            $html .= '<td> OC-1020 </td>';
             $html .= '<td style="text-align: right">' . $this->formatNumber($record['ingreso'], 4) . '</td>';
-            $html .= '<td style="text-align: right">' . $this->formatNumber($record['salida'], 4) . '</td>';
-            $html .= '<td style="text-align: right">' . $this->formatNumber($record['saldo'], 4) . '</td>';
-            $html .= '<td style="text-align: right">' . $this->formatNumber($record['saldo_val'], 4) . '</td>';
-            $html .= '<td style="text-align: right">' . $this->formatNumber($record['costo_unitario'], 4) . '</td>';
+            $html .= '<td style="text-align: right">' . $this->formatNumber($costoUnitario, 4) . '</td>';
             $html .= '<td style="text-align: right">' . $this->formatNumber($record['ingreso_val'], 4) . '</td>';
+            $html .= '<td style="text-align: right">' . $this->formatNumber($record['salida'], 4) . '</td>';
+            $html .= '<td style="text-align: right">' . $this->formatNumber($record['costo_unitario'], 4) . '</td>';
             $html .= '<td style="text-align: right">' . $this->formatNumber($record['salida_val'], 4) . '</td>';
+            $html .= '<td style="text-align: right">' . $this->formatNumber($totalSaldo, 4) . '</td>';
+            $html .= '<td style="text-align: right">' . $this->formatNumber($costoUnitario, 4) . '</td>';
+            $html .= '<td style="text-align: right">' . $this->formatNumber($totalSaldoValorado, 4) . '</td>';
+            $html .= '<td style="text-align: right">' . $this->formatNumber($costoPromedio, 4) . '</td>';
             $html .= '</tr>';
             $i++;
         }

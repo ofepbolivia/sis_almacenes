@@ -6,25 +6,29 @@
  * @date    21-09-2012
  * @descripcion Clase que recibe los parametros enviados por la vista para luego ser mandadas a la capa Modelo
  */
-require_once (dirname(__FILE__) . '/../reportes/pxpReport/ReportWriter.php');
-require_once (dirname(__FILE__) . '/../reportes/RExistencias.php');
-require_once (dirname(__FILE__) . '/../reportes/RMovimientoAlmacenes.php');
-require_once (dirname(__FILE__) . '/../reportes/RExistenciasUpdate.php');
-require_once (dirname(__FILE__) . '/../reportes/RExistenciasPUDesglosado.php');
-require_once (dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
-require_once (dirname(__FILE__) . '/../reportes/RExistenciasExcel.php');
-require_once (dirname(__FILE__) . '/../reportes/RMinisterioExistenciasXLS.php');
-require_once (dirname(__FILE__) . '/../reportes/RMovimientoAlmacenesXLS.php');
-require_once (dirname(__FILE__) . '/../reportes/RKardexItem.php');
+require_once(dirname(__FILE__) . '/../reportes/pxpReport/ReportWriter.php');
+require_once(dirname(__FILE__) . '/../reportes/RExistencias.php');
+require_once(dirname(__FILE__) . '/../reportes/RMovimientoAlmacenes.php');
+require_once(dirname(__FILE__) . '/../reportes/RExistenciasUpdate.php');
+require_once(dirname(__FILE__) . '/../reportes/RExistenciasPUDesglosado.php');
+require_once(dirname(__FILE__) . '/../reportes/pxpReport/DataSource.php');
+require_once(dirname(__FILE__) . '/../reportes/RExistenciasExcel.php');
+require_once(dirname(__FILE__) . '/../reportes/RMinisterioExistenciasXLS.php');
+require_once(dirname(__FILE__) . '/../reportes/RMovimientoAlmacenesXLS.php');
+require_once(dirname(__FILE__) . '/../reportes/RKardexItem.php');
+require_once(dirname(__FILE__) . '/../reportes/RExistenciasPUDesglosadoCS.php');
+require_once(dirname(__FILE__) . '/../reportes/RExistenciasPUDesglosadoCSExcel.php');
 
-class ACTReportes extends ACTbase {
-    function reporteExistencias() {
+class ACTReportes extends ACTbase
+{
+    function reporteExistencias()
+    {
         //var_dump($this->objParam->getParametro('formato_reporte'));exit;
         //TODO: pasos para el reporte:
         //iterar sobre el array de ids de almacenes
         //Obtener el listado de los items ordenados por clasificacion y por fecha de un determinado almacen:
         //fRnk: add fecha_ini
-        $this->objParam->addParametro('fecha_ini',$this->objParam->getParametro('fecha_ini'));
+        $this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini'));
         $fechaHasta = $this->objParam->getParametro('fecha_hasta');
 
         if ($this->objParam->getParametro('formato_reporte') == 'pdf') {
@@ -35,16 +39,16 @@ class ACTReportes extends ACTbase {
             $this->objParam->addParametroConsulta('puntero', 0);
 
             $nombreArchivo = 'Existencias.pdf';
-            if($this->objParam->getParametro('formato') == 'antiguo') {
+            if ($this->objParam->getParametro('formato') == 'antiguo') {
                 $this->objFunc = $this->create('MODReporte');
                 $resultRepExistencias = $this->objFunc->listarItemsPorAlmacenFecha($this->objParam);
 
                 $dataSource = new DataSource();
                 $resultData = $resultRepExistencias->getDatos();//var_dump($resultData);exit;
                 $lastNombreClasificacion = $resultData[0]['clasificacion'];
-                $dataSourceArray = Array();
+                $dataSourceArray = array();
                 $dataSourceClasificacion = new DataSource();
-                $dataSetClasificacion = Array();
+                $dataSetClasificacion = array();
                 $totalCostoClasificacion = 0;
                 $mainDataSet = array();
                 $costoTotal = 0;
@@ -58,7 +62,7 @@ class ACTReportes extends ACTbase {
                         $dataSourceArray[] = $dataSourceClasificacion;
                         $lastNombreClasificacion = $row['clasificacion'];
                         $dataSourceClasificacion = new DataSource();
-                        $dataSetClasificacion = Array();
+                        $dataSetClasificacion = array();
                         $totalCostoClasificacion = 0;
                     }
                     $dataSetClasificacion[] = $row;
@@ -82,35 +86,35 @@ class ACTReportes extends ACTbase {
 
                 $reportWriter = new ReportWriter($reporte, dirname(__FILE__) . '/../../reportes_generados/' . $nombreArchivo);
                 $reportWriter->writeReport(ReportWriter::PDF);
-            }else if($this->objParam->getParametro('formato') == 'nuevo'){
+            } else if ($this->objParam->getParametro('formato') == 'nuevo') {
 
                 $this->objFunc = $this->create('MODReporte');
                 $resultRepExistencias = $this->objFunc->listarKardexItemIngSal($this->objParam);
 
                 $resultData = $resultRepExistencias->getDatos();
 
-                $this->objParam->addParametro('orientacion','P');
-                $this->objParam->addParametro('tamano','LETTER');
-                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+                $this->objParam->addParametro('orientacion', 'P');
+                $this->objParam->addParametro('tamano', 'LETTER');
+                $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
 
                 $reporte = new RExistenciasUpdate($this->objParam);
                 $reporte->setDatos($resultData, $this->objParam->getParametro('all_items'), $this->objParam->getParametro('clasificacion'));
                 $reporte->generarReporte();
-                $reporte->output($reporte->url_archivo,'F');
-            }else if($this->objParam->getParametro('formato') == 'ministerio'){
+                $reporte->output($reporte->url_archivo, 'F');
+            } else if ($this->objParam->getParametro('formato') == 'ministerio') {
 
                 $this->objFunc = $this->create('MODReporte');
                 $resultRepExistencias = $this->objFunc->listarCantidadesClasificacion($this->objParam);
                 $resultData = $resultRepExistencias->getDatos();
 
-                $this->objParam->addParametro('orientacion','P');
-                $this->objParam->addParametro('tamano','LETTER');
-                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+                $this->objParam->addParametro('orientacion', 'P');
+                $this->objParam->addParametro('tamano', 'LETTER');
+                $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
 
                 $reporte = new RMovimientoAlmacenes($this->objParam);//var_dump($resultData);exit();
                 $reporte->setDatos($resultData);
                 $reporte->generarReporte();
-                $reporte->output($reporte->url_archivo,'F');
+                $reporte->output($reporte->url_archivo, 'F');
 
 
                 /*
@@ -129,21 +133,21 @@ class ACTReportes extends ACTbase {
                 $this->objReporte->generarReporte();*/
 
 
-            }else if($this->objParam->getParametro('formato')=='ingresos'){
+            } else if ($this->objParam->getParametro('formato') == 'ingresos') {
 
                 $this->objFunc = $this->create('MODReporte');
                 $resultRepExistencias = $this->objFunc->listarKardexItemDesglosado($this->objParam);
 
                 $resultData = $resultRepExistencias->getDatos();
 
-                $this->objParam->addParametro('orientacion','P');
-                $this->objParam->addParametro('tamano','LETTER');
-                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+                $this->objParam->addParametro('orientacion', 'P');
+                $this->objParam->addParametro('tamano', 'LETTER');
+                $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
 
                 $reporte = new RExistenciasPUDesglosado($this->objParam);
                 $reporte->setDatos($resultData);
                 $reporte->generarReporte();
-                $reporte->output($reporte->url_archivo,'F');
+                $reporte->output($reporte->url_archivo, 'F');
             }
 
             if ($resultRepExistencias->getTipo() == 'ERROR') {
@@ -155,7 +159,7 @@ class ACTReportes extends ACTbase {
             $mensajeExito->setArchivoGenerado($nombreArchivo);
             $this->res = $mensajeExito;
             $this->res->imprimirRespuesta($this->res->generarJson());
-        }else{
+        } else {
 
             if ($this->objParam->getParametro('formato') != 'ministerio') {
                 $this->objParam->addParametroConsulta('ordenacion', 'cla.id_clasificacion');
@@ -178,29 +182,31 @@ class ACTReportes extends ACTbase {
                 $this->objReporteFormato->generarDatos();
                 $this->objReporteFormato->generarReporte();
 
-            }else{
+            } else {
                 $this->objFunc = $this->create('MODReporte');
-                $this->res=$this->objFunc->listarCantidadesClasificacion($this->objParam);
+                $this->res = $this->objFunc->listarCantidadesClasificacion($this->objParam);
                 $titulo_archivo = 'Reporte Ministerio Existencias';
-                $this->datos=$this->res->getDatos();
+                $this->datos = $this->res->getDatos();
 
-                $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
-                $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
-                $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
-                $this->objParam->addParametro('datos',$this->datos);
-                $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_hasta'));
+                $nombreArchivo = uniqid(md5(session_id()) . $titulo_archivo) . '.xls';
+                $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+                $this->objParam->addParametro('titulo_archivo', $titulo_archivo);
+                $this->objParam->addParametro('datos', $this->datos);
+                $this->objParam->addParametro('fecha_hasta', $this->objParam->getParametro('fecha_hasta'));
 
                 $this->objReporte = new RMovimientoAlmacenesXLS($this->objParam);
                 $this->objReporte->generarReporte();
             }
 
             $this->mensajeExito = new Mensaje();
-            $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado','Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+            $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
             $this->mensajeExito->setArchivoGenerado($nombreArchivo);
             $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
         }
     }
-    function listarKardexItem() {
+
+    function listarKardexItem()
+    {
         $this->objParam->defecto('ordenacion', 'codigo');
         $this->objParam->defecto('dir_ordenacion', 'asc');
         if ($this->objParam->getParametro('tipoReporte') == 'excel_grid' || $this->objParam->getParametro('tipoReporte') == 'pdf_grid') {
@@ -209,16 +215,16 @@ class ACTReportes extends ACTbase {
         } elseif ($this->objParam->getParametro('tipoReporte') == 'reporte') {
             //fRnk: añadido para el nuevo reporte de Kardex almacen
             $this->reporteKardexItem($this->objParam->getParametro('item'), $this->objParam->getParametro('fecha_ini'), $this->objParam->getParametro('fecha_fin'));
-        }
-        else {
+        } else {
             $this->objFunc = $this->create('MODReporte');
             $this->res = $this->objFunc->listarKardexItem();
         }
         $this->res->imprimirRespuesta($this->res->generarJson());
     }
 
-    function reporteKardexItem($item, $fecha_ini, $fecha_fin) {
-        $nombreArchivo = uniqid(md5(session_id()).'KardexAlm').'.pdf';
+    function reporteKardexItem($item, $fecha_ini, $fecha_fin)
+    {
+        $nombreArchivo = uniqid(md5(session_id()) . 'KardexAlm') . '.pdf';
         $this->objFunc = $this->create('MODReporte');
         $repDatos = $this->objFunc->listarKardexItem();
         $dataSource = $repDatos;
@@ -226,23 +232,24 @@ class ACTReportes extends ACTbase {
         $orientacion = 'P';
         $titulo = 'Kardex Almacenes';
 
-        $this->objParam->addParametro('orientacion',$orientacion);
-        $this->objParam->addParametro('tamano',$tamano);
-        $this->objParam->addParametro('titulo_archivo',$titulo);
-        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
+        $this->objParam->addParametro('orientacion', $orientacion);
+        $this->objParam->addParametro('tamano', $tamano);
+        $this->objParam->addParametro('titulo_archivo', $titulo);
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
 
-        $reporte=new RKardexItem($this->objParam);
+        $reporte = new RKardexItem($this->objParam);
         $reporte->setDatos($dataSource->getDatos(), $item, $fecha_ini, $fecha_fin);
         $reporte->generarReporte();
-        $reporte->output($reporte->url_archivo,'F');
+        $reporte->output($reporte->url_archivo, 'F');
 
-        $mensajeExito=new Mensaje();
-        $mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $mensajeExito = new Mensaje();
+        $mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
         $mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->res = $mensajeExito;
     }
 
-    function listarItemEntRec() {
+    function listarItemEntRec()
+    {
         $this->objParam->defecto('ordenacion', 'codigo');
         $this->objParam->defecto('dir_ordenacion', 'asc');
 
@@ -257,56 +264,134 @@ class ACTReportes extends ACTbase {
     }
 
     //{'develop':'franklin.espinoza', 'date':'26/2/2020'}
-    function listarCantidadesClasificacion(){
+    function listarCantidadesClasificacion()
+    {
 
         $this->objFunc = $this->create('MODReporte');
 
 
-        $this->res=$this->objFunc->listarCantidadesClasificacion($this->objParam);
+        $this->res = $this->objFunc->listarCantidadesClasificacion($this->objParam);
         $titulo_archivo = 'Reporte Ministerio Existencias';
-        $this->datos=$this->res->getDatos();
+        $this->datos = $this->res->getDatos();
 
 
-        $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
-        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
-        $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
-        $this->objParam->addParametro('datos',$this->datos);
-        $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_fin'));
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo_archivo) . '.xls';
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+        $this->objParam->addParametro('titulo_archivo', $titulo_archivo);
+        $this->objParam->addParametro('datos', $this->datos);
+        $this->objParam->addParametro('fecha_hasta', $this->objParam->getParametro('fecha_fin'));
 
         $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
         $this->objReporte->generarReporte();
 
-        $this->mensajeExito=new Mensaje();
-        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito = new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->res = $this->mensajeExito;
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
     }
 
-    function listarTotalCantidadesClasificacion(){
+    function listarTotalCantidadesClasificacion()
+    {
         $this->objFunc = $this->create('MODReporte');
 
-        $this->objParam->addParametro('fecha_hasta',$this->objParam->getParametro('fecha_hasta'));
-        $this->objParam->addParametro('fecha_ini',$this->objParam->getParametro('fecha_ini')); //NMQ: añadido para el ajuste al reporte por HR 2024-01111
-        $this->objParam->addParametro('tipo_reporte',$this->objParam->getParametro('tipo_reporte')); //NMQ: añadido para el ajuste al reporte por HR 2024-01111
+        $this->objParam->addParametro('fecha_hasta', $this->objParam->getParametro('fecha_hasta'));
+        $this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini')); //NMQ: añadido para el ajuste al reporte por HR 2024-01111
+        $this->objParam->addParametro('tipo_reporte', $this->objParam->getParametro('tipo_reporte')); //NMQ: añadido para el ajuste al reporte por HR 2024-01111
 
-        $this->res=$this->objFunc->listarTotalCantidadesClasificacion($this->objParam);
-        $this->datos=$this->res->getDatos();
+        $this->res = $this->objFunc->listarTotalCantidadesClasificacion($this->objParam);
+        $this->datos = $this->res->getDatos();
 
         $titulo_archivo = 'Reporte Ministerio Existencias';
-        $nombreArchivo = uniqid(md5(session_id()).$titulo_archivo).'.xls';
-        $this->objParam->addParametro('nombre_archivo',$nombreArchivo);
-        $this->objParam->addParametro('titulo_archivo',$titulo_archivo);
-        $this->objParam->addParametro('datos',$this->datos);
+        $nombreArchivo = uniqid(md5(session_id()) . $titulo_archivo) . '.xls';
+        $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+        $this->objParam->addParametro('titulo_archivo', $titulo_archivo);
+        $this->objParam->addParametro('datos', $this->datos);
 
 
         $this->objReporte = new RMinisterioExistenciasXLS($this->objParam);
         $this->objReporte->generarReporte();
-        $this->mensajeExito=new Mensaje();
-        $this->mensajeExito->setMensaje('EXITO','Reporte.php','Reporte generado','Se generó con éxito el reporte: '.$nombreArchivo,'control');
+        $this->mensajeExito = new Mensaje();
+        $this->mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
         $this->mensajeExito->setArchivoGenerado($nombreArchivo);
         $this->res = $this->mensajeExito;
         $this->mensajeExito->imprimirRespuesta($this->mensajeExito->generarJson());
+    }
+
+    function reporteSalidaAlmacen()
+    {
+        $this->objParam->addParametro('fecha_ini', $this->objParam->getParametro('fecha_ini'));
+        $fechaHasta = $this->objParam->getParametro('fecha_hasta');
+        if ($this->objParam->getParametro('formato_reporte') == 'pdf') {
+            $idAlmacen = $this->objParam->getParametro('id_almacen');
+            $this->objParam->addParametroConsulta('ordenacion', 'cla.id_clasificacion');
+            $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
+            $this->objParam->addParametroConsulta('cantidad', 10000);
+            $this->objParam->addParametroConsulta('puntero', 0);
+
+            $nombreArchivo = 'Salidas.pdf';
+
+            $this->objFunc = $this->create('MODReporte');
+            $resultRepExistencias = $this->objFunc->listarKardexItemDesglosadoCS($this->objParam);
+            $resultData = $resultRepExistencias->getDatos();
+
+            $this->objParam->addParametro('orientacion', 'L');
+            $this->objParam->addParametro('tamano', 'LETTER');
+            $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+
+            $reporte = new RExistenciasPUDesglosadoCS($this->objParam);
+            $reporte->setDatos($resultData);
+            $reporte->generarReporte();
+            $reporte->output($reporte->url_archivo, 'F');
+
+            if ($resultRepExistencias->getTipo() == 'ERROR') {
+                $resultRepExistencias->imprimirRespuesta($resultRepExistencias->generarMensajeJson());
+                exit;
+            }
+            $mensajeExito = new Mensaje();
+            $mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+            $mensajeExito->setArchivoGenerado($nombreArchivo);
+            $this->res = $mensajeExito;
+            $this->res->imprimirRespuesta($this->res->generarJson());
+        } else {
+
+            $this->objParam->addParametroConsulta('ordenacion', 'cla.id_clasificacion');
+            $this->objParam->addParametroConsulta('dir_ordenacion', 'asc');
+            $this->objParam->addParametroConsulta('cantidad', 10000);
+            $this->objParam->addParametroConsulta('puntero', 0);
+
+            $this->objParam->addParametro('orientacion', 'L');
+            $this->objParam->addParametro('tamano', 'LETTER');
+            $nombreArchivo = uniqid(md5(session_id()) . $titulo);
+            $nombreArchivo .= '.xls';
+            $this->objParam->addParametro('nombre_archivo', $nombreArchivo);
+
+            $this->objFunc = $this->create('MODReporte');
+            $resultRepExistencias = $this->objFunc->listarKardexItemDesglosadoCS($this->objParam);
+            $resultData = $resultRepExistencias->getDatos();
+            // var_dump($resultData); exit;
+
+            $this->objParam->addParametro('datos', $resultData);
+
+            //obtener titulo de reporte
+            $titulo = 'Reporte Salidas';
+
+            //Instancia la clase de excel
+            $this->objReporteFormato = new RExistenciasPUDesglosadoCSExcel($this->objParam);
+            $this->objReporteFormato->generarDatos();
+            $this->objReporteFormato->generarReporte();
+
+            if ($resultRepExistencias->getTipo() == 'ERROR') {
+                $resultRepExistencias->imprimirRespuesta($resultRepExistencias->generarMensajeJson());
+                exit;
+            }
+            $mensajeExito = new Mensaje();
+            $mensajeExito->setMensaje('EXITO', 'Reporte.php', 'Reporte generado', 'Se generó con éxito el reporte: ' . $nombreArchivo, 'control');
+            $mensajeExito->setArchivoGenerado($nombreArchivo);
+            $this->res = $mensajeExito;
+            $this->res->imprimirRespuesta($this->res->generarJson());
+        }
     }
 }
+
 ?>

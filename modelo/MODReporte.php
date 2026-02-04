@@ -1,10 +1,10 @@
 <?php
 /**
- *@package pXP
- *@file    MODMovimiento.php
- *@author  Ariel Ayaviri Omonte
- *@date    17-04-2013
- *@description: DAO para los reportes del sistema de almacenes
+ * @package pXP
+ * @file    MODMovimiento.php
+ * @author  Ariel Ayaviri Omonte
+ * @date    17-04-2013
+ * @description: DAO para los reportes del sistema de almacenes
  */
 
 class MODReporte extends MODbase
@@ -317,7 +317,7 @@ class MODReporte extends MODbase
 
         $this->consulta = "select * from alm.ft_reporte_existencias(array[" . $idClasificacionLista . "]::integer[], 
         to_date('" . $fechaIni . "','DD/MM/YYYY'), to_date('" . $fechaFin . "','DD/MM/YYYY'),
-        array[" . $idalmacen . "]::integer[]," . $idUsuario . ",'". $tipoReporte ."')
+        array[" . $idalmacen . "]::integer[]," . $idUsuario . ",'" . $tipoReporte . "')
         as (codigo  varchar, nombre varchar, vr_unidad_medida varchar, vr_cantidad_saldo_inicial numeric, saldo_ini numeric,
          vr_cantidad_ingreso numeric, ingreso numeric, vr_cantidad_egreso numeric, salida numeric, vr_cantidad_saldo_final numeric,
          saldo_fin numeric, vr_fuente varchar, vr_grupo varchar, vr_nivel varchar,
@@ -326,5 +326,51 @@ class MODReporte extends MODbase
         // var_dump($this->getConsulta()); exit();
         return $this->respuesta;
     }
+
+    // HR 2025-01093
+    function listarKardexItemDesglosadoCS()
+    {
+        $this->procedimiento = 'alm.ft_reporte_sel';
+        $this->transaccion = 'SAL_ITECS_DESG_SEL';
+        $this->tipo_procedimiento = 'SEL';
+        //$this->tipo_retorno='record';
+        $this->count = false;
+
+        $this->setParametro('id_almacen', 'id_almacen', 'integer');
+        //$this->setParametro('fecha_ini', 'fecha_ini', 'date');
+        $this->setParametro('fecha_hasta', 'fecha_hasta', 'date');
+        $this->setParametro('all_items', 'all_items', 'varchar');
+        $this->setParametro('id_items', 'id_items', 'varchar');
+        $this->setParametro('saldo_cero', 'saldo_cero', 'varchar');
+        $this->setParametro('alertas', 'alertas', 'varchar');
+        $this->setParametro('id_clasificacion', 'id_clasificacion', 'varchar');
+
+        //$this->captura('id', 'integer');
+        //$this->captura('fecha', 'timestamp');
+        $this->captura('nro_tramite', 'varchar');
+        $this->captura('tipo_movimiento', 'varchar');
+        $this->captura('cantidad', 'numeric');
+        $this->captura('costo_unitario', 'numeric');
+        $this->captura('fecha_mov', 'date');
+        $this->captura('fecha_salida', 'date');
+        $this->captura('saldo_actual', 'numeric');
+        $this->captura('id_item', 'integer');
+        $this->captura('codigo', 'varchar');
+        $this->captura('nombre', 'varchar');
+        $this->captura('unidad_medida', 'varchar');
+        $this->captura('clasificacion', 'varchar');
+        $this->captura('nombre_almacen', 'varchar');
+        $this->captura('nombre_solicitante', 'text');
+        $this->captura('area_solicitante', 'text');
+        $this->captura('cargo_solicitante', 'text');
+        $this->captura('observaciones', 'text');
+
+        $this->armarConsulta();
+        //echo $this->consulta;exit;
+        $this->ejecutarConsulta();
+
+        return $this->respuesta;
+    }
 }
+
 ?>
